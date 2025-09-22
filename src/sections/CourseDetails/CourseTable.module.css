@@ -1,0 +1,244 @@
+.container {
+  width: 96%;
+  margin: 15px auto 0;
+  overflow-y: auto;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.title {
+  font-weight: 400;
+  font-size: 22px;
+}
+.addcoursebtn {
+  /* width: 30%; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addBtn {
+  background: linear-gradient(to bottom, #144196, #061530);
+  color: #f6f6f6;
+  border: none;
+  padding: 8px 20px;
+  cursor: pointer;
+  border-radius: 10px;
+
+  display: flex; /* Puts icon and text in a row */
+  align-items: center; /* Vertical center */
+  gap: 8px; /* Space between icon and text */
+  font-size: 14px;
+}
+.addBtn:hover{
+      background: #154682fc;
+
+}
+.courseTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 35px auto 0;
+}
+.courseTable th {
+  padding: 8px 5px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+  /* color: #0B2C65;   */
+  background: linear-gradient(to bottom, #144196, #061530);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: left;
+}
+.courseTable thead{
+  background-color: #f2f2f2;
+  
+}
+.courseTable td {
+  padding: 15px 9px;
+  border-bottom: 1px solid #e3e3e3;
+  font-weight: normal;
+  color: black;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.courseTable th {
+  background-color: #f3f3f3;
+}
+
+.greenText {
+  color: green;
+  font-weight: 600;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 6px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination button:hover {
+  background: linear-gradient(to bottom, #144196, #061530);
+  color: white;
+}
+
+.pagination button:disabled {
+  background-color: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+.activePage {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+@media (max-width: 765px) {
+  .container {
+    padding: 10px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .addcoursebtn {
+    width: 100%;
+    justify-content: flex-start;
+    position: relative;
+  }
+  .addBtn {
+    background: linear-gradient(to bottom, #144196, #061530);
+    color: #f6f6f6;
+    padding: 8px 20.51px 8px 37.18px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  .addBtn svg {
+    color: white;
+    position: absolute;
+    left: 10px;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .courseTable {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .courseTable thead,
+  .courseTable tbody,
+  .courseTable th,
+  .courseTable td,
+  .courseTable tr {
+    white-space: nowrap;
+  }
+  .courseTable th {
+    padding: 7.08px 20px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.899rem;
+    color: #0b2c65;
+  }
+  .courseTable td {
+    padding: 20px 9px;
+    border-bottom: 1px solid #ddd;
+    font-weight: normal;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  .courseTable th {
+    background-color: #f3f3f3;
+  }
+
+  .greenText {
+    color: green;
+    font-weight: 600;
+  }
+}
+@media (min-width: 766px) and (max-width: 1024px) {
+  .addcoursebtn {
+    width: 30%;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .addBtn {
+    background: linear-gradient(to bottom, #144196, #061530);
+    color: #f6f6f6;
+    border: none;
+    padding: 8px 20.51px 8px 51.18px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  .addBtn svg {
+    color: white;
+    left: 85px;
+  }
+  .courseTable {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .courseTable thead,
+  .courseTable tbody,
+  .courseTable th,
+  .courseTable td,
+  .courseTable tr {
+    white-space: nowrap;
+  }
+  .courseTable th {
+    padding: 7.08px 50px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.899rem;
+    color: #0b2c65;
+  }
+  .courseTable td {
+    padding: 20px 9px;
+    border-bottom: 1px solid #ddd;
+    font-weight: normal;
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.9rem;
+  }
+
+  .courseTable th {
+    background-color: #f3f3f3;
+  }
+
+  .greenText {
+    color: green;
+    font-weight: 600;
+  }
+}

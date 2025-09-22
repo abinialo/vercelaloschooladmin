@@ -1,0 +1,342 @@
+.add_student {
+  width: 100%;
+  border-radius: 20px;
+  background-color: #ffffff;
+  padding: 30px;
+  font-family: "Poppins", sans-serif;
+}
+.inputfield {
+  width: 100%;
+  height: 40px;
+  margin-top: 5px;
+  border-radius: 7px;
+  outline: none;
+  border: none;
+  background-color: #f2f2f2;
+  padding-left: 15px;
+}
+.header {
+  text-align: center;
+  position: relative;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.close_icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+.title {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.form_body {
+  margin-top: 15px;
+}
+
+.important {
+  color: red;
+}
+
+.error {
+  font-size: 13px;
+  color: red;
+}
+.hiddenInput {
+  display: none;
+}
+
+.customUpload {
+  display: inline-block;
+  height: 125px;
+  width: 125px;
+  /* border: 2px solid black; */
+  cursor: pointer;
+  text-align: center;
+  background-color: #f2f2f2;
+  position: relative;
+  border-radius: 7px;
+}
+
+.defaultimg {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.first_detail,
+.second_detail,
+.third_detail,
+.fourth_detail,
+.fifth_detail,
+.sixth_detail {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.student_name {
+  width: 100%;
+}
+.student_phone,
+.student_father {
+  width: 50%;
+}
+
+.student_id,
+.student_email,
+.student_mobile {
+  width: 50%;
+}
+
+.student_address {
+  width: 100%;
+}
+
+.input_field {
+  width: 100%;
+  height: 40px;
+  margin-top: 5px;
+  border-radius: 7px;
+  outline: none;
+  border: none;
+  background-color: #f2f2f2;
+  padding-left: 15px;
+}
+
+.student_bloodgroup,
+.student_dob,
+.student_qualification,
+.student_course,
+.student_document,
+.student_aadhar {
+  width: 33%;
+}
+
+.select_container {
+  position: relative;
+  width: 100%;
+}
+
+.select_field {
+  width: 100%;
+  height: 40px;
+  padding-left: 15px;
+  padding-right: 35px;
+  border: none;
+  border-radius: 7px;
+  background-color: #f2f2f2;
+  outline: none;
+  margin-top: 5px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.selectIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: black;
+  font-size: 16px;
+}
+
+.datepicker_wrapper {
+  width: 100%;
+}
+
+.date_input_container {
+  position: relative;
+  width: 100%;
+}
+
+.datepicker {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  padding: 0 40px 0 15px;
+  background-color: #f2f2f2;
+  color: #555;
+  font-size: 15px;
+  outline: none;
+  margin-top: 5px;
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  position: relative;
+  z-index: 1;
+}
+
+.datepicker::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  z-index: -1;
+}
+
+.calendar_icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+  color: #555;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.hidden_file_input {
+  display: none;
+}
+
+.custom_file_upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-top: 5px;
+  background-color: #f2f2f2;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  border: none;
+  transition: background 0.3s;
+}
+
+.custom-file_upload:hover {
+  background-color: #e0e0e0;
+}
+
+.download_icon {
+  margin-left: 10px;
+  font-size: 18px;
+}
+
+.submit_button {
+  margin-top: 20px;
+}
+
+.submit {
+  padding: 10px 20px;
+  border-radius: 8px;
+  outline: none;
+  border: none;
+  background: linear-gradient(to bottom, #0b48b0, #061634);
+  color: white;
+  font-size: 18px;
+}
+.submit:hover{
+ background: #154682fc;
+}
+
+.sixth_detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.student_course,
+.student_batch,
+.student_aadhar,
+.student_document {
+  flex: 1 1 45%;
+  min-width: 250px;
+}
+.course_batch_row,
+.document_upload_row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.profile_img img {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 50%;
+}
+
+.profile_img {
+  width: 150px;
+  height: 150px;
+  position: relative;
+}
+.close {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+  color: red;
+  font-size: 17px;
+}
+.filename {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* max-width: 200px; */
+}
+
+@media screen and (max-width: 768px) {
+  .first_detail,
+  .second_detail,
+  .third_detail,
+  .fourth_detail,
+  .fifth_detail,
+  .sixth_detail {
+    flex-direction: column;
+  }
+
+  .student_name,
+  .student_phone,
+  .student_father {
+    width: 100%;
+  }
+
+  .student_id,
+  .student_email,
+  .student_mobile {
+    width: 100%;
+  }
+
+  .student_bloodgroup,
+  .student_dob,
+  .student_qualification,
+  .student_course,
+  .student_document,
+  .student_aadhar {
+    width: 100%;
+  }
+}
+
+/* Wraps the toast relative to the submit button */
+.toastWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 8px; /* space below button */
+}
+
+/* Override Toastify’s bottom-center positioning only in this wrapper */
+
+.customContainer {
+  bottom: auto !important;
+  transform: translate(-1%, -90px) !important;
+  align-items: center !important;
+}

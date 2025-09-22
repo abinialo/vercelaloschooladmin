@@ -1,0 +1,47 @@
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+
+.edit {
+  color: rgb(19, 19, 123);
+}
+
+.delete {
+  color: rgb(245 86 86);
+}
+.popmessage {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.popyes {
+  color: white;
+  background: linear-gradient(to bottom, #0b48b0, #061634);
+  width: 70px;
+  padding: 8px 0px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.popyes:hover ,.button button:hover{
+    background: #154682fc;
+}
+.popno {
+  color: black;
+  width: 70px;
+  padding: 8px 0px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+.popno:hover {
+  background: #d6d7d7fc;
+  border: none;
+}

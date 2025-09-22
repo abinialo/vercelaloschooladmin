@@ -1,0 +1,92 @@
+.dashboradcontainer {
+    padding: 10px 10px 80px 10px;
+    margin: 5px;
+}
+
+.headersection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.adminactive::before {
+    content: '';
+    background-color: #0DC44A;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+
+}
+
+.adminactive {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border: 1.5px solid #00000029;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.admininactive::before {
+    content: '';
+    background-color: #c40d0d;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+}
+
+.dashcardcontainer {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    margin: 10px;
+}
+
+.dashcard {
+    background-color: #F8F8F8;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.profileicon {
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.dashcount {
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.avatars {
+    display: flex;
+}
+
+.avatars img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+    margin-left: -10px;
+}
+
+.avatars img:first-child {
+    margin-left: 0;
+}
+
+.avatar_text {
+    margin-left: 10px;
+    font-size: 14px;
+    color: #444;
+    white-space: nowrap;
+}
+
+.dashdate {
+    color: #555;
+    font-size: 10px;
+}

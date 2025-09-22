@@ -1,0 +1,368 @@
+.aloschool {
+  width: 100%;
+  display: flex;
+  /* min-height: 100vh; */
+  /* overflow-x: hidden; */
+  position: fixed !important;
+  top: 0px !important;
+}
+
+.menu_toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 10px;
+  font-size: 30px;
+}
+
+.navbar {
+  width: 17vw;
+  background: linear-gradient(to bottom, #0b48b0, #061634);
+  /* padding-top: 25px; */
+  padding-left: 20px;
+  padding-right: 15px;
+  padding-bottom: 50px;
+  position: relative;
+  transform: none;
+}
+
+.navbar_close {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+  color: white;
+  display: none;
+}
+
+.navbar_content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 25px;
+  overflow: auto;
+  height: 100vh;
+}
+
+.navbar_content::-webkit-scrollbar {
+  display: none !important;
+}
+
+.Outlet::-webkit-scrollbar {
+  display: none !important;
+}
+.logo {
+  width: 100%;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  padding-right: 20px;
+}
+
+.logo img {
+  max-width: 200px;
+  width: 100%;
+  height: 100%;
+}
+
+.main_navigation {
+  display: flex;
+  flex-direction: column;
+  row-gap: 30px;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+}
+
+.dashboard_button,
+.students_button,
+.fees_button,
+.attendance_button,
+.events_button,
+.settings_button,
+.logout_button {
+  width: 100%;
+  text-align: start;
+  border: none;
+  background-color: transparent;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+
+
+.navactive {
+  border-right: 3px solid white;
+  border-radius: 2px;
+  outline: none;
+  font-weight: 600;
+}
+
+/* .dashboard_button:focus .filled_chart_icon {
+    display: inline;
+}
+
+.dashboard_button:focus .outline_chart_icon {
+    display: none;
+}
+
+.students_button:focus .filled_person_icon {
+    display: inline;
+}
+
+.students_button:focus .outline_person_icon {
+    display: none;
+}
+
+.attendance_button:focus .filled_list_icon {
+    display: inline;
+}
+
+.attendance_button:focus .outline_list_icon {
+    display: none;
+}
+
+.events_button:focus .filled_flag_icon {
+    display: inline;
+}
+
+.events_button:focus .outline_flag_icon {
+    display: none;
+}
+
+.settings_button:focus .filled_settings_icon {
+    display: inline;
+}
+
+.settings_button:focus .outline_settings_icon {
+    display: none;
+} */
+
+.add_student_button {
+  width: 80%;
+  height: 40px;
+  border-radius: 15px;
+  outline: none;
+  border: none;
+  font-size: clamp(13px, 1.2vw, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 10px;
+  cursor: pointer;
+  background-color: #ffffff;
+  font-weight: 500;
+}
+
+.add_student_button:hover {
+  background-color: #dde0e1fc;
+  color: black;
+}
+
+.task_box {
+  width: 100%;
+}
+
+.task {
+  background-color: #ffffff;
+  border-radius: 10px;
+  width: 80%;
+  overflow: hidden;
+}
+
+.task_text {
+  font-size: 14px;
+  line-height: 18px;
+  padding: 5px 10px 5px;
+}
+
+.employee_image {
+  display: block;
+}
+
+.content {
+  width: 90vw;
+  /* background-color: aqua; */
+}
+
+.header {
+  width: 100%;
+  border-bottom: 1px solid grey;
+  margin-left: 25px;
+  display: flex;
+  align-items: center;
+  height: fit-content;
+  max-height: 100px;
+  justify-content: space-between;
+}
+
+.welcome_text {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.login_details {
+  padding-right: 60px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  /* position: relative; */
+}
+
+.notification_icon {
+  font-size: 25px;
+  position: relative;
+}
+
+.userdetails {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user_image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.admin_user {
+  font-size: 20px;
+}
+
+.notification{
+  position: relative;
+  /* right: 10px; */
+  top:70px;
+  /* background-color: #0b48b0; */
+  width: 100%;
+  left: 0;
+  display: flex;
+  justify-content: end;
+  padding: 0px 10px;
+}
+
+.notification_content{
+  width: 400px;
+  background-color: white;
+  height: 400px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  border-radius: 10px;
+  overflow: auto;
+  cursor: pointer;
+  padding: 10px 10px;
+}
+
+.notification_read {
+  color:blue;
+  font-weight: 500;
+}
+.dot{
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 9px;
+  height: 9px;
+  background:  linear-gradient(to bottom, #0b48b0, #061634);
+  border-radius: 50%;
+}
+.notification_box{
+  padding: 10px;
+  border-bottom: 1px solid rgba(215, 215, 215, 0.345);
+}
+.notification_title{
+  /* padding-left: 20px; */
+  font-size: 19px;
+ 
+  font-weight: 500;
+}
+.notification_header{
+ /* border-bottom:1px solid rgba(215, 215, 215, 0.696); */
+  padding:10px 10px 15px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+@media screen and (max-width: 768px) {
+  .aloschool {
+    height: auto;
+  }
+
+  .menu_toggle {
+    display: block;
+  }
+
+  .navbar_close {
+    display: inline-block;
+    cursor: pointer;
+  }
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60vw;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: 20px;
+    transform: translateX(-100%);
+    /* transition: transform 0.3s ease-in; */
+  }
+
+  .navbar.closed {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-out;
+  }
+
+  .navbar.open {
+    transform: translateX(0);
+    transition: transform 0.3s ease-in;
+  }
+
+  .dashboard_button,
+  .students_button,
+  .fees_button,
+  .attendance_button,
+  .events_button,
+  .settings_button,
+  .logout_button,
+  .add_student_button,
+  .task_text {
+    font-size: 13px;
+  }
+
+  .add_student_button {
+    margin: 0 auto;
+  }
+
+  .logo img {
+    width: 100px;
+  }
+
+  .task {
+    margin: 0 auto;
+  }
+
+  .content {
+    width: 100vw;
+  }
+  .welcome {
+    padding-left: 20px;
+  }
+  .user_name {
+    display: none;
+  }
+}

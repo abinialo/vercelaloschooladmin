@@ -1,0 +1,40 @@
+
+
+.popmessage{
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.popyes{
+    color: white;
+    background: linear-gradient(to bottom, #0b48b0, #061634);
+    width: 70px;
+    padding: 8px 0px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.popno{
+    color: black;
+     width: 70px;
+    padding: 8px 0px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid black;
+}
+.popyes:hover ,.button button:hover{
+    background: #154682fc;
+}
+
+
+.popno:hover {
+  background: #d6d7d7fc;
+  border: none;
+}
+
+.clear{
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: red;
+
+}

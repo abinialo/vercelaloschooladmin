@@ -1,0 +1,95 @@
+.modalTitle {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.required {
+  color: red;
+  font-weight: bold;
+}
+
+.rowOneGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.rowTwoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.formWrapper {
+  padding: 16px 20px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.rowThreeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  font-family: "poppins", sans-serif;
+}
+
+.formGroup label {
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  color: #222;
+}
+
+.formGroup input {
+  background-color: #f2f2f2;
+  padding: 14px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  color: #000;
+}
+
+.submitBtn {
+  background: linear-gradient(to bottom, #144196, #061530);
+  color: white;
+  padding: 10px 30px;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  /* transition: 0.3s; */
+}
+
+.submitBtn:hover {
+  /* opacity: 0.9; */
+  background: #154682fc;
+}
+.errorDiv {
+  color: red;
+  font-size: 11px;
+  padding: 7px;
+}
+
+@media (max-width: 768px) {
+  .rowOneGrid,
+  .rowTwoGrid,
+  .rowThreeGrid {
+    grid-template-columns: 1fr;
+  }
+}

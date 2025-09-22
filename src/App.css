@@ -1,0 +1,56 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap'); */
+
+body {
+  margin: 0;
+  padding: 0;
+}
+.custom-tabs .ant-tabs-nav-list {
+  width: 100% !important;
+  justify-content: space-around !important;
+}
+.ant-modal .ant-modal-close{
+  color:black !important;
+}
+.headtitle {
+  font-size: 20px !important;
+  color: #000000;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.Toastify__toast-container {
+  z-index: 999999 !important;
+}
+.add-student-toast-wrapper 
+  .Toastify__toast-container--bottom-center {
+    bottom: auto; /* reset */
+    top: 100%; /* position below wrapper */
+    left: 50%;
+    transform: translate(-50%, 10px); /* adjust vertical distance */
+  }
+
+.ant-tabs .ant-tabs-tab-btn {
+   font-size: 17px !important;
+   font-weight: 500 !important;
+}
+
+@keyframes slideUpFromBottom {
+  from {
+    transform: translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-up-wrapper {
+  animation: slideUpFromBottom 0.4s ease-out;
+}
+
+.ant-switch-checked:hover:not(.ant-switch-disabled) {
+    background-color: green !important;
+}

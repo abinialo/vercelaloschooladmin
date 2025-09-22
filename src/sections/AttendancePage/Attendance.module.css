@@ -1,0 +1,583 @@
+.container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-top: 13px;
+  padding: 0 0 100px 0;
+}
+.attendancetop {
+  width: 97%;
+  display: flex;
+}
+.attendanceleft {
+  font-size: 22px;
+  font-weight: 400;
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.attendanceright {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.attendancerightdiv {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  width: 90%;
+  gap: 10px;
+}
+
+.selectWrapper {
+  position: relative;
+  /* width: 20%; */
+}
+.dateWrapper {
+  position: relative;
+  width: 150px;
+  display: flex;
+  align-items: center;
+}
+.attendancerightdiv div:nth-child(2) {
+  /* border: 1px solid; */
+  /* width: 20%; */
+}
+
+.attendancerightdiv div:nth-child(4) {
+  /* border: 1px solid; */
+  flex-grow: 1;
+}
+.attendancerightdiv select {
+  padding: 6px 15px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  border: none;
+  appearance: none; /* Standard */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+  width: 100%;
+  color: rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+.dateWrapper input[type="date"] {
+  /* border: 1px solid; */
+  padding: 5px 15px;
+  border-radius: 4px;
+  border: none;
+  background-color: #f2f2f2;
+  color: #000 !important;
+  -webkit-appearance: none;
+  /* -moz-appearance: textfield; */
+  width: 98%;
+  outline: none;
+  cursor: pointer;
+}
+/* Remove calendar icon from date input */
+/* .attendancerightdiv input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+} */
+
+.attendancerightdiv div:nth-child(4) input {
+  /* border: 1px solid; */
+  /* padding: 5px 19px 5px 45px; */
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  /* background-color: #F2F2F2; */
+  /* color: grey; */
+  outline: none;
+}
+.searchWrapper {
+  position: relative;
+}
+.leaveReqIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* mobile */
+@media screen and (max-width: 767px) {
+  .attendancetop {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .attendanceleft {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid gainsboro;
+  }
+
+  .attendanceright {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .attendancerightdiv {
+    padding: 0 5px 0px 310px;
+    width: max-content;
+    /* width: 100%; */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 10px;
+    white-space: nowrap;
+  }
+
+  .attendancerightdiv > div {
+    flex-shrink: 0;
+    white-space: normal; /* keep content wrapping inside input/select */
+  }
+
+  .selectWrapper {
+    width: 120px;
+  }
+
+  .attendancerightdiv div:nth-child(2) {
+    width: 120px;
+  }
+
+  .dateWrapper {
+    width: 150px;
+  }
+
+  .searchWrapper {
+    width: 190px;
+  }
+}
+/* tab */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .attendancetop {
+    width: 97%;
+    display: flex;
+    flex-direction: column;
+  }
+  .attendanceleft {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+  .attendanceright {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .attendancerightdiv {
+    width: 95%;
+  }
+}
+
+.attendancemiddle {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 30% 30% 30%;
+  /* height: 100px; */
+  justify-content: space-around;
+  /* margin-top: 26px; */
+}
+.attendancemiddlediv {
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 0 10px 15px;
+}
+.attendancemiddlediv p:nth-child(1) {
+  font-size: 14px;
+  font-weight: 500;
+}
+.attendancemiddlediv p:nth-child(2) {
+  font-size: 2rem;
+  background: linear-gradient(to bottom, #144196, #061530);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  /* Optional for Firefox */
+  background-clip: text;
+  color: transparent;
+  font-weight: 500;
+}
+.attendancemiddlediv1 {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+}
+.attendancemiddlediv1 div:nth-child(2) {
+  border-radius: 50%;
+  height: 40px;
+  width: 40px;
+  align-self: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #144196, #061530);
+  color: white;
+}
+.attendancemiddlediv1 div:nth-child(2):hover {
+  background: #154682fc;
+}
+@media screen and (max-width: 767px) {
+  .attendancemiddle {
+    grid-template-columns: 1fr;
+    width: 97%;
+    gap: 10px;
+  }
+  .attendancemiddlediv1 div:nth-child(2) {
+    margin-right: 10px;
+  }
+  .attendancemiddlediv1 {
+    width: 100%;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .attendancemiddlediv1 div:nth-child(2) {
+    width: 40px;
+  }
+}
+.attendancebottom {
+  width: 95%;
+  overflow-x: auto;
+  padding: 20px 10px;
+  /* height: 395px; */
+}
+.table {
+  width: 100%;
+  border-collapse: collapse; /* ✅ important: allows spacing */
+  border-spacing: 0 0px; /* ✅ 10px vertical space between thead and tbody */
+  background-color: white;
+}
+
+.table thead {
+  background-color: #f2f2f2;
+  border-radius: 4px;
+}
+
+.table th {
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px 10px;
+  background: linear-gradient(to bottom, #144196, #061530);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: left;
+}
+
+.clear {
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: red;
+}
+
+.table td {
+  padding: 15px 10px;
+  font-size: 14px;
+  margin-top: 10px;
+  border-bottom: 1px solid #e3e3e3;
+  text-align: left;
+}
+
+.table tr td:nth-child(6),
+.table tr td:nth-child(7) {
+  color: #08792e;
+}
+.table tr td:last-child {
+  /* background-image: linear-gradient(to bottom, #144196, #061530); */
+  background-size: 100%;
+  /* -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent; */
+  color: #08792e;
+}
+
+.showdiv {
+  /* border: 1px solid red; */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  z-index: 1000;
+  background-color: white;
+  min-height: 100vh;
+
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.attendancetop {
+  margin-top: 5px;
+}
+.anotherClass {
+  justify-content: flex-start;
+
+  width: 65%;
+}
+.all {
+  height: 85%;
+  width: 15%;
+  position: relative;
+}
+.all select {
+  height: 100%;
+  width: 100%;
+  font-size: 0.9rem;
+}
+.anotherClass .dates {
+  height: 85%;
+  width: 30% !important;
+  position: relative;
+}
+.dates input {
+  padding-left: 12px;
+  width: 100%;
+  height: 100%;
+  color: grey;
+  border: none;
+  background-color: #f2f2f2;
+  border-radius: 12px;
+}
+.input {
+  position: relative;
+  /* width: 40% !important; */
+  flex-grow: 1;
+}
+.input input {
+  padding-left: 45px !important;
+  font-size: 0.9rem;
+}
+
+.table1 {
+  width: 100%;
+  border-collapse: separate; /* ✅ important: allows spacing */
+  border-spacing: 0 21px; /* ✅ 10px vertical space between thead and tbody */
+  background-color: white;
+}
+
+.table1 thead {
+  background-color: #f2f2f2;
+}
+
+.table1 th {
+  font-weight: 400;
+  font-size: 13px;
+  padding: 10px 16px;
+  background: linear-gradient(to bottom, #144196, #061530);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: left;
+}
+
+.table1 td {
+  padding: 0 16px 10px;
+  font-size: 13px;
+  margin-top: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.table1 tr td:last-child {
+  /* background-image: linear-gradient(to bottom, #144196, #061530);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent; */
+  color: #08792e;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+  .anotherClass {
+    width: 100%;
+    padding-left: 10px;
+  }
+  .all {
+    height: 85%;
+    width: 30%;
+    position: relative;
+  }
+  .anotherClass .dates {
+    height: 85%;
+    width: 55% !important;
+    position: relative;
+  }
+  .input {
+    position: relative;
+    width: 70% !important;
+  }
+}
+.leavereq {
+  width: 70%;
+  max-height: 90%;
+  min-height: 90%;
+  overflow-y: auto;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+
+  /* Hide scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+.leavereq::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.reqhead {
+  width: 60%;
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 10px;
+  padding: 30px 20px;
+  font-size: 1.12rem;
+}
+.closeIcon {
+  font-size: 25px;
+  cursor: pointer;
+}
+.div {
+  width: 90%;
+  align-self: center;
+  height: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.profile {
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.profilediv {
+  border: 1px solid;
+  height: 120px;
+  width: 130px;
+  border-radius: 5px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.grid1 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid1 label {
+  font-size: 0.8rem;
+}
+.grid1 input {
+  padding: 10px;
+  background-color: #f2f2f2;
+  border: none;
+  border-radius: 10px;
+}
+.grids {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+.grid2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid2 label {
+  font-size: 0.8rem;
+}
+.grid2 input {
+  padding: 10px;
+  background-color: #f2f2f2;
+  border: none;
+  border-radius: 10px;
+}
+.dateinput {
+  color: grey;
+}
+.gridss {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.grid3 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.grid3 label {
+  font-size: 0.8rem;
+}
+.description {
+  width: 100%;
+  height: 100px;
+  padding: 10px;
+  resize: none; /* prevents manual resizing */
+  overflow: auto; /* enables scroll when content overflows */
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  background-color: #f2f2f2;
+}
+.gridsss {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 15px;
+}
+
+/* Reject Button - White with blue border and text */
+.rejectBtn {
+  padding: 10px 20px;
+  background-color: white;
+  color: #0b2c6a; /* dark navy blue */
+  border: 1px solid #0b2c6a;
+  border-radius: 12px;
+  font-size: 17px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+/* Accept Button - Blue gradient */
+.acceptBtn {
+  padding: 10px 20px;
+  background: linear-gradient(to bottom, #144196, #061530);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+/* .gridsss{
+  border: 1px solid;
+  display: flex;
+  gap: 30px;
+
+}
+.gridsss button{
+padding: 6px 20px;
+font-size: 1.2rem;
+border-radius: 10px;
+
+} */

@@ -1,0 +1,268 @@
+.container {
+  min-height: 100%;
+  width: 100%;
+  margin: auto;
+  overflow-y: auto;
+  padding: 18px;
+}
+.header {
+  font-weight: 400;
+  font-size: 22px;
+}
+
+.diplomatable {
+  margin-top: 28px;
+  padding: 5px;
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #f2f2f2;
+  border-radius: 10px;
+}
+
+.tablehead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px 0 15px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  padding: 10px 15px 0 15px;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.tableheadpara {
+  font-weight: 500;
+  font-size: 22px;
+}
+
+.tableheadicon {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-size: 1rem;
+  color: #144196;
+  cursor: pointer;
+  gap: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 26px;
+}
+
+.table th {
+  width: 7%;
+  font-size: 15px;
+  text-align: center;
+  font-weight: 400;
+  color: #666;
+  padding: 8px;
+  text-align: left;
+  /* font-weight: 400; */
+  color: #666;
+  padding: 8px;
+}
+
+.table td {
+  padding: 8px;
+  font-weight: 500;
+  text-align: left;
+  padding: 8px;
+  font-weight: 500;
+}
+.loadingText{
+    display: grid;
+        grid-template-columns:auto;
+    justify-content: center;
+    width: 100%;
+}
+.diplomacard {
+  margin-top: 28px;
+}
+
+.cardcreate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* Allow button to move below title */
+  flex-wrap: wrap; /* Allow button to move below title */
+}
+
+.createbtn {
+  display: flex;
+  align-items: center;
+  padding: 7px 15px 7px 20px;
+  color: white;
+  background: linear-gradient(to bottom, #144196, #061530);
+  border-radius: 8px;
+  cursor: pointer;
+  gap:3px;
+}
+
+.createbtnicon {
+  margin-right: 10px;
+}
+
+.cards {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+
+.popmessage{
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.popyes{
+    color: white;
+    background: linear-gradient(to bottom, #0b48b0, #061634);
+    width: 70px;
+    padding: 8px 0px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.popyes:hover ,.createbtn:hover{
+    background: #154682fc;
+}
+.popno:hover {
+  background: #d6d7d7fc;
+  border: none;
+}
+.popno{
+    color: black;
+     width: 70px;
+    padding: 8px 0px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid black;
+}
+.divcards {
+  padding: 10px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+}
+
+.divcardspara1 {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.datesection {
+  border-bottom: 1px solid grey;
+  margin: 4px 0 10px 0;
+  padding-bottom: 10px;
+  margin: 4px 0 10px 0;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.datesectionpara1
+ {
+  font-size: 15px;
+  font-weight: 400;
+}
+.datesectionpara2 {
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.iconsection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.iconsectionsvg {
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #144196;
+  cursor: pointer;
+}
+
+.tableheadstatus {
+  font-size: 0.8rem;
+}
+.icondiv {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+}
+.ongoing {
+  color: green;
+  font-weight: 500;
+}
+
+.complete {
+  color: red;
+}
+
+/* 📱 Mobile Responsive Adjustments */
+@media (max-width: 1024px) {
+  .cards {
+    grid-template-columns: 1fr 1fr; /* 2 per row on tablets */
+  }
+}
+
+@media (max-width: 768px) {
+  .tableheadpara {
+    font-size: 1.3rem;
+  }
+  .cards {
+    grid-template-columns: 1fr; /* 1 per row on mobile */
+  }
+  .table th,
+  .table td {
+    font-size: 0.75rem;
+    padding: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    font-size: 1rem;
+    text-align: center;
+  }
+  .tablehead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .createbtn {
+    width: 100%;
+    justify-content: center;
+  }
+  .table {
+    font-size: 0.7rem;
+    overflow-x: auto;
+    display: block;
+  }
+}
+/* ... existing styles ... */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0px; /* Adjust spacing between the button and the heading */
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1f2937;
+  font-size: 18px; /* Adjust icon size as needed */
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+  margin-top: 5px;
+}
