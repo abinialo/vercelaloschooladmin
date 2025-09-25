@@ -376,7 +376,7 @@ const Details = () => {
                                             <div className='bg-white rounded-[10px] mt-2'>
                                                 <div className=' px-[20px] py-[10px]  '>
                                                     <p className='py-[5px] flex items-center gap-[5px]   '>Degree\Qualification : {item?.qualification}</p>
-                                                    <p className='py-[5px] flex items-center gap-[5px]   '>School\Unversity : {item?.university}</p>
+                                                    <p className='py-[5px] flex items-center gap-[5px]   '>School\University : {item?.university}</p>
                                                     <p className='py-[5px] flex items-center gap-[5px] '>Start Year : {item?.fromDate}</p>
                                                     <p className=' py-[5px] flex items-center gap-[5px]  '>End Year : {item?.toDate}</p>
                                                     <p className='py-[5px] flex items-center gap-[5px]  '>Grade : {item?.grade}</p>

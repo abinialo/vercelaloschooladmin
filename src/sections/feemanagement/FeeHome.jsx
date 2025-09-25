@@ -908,7 +908,7 @@ const FeeHome = () => {
               :
               <tbody>
                 {
-                  list.length > 0 ?
+                  Array.isArray(list) && list.length > 0 ?
                     list.map((item) => (
                       <tr key={item._id}>
                         <td>{item.receiptId}</td>

@@ -465,7 +465,7 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
                     <h2 className={styles.title}>Update Student</h2>
                     <span className={styles.close_icon} onClick={closeModal}><AiOutlineClose /></span>
                 </div>
-                <p style={{ color: 'red', fontSize: '12px', marginTop: '1rem' }}>Note: File size should be less than 1MB*</p>
+                <p style={{ color: 'red', fontSize: '12px', marginTop: '1rem' }}>Note: File size should be less than 500KB*</p>
 
                 <form action="">
                     <div className={styles.form_body}>

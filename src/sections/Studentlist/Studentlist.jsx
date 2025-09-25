@@ -147,15 +147,13 @@ const Studentlist = () => {
 
 
 
-  const handlePageChange = (event, value) => {
-    setUser([]);
-    if (value === offset) {
-      // same page clicked -> call API again
-      getuserlist();
-    } else {
-      setoffset(value); // triggers useEffect when page changes
-    }
-  };
+ const handlePageChange = (event, value) => {
+  if (value !== offset) {
+    setoffset(value);
+  } else {
+    getuserlist(); // reload if same page clicked
+  }
+};
 
 
   useEffect(() => {
@@ -499,7 +497,7 @@ const Studentlist = () => {
                       <Loader />
                     </td>
                   </tr>
-                ) : users.length > 0 ? (
+                ) : Array.isArray(users) && users.length > 0 ? (
                   users.map((user) => (
                     <tr key={user._id} className="border-b border-[#0000001A] hover:bg-gray-50">
                       <td className="px-4 py-2">

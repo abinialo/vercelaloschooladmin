@@ -112,7 +112,7 @@ const Enquiry = () => {
                                                 <tr>
                                                     <td colSpan="10" className="text-center py-20 text-lg text-gray-500 font-semibold">
                                                         <img src={nodata} alt="" width={'200px'} height={'200px'} className='m-auto' />
-                                                        <p>No Data Found</p>
+                                                        <p>N o Data Found</p>
                                                     </td>                                            </tr>
                                             )}
 
