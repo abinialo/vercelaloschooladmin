@@ -182,7 +182,7 @@ export const Dashborad = () => {
 
                                 {studentData?.totalStudents > 2 && (
                                     <>
-                                         +{studentData?.totalStudents - 2} <span><Link to="/students">others</Link></span>
+                                       <Link to="/students">  +{studentData?.totalStudents - 2} <span>others</span></Link>
                                     </>
                                 )}
                             </div>
@@ -214,7 +214,7 @@ export const Dashborad = () => {
 
                                 {studentData?.totalStudents > 2 && (
                                     <>
-                                         +{studentData?.totalStudents - 2} <span><Link to="/students">others</Link></span>
+                                      <Link to="/students">   +{studentData?.totalStudents - 2} <span>others</span></Link>
                                     </>
                                 )}
                             </div>
