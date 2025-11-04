@@ -134,9 +134,7 @@ const Studentlist = () => {
   const handleSearchChange = (e) => {
     setoffset(1)
     setSearchText(e.target.value);
-
     setUser([])
-
   };
 
 

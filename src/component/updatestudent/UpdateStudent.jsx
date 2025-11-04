@@ -516,7 +516,7 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
                             </div>
                             <div className={styles.student_email}>
                                 <label htmlFor="email">E-Mail<span className={styles.important}>*</span></label>
-                                <input className={styles.input_field} onChange={(e) => { setFormdata({ ...Formdata, student_email: e.target.value }), emailvalidation(e.target.value) }} value={Formdata.student_email} id='email' type="email" placeholder='Enter mail' />
+                                <input className={styles.input_field} style={{ color: 'grey', cursor: 'not-allowed' }} onChange={(e) => { setFormdata({ ...Formdata, student_email: e.target.value }), emailvalidation(e.target.value) }} value={Formdata.student_email} id='email' type="email" placeholder='Enter mail' disabled />
                                 <p className={styles.error}>{Errors.student_email}</p>
                             </div>
                         </div>
