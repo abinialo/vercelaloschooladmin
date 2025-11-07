@@ -227,33 +227,33 @@ const Attandance = () => {
     setBatchId('');
   }
 
-   let getExcel = async () => {
+  let getExcel = async () => {
     try {
-      let res = await excelAttendance(searchText,courseId, batchId,date,status);
+      let res = await excelAttendance(searchText, courseId, batchId, date, status);
       console.log("Axios response:", res);
-  
+
       // The Base64 string is here
       let base64String = res.data.data;
-  
+
       if (!base64String) {
         alert("No Excel file data found");
         return;
       }
-  
+
       // Clean (just in case)
       base64String = base64String.replace(/\s/g, "");
-  
+
       // Convert Base64 → Blob
       const byteCharacters = atob(base64String);
       const byteNumbers = new Array(byteCharacters.length)
         .fill()
         .map((_, i) => byteCharacters.charCodeAt(i));
       const byteArray = new Uint8Array(byteNumbers);
-  
+
       const blob = new Blob([byteArray], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-  
+
       // Trigger download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -542,8 +542,11 @@ const Attandance = () => {
               <th>Mobile</th>
               <th>Course</th>
               <th>Date</th>
+              <th>Break Hours</th>
+
               <th>In-Time</th>
               <th colspan="2">Out Time</th>
+
             </tr>
           </thead>
           {loading ?
@@ -564,7 +567,7 @@ const Attandance = () => {
                     <td style={{ color: item?.onLeave && "red" }}>{item.userDetails?.mobileNo}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.courseDetails?.courseName}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.date?.split("T")[0]}</td>
-
+                    <td style={{ color: item?.onLeave && "red" }}>{item.breakHours}</td>
                     <td>{item?.onLeave ? <p style={{ color: "red" }}>Leave</p> : item.inTime ? formatTime(item?.inTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td  >
                       {item?.onLeave ? '' : item.outTime ? formatTime(item?.outTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>
