@@ -56,10 +56,11 @@ const Studentlist = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [course, setCourse] = useState([])
   const [batch, setBatch] = useState([])
-  const [batchId, setBatchId] = useState('')
-  const [courseId, setCourseId] = useState('')
-  const [status, setStatusName] = useState('')
-  const [activestatus, setActiveStatus] = useState('');
+  const [activestatus, setActiveStatus] = useState(() => localStorage.getItem('activestatus') || '');
+  const [status, setStatus] = useState(() => localStorage.getItem('status') || '');
+  const [courseId, setCourseId] = useState(() => localStorage.getItem('courseId') || '');
+  const [batchId, setBatchId] = useState(() => localStorage.getItem('batchId') || '');
+  const [searchText, setSearchText] = useState(() => localStorage.getItem('searchText') || '');
 
   // Calculate visible range
   const startIndex = (offset - 1) * limit + 1;
@@ -78,40 +79,59 @@ const Studentlist = () => {
   };
 
   const handleStatusChange = (event) => {
-    setStatusName(event.target.value);
+    setStatus(event.target.value);
     setoffset(1);
   };
 
   const [deleteOpen, setDeleteOpen] = useState(false)
 
+ useEffect(() => {
+  localStorage.setItem('activestatus', activestatus);
+  localStorage.setItem('status', status);
+  localStorage.setItem('courseId', courseId);
+  localStorage.setItem('batchId', batchId);
+  localStorage.setItem('searchText', searchText);
+}, [activestatus, status, courseId, batchId, searchText]);
 
+  const handlefilterSearch = () => {
+    setActiveStatus('');
+    setStatus('');
+    setCourseId('');
+    setBatchId('');
+    setSearchText('');
+    localStorage.removeItem('activestatus');
+    localStorage.removeItem('status');
+    localStorage.removeItem('courseId');
+    localStorage.removeItem('batchId');
+    localStorage.removeItem('searchText');
+  };
 
   useEffect(() => {
     getBatchname()
   }, []);
 
-  let getBatchnameid = async (id) => {
-    try {
-      const res = await getBatchbyid(id);
+ let getBatchnameid = async (id) => {
+  try {
+    const res = await getBatchbyid(id);
+    const course = res?.data?.data?.find(c => c._id === id);
 
-      // Extract imageURL from backend response
+    const batches = course?.batches
+      ? Array.isArray(course.batches)
+        ? course.batches
+        : [course.batches]
+      : [];
 
-      // console.log(res?.data?.data, 'batchdasdasd')
-      const course = res?.data?.data?.find(c => c._id === id);
+    setBatch(batches);
 
-      // store only the batches array
-      setBatch(
-        course?.batches
-          ? Array.isArray(course.batches)
-            ? course.batches
-            : [course.batches]
-          : []
-      ); setBatchId("");
-
-    } catch (error) {
-      console.error("error", error.response?.data || error);
+    // ✅ only clear batchId if it doesn’t exist in this course’s batches
+    if (!batches.some(b => b._id === batchId)) {
+      setBatchId('');
     }
-  };
+  } catch (error) {
+    console.error("error", error.response?.data || error);
+  }
+};
+
 
 
   let getBatchname = async () => {
@@ -128,7 +148,7 @@ const Studentlist = () => {
       console.error("error", error.response?.data || error);
     }
   };
-  const [searchText, setSearchText] = useState('');
+  // const [searchText, setSearchText] = useState('');
 
 
   const handleSearchChange = (e) => {
@@ -145,13 +165,13 @@ const Studentlist = () => {
 
 
 
- const handlePageChange = (event, value) => {
-  if (value !== offset) {
-    setoffset(value);
-  } else {
-    getuserlist(); // reload if same page clicked
-  }
-};
+  const handlePageChange = (event, value) => {
+    if (value !== offset) {
+      setoffset(value);
+    } else {
+      getuserlist(); // reload if same page clicked
+    }
+  };
 
 
   useEffect(() => {
@@ -199,12 +219,12 @@ const Studentlist = () => {
 
   const [id, setId] = useState('')
 
-  const handlefilterSearch = () => {
-    setActiveStatus('');
-    setCourseId('');
-    setBatchId('');
-    setStatusName('')
-  }
+  // const handlefilterSearch = () => {
+  //   setActiveStatus('');
+  //   setCourseId('');
+  //   setBatchId('');
+  //   setStatusName('')
+  // }
 
   let getExcel = async () => {
     try {
@@ -232,7 +252,6 @@ const Studentlist = () => {
       const blob = new Blob([byteArray], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-
       // Trigger download
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
@@ -243,6 +262,26 @@ const Studentlist = () => {
       console.log("Error downloading Excel:", err);
     }
   };
+
+  // 👇 This ensures batch dropdown refills when you come back from view page
+useEffect(() => {
+  if (courseId) {
+    getBatchnameid(courseId);
+  } else {
+    setBatch([]);
+  }
+}, [courseId]);
+
+  // 👇 after you already defined getBatchnameid() and have batchId in state
+  useEffect(() => {
+    if (batch.length > 0 && batchId) {
+      // ensure that the batchId exists in the new batch list
+      const found = batch.some((b) => b._id === batchId);
+      if (!found) {
+        setBatchId(''); // reset if the stored ID doesn’t exist in this course
+      }
+    }
+  }, [batch, batchId]);
 
 
 
@@ -534,7 +573,7 @@ const Studentlist = () => {
                           <VisibilityIcon /> View
                         </button>
                       </td>
-                      
+
                       {/* <td className="px-4 py-2 space-x-2 text-sm">
             <button
               className="text-red-600 flex items-center gap-1 cursor-pointer"

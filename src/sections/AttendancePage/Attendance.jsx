@@ -56,30 +56,35 @@ const Attandance = () => {
   const [rate, setRate] = useState()
   const [course, setCourse] = useState([])
   const [batch, setBatch] = useState([])
-  const [batchId, setBatchId] = useState('')
-  const [courseId, setCourseId] = useState('')
-  const [date, setDate] = useState('')
+  // const [batchId, setBatchId] = useState('')
+  // const [courseId, setCourseId] = useState('')
+  // const [date, setDate] = useState('')
   const [open, setOpen] = useState(false)
   const [deleteevent, setDelete] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [status, setStatus] = useState('');
+  // const [status, setStatus] = useState('');
+  const [courseId, setCourseId] = useState(() => localStorage.getItem('att_courseId') || '');
+  const [batchId, setBatchId] = useState(() => localStorage.getItem('att_batchId') || '');
+  const [status, setStatus] = useState(() => localStorage.getItem('att_status') || '');
+  const [date, setDate] = useState(() => dayjs(localStorage.getItem('att_date')) || dayjs());
+  const [searchText, setSearchText] = useState(() => localStorage.getItem('att_searchText') || '');
+
 
 
   // Calculate visible range
   const startIndex = (offset - 1) * limit + 1;
   const endIndex = Math.min(offset * limit, totallist);
 
-  function handleClick(date, courseId, batchId) {
-    let url = "/attendence/leaverequest";
+  function handleClick(date, courseId, batchId, searchText) {
+    const params = new URLSearchParams();
 
-    if (date) url += `/${date}`;
-    if (courseId) url += `/${courseId}`;
-    if (batchId) url += `/${batchId}`;
+    if (date) params.append("date", date);
+    if (courseId) params.append("courseId", courseId);
+    if (batchId) params.append("batchId", batchId);
+    if (searchText) params.append("search", searchText);
 
-    navigate(url);
+    navigate(`/attendence/leaverequest?${params.toString()}`);
   }
-
-
 
   useEffect(() => {
     const totalPages = Math.ceil(totallist / limit);
@@ -97,7 +102,7 @@ const Attandance = () => {
     }
   };
 
-  const [searchText, setSearchText] = useState('');
+  // const [searchText, setSearchText] = useState('');
 
 
   const handleSearchChange = (e) => {
@@ -106,6 +111,14 @@ const Attandance = () => {
     setList([])
 
   };
+
+  useEffect(() => {
+    localStorage.setItem('att_courseId', courseId);
+    localStorage.setItem('att_batchId', batchId);
+    localStorage.setItem('att_status', status);
+    localStorage.setItem('att_date', date ? dayjs(date).format('YYYY-MM-DD') : '');
+    localStorage.setItem('att_searchText', searchText);
+  }, [courseId, batchId, status, date, searchText]);
 
 
   const handleChange = (event) => {
@@ -216,16 +229,43 @@ const Attandance = () => {
     });
   };
 
+
+
+
   const statusChange = (event) => {
     setStatus(event.target.value);
     setoffset(1)
   }
-
   const handlefilterSearch = () => {
-    setStatus('');
     setCourseId('');
     setBatchId('');
-  }
+    setStatus('');
+    setDate(dayjs());
+    setSearchText('');
+
+    localStorage.removeItem('att_courseId');
+    localStorage.removeItem('att_batchId');
+    localStorage.removeItem('att_status');
+    localStorage.removeItem('att_date');
+    localStorage.removeItem('att_searchText');
+  };
+
+  useEffect(() => {
+    // Step 1: If a saved courseId exists on mount, load its batches
+    if (courseId) {
+      getBatchnameid(courseId).then(() => {
+        // Step 2: After batches load, check if saved batchId still exists in them
+        const savedBatchId = localStorage.getItem('att_batchId');
+        if (savedBatchId) {
+          setBatchId(savedBatchId);
+        }
+      });
+    } else {
+      setBatch([]);
+    }
+    // 👇 Run only once on mount
+  }, []);
+
 
   let getExcel = async () => {
     try {
@@ -522,7 +562,7 @@ const Attandance = () => {
               <div>
                 <div className={styles.leaveReqIcon} onClick={() => {
 
-                  handleClick(date, courseId, batchId);
+                  handleClick(date, courseId, batchId, searchText);
                 }}>
                   <FaArrowRight />
                 </div>

@@ -18,7 +18,7 @@ import { MdClose } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import nodata from '../../assets/nodata.jpg'
 import Loader from '../../component/loader/Loader';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { IoIosCloseCircle } from "react-icons/io";
@@ -46,7 +46,11 @@ const theme = createTheme({
     },
   },
 });
+
+
 const LeaveRequest = () => {
+  const useQuery = () => new URLSearchParams(useLocation().search);
+
   const [searchText, setSearchText] = useState('');
   const [date, setDate] = useState('')
   const [open, setOpen] = useState(false)
@@ -93,26 +97,29 @@ const LeaveRequest = () => {
     }
   };
 
-  const { date: paramDate, courseId: paramCourse, batchId: paramBatch } = useParams();
+  const query = useQuery();
 
-
-  useEffect(() => {
-    if (paramDate) {
-      setDate(paramDate);
-    }
-  }, [paramDate]);
+  const dates = query.get("date");
+  const courseIds = query.get("courseId");
+  const batchIds = query.get("batchId");
+  const searchTexts = query.get("search");
 
   useEffect(() => {
-    if (paramCourse) {
-      setCourseId(paramCourse);
-    }
-  }, [paramCourse]);
+    if (dates) setDate(dates);
+  }, [dates]);
 
   useEffect(() => {
-    if (paramBatch) {
-      setBatchId(paramBatch);
-    }
-  }, [paramBatch]);
+    if (courseIds) setCourseId(courseIds);
+  }, [courseIds]);
+
+  useEffect(() => {
+    if (batchIds) setBatchId(batchIds);
+  }, [batchIds]);
+
+  useEffect(() => {
+    if (searchTexts) setSearchText(searchTexts);
+  }, [searchTexts]);
+
   const handleSearchChange = (e) => {
     setoffset(1)
     setSearchText(e.target.value);
@@ -182,11 +189,11 @@ const LeaveRequest = () => {
   };
 
   useEffect(() => {
-    if (paramCourse) {
-      setCourseId(paramCourse);
-      getBatchnameid(paramCourse);  // fetch batches immediately
+    if (courseIds) {
+      setCourseId(courseIds);
+      getBatchnameid(courseIds);
     }
-  }, [paramCourse]);
+  }, [courseIds]);
 
   useEffect(() => {
     getBatchname()
@@ -197,10 +204,7 @@ const LeaveRequest = () => {
       const res = await getBatchbyid(id);
       const course = res?.data?.data?.find(c => c._id === id);
       const batches = Array.isArray(course?.batches) ? course.batches : [];
-
       setBatch(batches);
-
-      // ✅ If paramBatch exists and is in this course, bind it
       if (paramBatch && batches.some(b => b._id === paramBatch)) {
         setBatchId(paramBatch);
       }
@@ -249,9 +253,9 @@ const LeaveRequest = () => {
       setUpdate(false)
       getleavelist()
       setReason('')
-      if (status === 'Rejected'){
+      if (status === 'Rejected') {
         toast.error('Leave Rejected')
-      }else if (status === 'Approved'){
+      } else if (status === 'Approved') {
         toast.success('Leave Approved')
       }
 
@@ -309,7 +313,7 @@ const LeaveRequest = () => {
 
   return (
     <>
-    <ToastContainer/>
+      <ToastContainer />
       <div className={styles.container}>
         <div className={styles.attendance_container}>
           <div className={styles.header_container}>
@@ -321,7 +325,7 @@ const LeaveRequest = () => {
               <h3 className={styles.attendance_h3}>Leave Request</h3>
             </div>
             <div className={styles.header_container2}>
-             
+
               <div className={styles.selectWrapper}>
                 <FormControl
                   variant="outlined"
@@ -557,7 +561,7 @@ const LeaveRequest = () => {
                   }}
                 />
               </div>
-               <div>
+              <div>
                 {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || leaveType?.toString().trim()) && (
                   <button className={styles.clear} onClick={handlefilterSearch}>
                     <IoIosCloseCircle />
@@ -644,7 +648,7 @@ const LeaveRequest = () => {
         </div>
 
         <div className='flex justify-between items-end px-2 ms-auto w-[50%]'>
-         
+
           {totalpages > 0 &&
             <ThemeProvider theme={theme}>
               <div style={{ marginTop: '20px' }}>
@@ -660,7 +664,7 @@ const LeaveRequest = () => {
               </div>
             </ThemeProvider>
           }
-           {totalpages > 0 &&
+          {totalpages > 0 &&
             <div className="flex justify-between items-center">
               <p className="text-gray-600 text-sm">
                 Showing {startIndex} – {endIndex} of {totallist} students
