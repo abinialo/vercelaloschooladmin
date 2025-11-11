@@ -342,12 +342,10 @@ const Attandance = () => {
                   <MenuItem value={""}>All</MenuItem>
                   <MenuItem value={false}>Present</MenuItem>
                   <MenuItem value={true}>Absent</MenuItem>
-
                 </Select>
               </FormControl>
             </div>
             <div className={styles.selectWrapper}>
-
               <FormControl
                 variant="outlined"
                 size="small"
@@ -582,11 +580,10 @@ const Attandance = () => {
               <th>Mobile</th>
               <th>Course</th>
               <th>Date</th>
-              <th>Break Hours</th>
-
+              <th>Break In</th>
+              <th>Break Out</th>
               <th>In-Time</th>
               <th colspan="2">Out Time</th>
-
             </tr>
           </thead>
           {loading ?
@@ -607,9 +604,10 @@ const Attandance = () => {
                     <td style={{ color: item?.onLeave && "red" }}>{item.userDetails?.mobileNo}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.courseDetails?.courseName}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.date?.split("T")[0]}</td>
-                    <td style={{ color: item?.onLeave && "red" }}>{item.breakHours}</td>
+                    <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[0] ? formatTime(item?.breakTime[0]) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
+                    <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[1] ? formatTime(item?.breakTime[1]) :<p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td>{item?.onLeave ? <p style={{ color: "red" }}>Leave</p> : item.inTime ? formatTime(item?.inTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
-                    <td  >
+                    <td >
                       {item?.onLeave ? '' : item.outTime ? formatTime(item?.outTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>
                       }
                     </td>

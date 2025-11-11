@@ -292,7 +292,8 @@
 }
 
 .table tr td:nth-child(6),
-.table tr td:nth-child(7) {
+.table tr td:nth-child(7),
+.table tr td:nth-child(8) {
   color: #08792e;
 }
 .table tr td:last-child {
