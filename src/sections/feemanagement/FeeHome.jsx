@@ -835,7 +835,7 @@ const FeeHome = () => {
           </div>
         </div>
         <div className='flex justify-end mt-4'>
-          <button className='bg-[gray] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
+          <button className='bg-gradient-to-b from-[#144196] to-[#061530] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
           </button>
         </div>
         {calloading ?

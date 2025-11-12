@@ -60,8 +60,6 @@ const Login = ({ setLoginUser }) => {
           let token = res?.data?.data.token;
           let userId = res?.data?.data?.data.userId;
           let userName = res?.data?.data?.data.name;
-
-
           localStorage.setItem('authToken', token);
           sessionStorage.setItem('authToken', token);
           localStorage.setItem('userId', userId);

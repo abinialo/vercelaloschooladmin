@@ -66,7 +66,10 @@ const Attandance = () => {
   const [courseId, setCourseId] = useState(() => localStorage.getItem('att_courseId') || '');
   const [batchId, setBatchId] = useState(() => localStorage.getItem('att_batchId') || '');
   const [status, setStatus] = useState(() => localStorage.getItem('att_status') || '');
-  const [date, setDate] = useState(() => dayjs(localStorage.getItem('att_date')) || dayjs());
+const [date, setDate] = useState(() => {
+  const saved = localStorage.getItem('att_date');
+  return saved ? dayjs(saved).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
+});
   const [searchText, setSearchText] = useState(() => localStorage.getItem('att_searchText') || '');
 
 
@@ -133,9 +136,9 @@ const Attandance = () => {
     getBatchnameid(selectedId);
   };
 
-  useEffect(() => {
-    setDate(dayjs().format("YYYY-MM-DD"));
-  }, []);
+  // useEffect(() => {
+  //   setDate(dayjs().format("YYYY-MM-DD"));
+  // }, []);
 
 
   useEffect(() => {
@@ -184,7 +187,7 @@ const Attandance = () => {
     setLoading(true);
     try {
       let res = await getAttendance(limit, offset - 1, searchText, courseId, batchId, date, status)
-      console.log(res.data?.data?.data, 'l')
+      console.log( 'l', date)
       setList(res.data?.data?.data)
       settotal(res.data?.data?.totalCount)
     } catch (err) {
@@ -514,7 +517,7 @@ const Attandance = () => {
         </div>
       </div>
       <div className='flex justify-end mt-4 w-[96%]'>
-        <button className='bg-[gray] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
+        <button className='bg-gradient-to-b from-[#144196] to-[#061530] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
         </button>
       </div>
       {rateLoading ?
