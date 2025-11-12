@@ -127,7 +127,7 @@ const Studentdetails = () => {
 
     return (
         <>
-        <ToastContainer/>
+            <ToastContainer />
             <div className={styles.spacing}>
 
                 <div className="flex gap-[10px] items-center pb-[10px]">
@@ -359,9 +359,9 @@ const Studentdetails = () => {
                                         <h2 className='text-[22px] font-[500] text-center md:text-left'>{user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
                                         <div className="flex justify-between items-center pb-[10px]">
                                             <div onClick={() => setIsOpen(true)} className='text-transparent bg-clip-text bg-gradient-to-b from-[#144196] to-[#061530] flex items-center font-[500] px-[40px] p-2 cursor-pointer '>
-                                                <EditOutlinedIcon  className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>
+                                                <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>
                                             <div>
-                                                <Switch value={status} onChange={onChange}  size="small" />
+                                                <Switch value={status} onChange={onChange} size="small" />
                                             </div>
                                         </div>
                                     </div>
@@ -421,22 +421,36 @@ const Studentdetails = () => {
                                 }
                                 {studentattendance.length > 0 ?
                                     studentattendance.map((item, index) => (
-                                        <div key={index} className='grid grid-cols-3 text-[12px] bg-white rounded-[10px] px-[20px] py-[10px] my-5'>
+                                        <div key={index} className='grid grid-cols-5 text-[12px] bg-white rounded-[10px] px-[20px] py-[10px] my-5'>
                                             <div>
                                                 <div className='text-[#00000080]'>Date</div>
-                                                <p className='font-[500]' style={{color: item?.onLeave ? 'red' : ''}}>{new Date(item.date).toLocaleDateString()}</p>
+                                                <p className='font-[500]' style={{ color: item?.onLeave ? 'red' : '' }}>{new Date(item.date).toLocaleDateString()}</p>
+                                            </div>
+                                            <div>
+                                                <div className='text-[#00000080]'>Break-in</div>
+                                                <p className='font-[500]'>
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[0] ? new Date(item.breakTime[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <div className='text-[#00000080]'>Break-out</div>
+                                                <p className='font-[500]'>
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[1] ? new Date(item.breakTime[1]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+
+                                                </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Check-in</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{color:'red'}}>Leave</span> : item.inTime ? new Date(item.inTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>Leave</span> : item.inTime ? new Date(item.inTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
 
                                                 </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Check-out</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? '' : item.outTime ? new Date(item.outTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.outTime ? new Date(item.outTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
                                                 </p>
                                             </div>
                                         </div>
