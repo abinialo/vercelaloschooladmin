@@ -308,6 +308,7 @@ const LeaveRequest = () => {
     setCourseId('');
     setBatchId('');
     setLeaveType('');
+    setSearchText('');
   }
 
 
@@ -562,7 +563,7 @@ const LeaveRequest = () => {
                 />
               </div>
               <div>
-                {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || leaveType?.toString().trim()) && (
+                {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || leaveType?.toString().trim() || searchText) && (
                   <button className={styles.clear} onClick={handlefilterSearch}>
                     <IoIosCloseCircle />
                   </button>

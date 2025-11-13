@@ -90,6 +90,16 @@ const Header = ({ setLoginUser }) => {
     sessionStorage.removeItem('authToken');
     localStorage.removeItem('userId');
     sessionStorage.removeItem('userId');
+    localStorage.removeItem('att_courseId');
+    localStorage.removeItem('att_batchId');
+    localStorage.removeItem('att_status');
+    localStorage.removeItem('att_date');
+    localStorage.removeItem('att_searchText');
+    localStorage.removeItem('activestatus');
+    localStorage.removeItem('status');
+    localStorage.removeItem('courseId');
+    localStorage.removeItem('batchId');
+    localStorage.removeItem('searchText');
     navigate('/login');
     setLoginUser(false);
   };
@@ -185,13 +195,13 @@ const Header = ({ setLoginUser }) => {
                   <button className={`${styles.events_button} ${location.pathname == '/events' ? styles.navactive : ''}`} onClick={() => navigate('/events')}>{location.pathname == '/events' ? <PiFlagPennantFill className={styles.filled_flag_icon} /> : <PiFlagPennantLight className={styles.outline_flag_icon} />}  Events</button>
                 </div>
                 <div className={styles.settings}>
-                  <button className={`${styles.settings_button} ${location.pathname == '/enquiry' ? styles.navactive : ''}`} onClick={() => navigate('/enquiry')}>{location.pathname == '/enquiry' ? <FaQuestionCircle className={styles.outline_settings_icon} />:
-                    <FaRegQuestionCircle className={styles.filled_settings_icon} /> }
+                  <button className={`${styles.settings_button} ${location.pathname == '/enquiry' ? styles.navactive : ''}`} onClick={() => navigate('/enquiry')}>{location.pathname == '/enquiry' ? <FaQuestionCircle className={styles.outline_settings_icon} /> :
+                    <FaRegQuestionCircle className={styles.filled_settings_icon} />}
                     Enquiry</button>
                 </div>
                 <div className={styles.settings}>
-                  <button className={`${styles.settings_button} ${location.pathname == '/application' ? styles.navactive : ''}`} onClick={() => navigate('/application')}>{location.pathname == '/application' ? <FaIdBadge className={styles.outline_settings_icon} />:
-                    <FaRegIdBadge  className={styles.filled_settings_icon} /> }
+                  <button className={`${styles.settings_button} ${location.pathname == '/application' ? styles.navactive : ''}`} onClick={() => navigate('/application')}>{location.pathname == '/application' ? <FaIdBadge className={styles.outline_settings_icon} /> :
+                    <FaRegIdBadge className={styles.filled_settings_icon} />}
                     Application</button>
                 </div>
                 <div className={styles.logout}>

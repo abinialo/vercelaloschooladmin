@@ -66,10 +66,10 @@ const Attandance = () => {
   const [courseId, setCourseId] = useState(() => localStorage.getItem('att_courseId') || '');
   const [batchId, setBatchId] = useState(() => localStorage.getItem('att_batchId') || '');
   const [status, setStatus] = useState(() => localStorage.getItem('att_status') || '');
-const [date, setDate] = useState(() => {
-  const saved = localStorage.getItem('att_date');
-  return saved ? dayjs(saved).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
-});
+  const [date, setDate] = useState(() => {
+    const saved = localStorage.getItem('att_date');
+    return saved ? dayjs(saved).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
+  });
   const [searchText, setSearchText] = useState(() => localStorage.getItem('att_searchText') || '');
 
 
@@ -187,7 +187,7 @@ const [date, setDate] = useState(() => {
     setLoading(true);
     try {
       let res = await getAttendance(limit, offset - 1, searchText, courseId, batchId, date, status)
-      console.log( 'l', date)
+      console.log('l', date)
       setList(res.data?.data?.data)
       settotal(res.data?.data?.totalCount)
     } catch (err) {
@@ -506,11 +506,12 @@ const [date, setDate] = useState(() => {
               />
             </div>
             <div>
-              {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim()) && (
+              {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || date || searchText) && (
                 <button className={styles.clear} onClick={handlefilterSearch}>
                   <IoIosCloseCircle />
                 </button>
               )}
+
 
             </div>
           </div>
@@ -608,7 +609,7 @@ const [date, setDate] = useState(() => {
                     <td style={{ color: item?.onLeave && "red" }}>{item.courseDetails?.courseName}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.date?.split("T")[0]}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[0] ? formatTime(item?.breakTime[0]) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
-                    <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[1] ? formatTime(item?.breakTime[1]) :<p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
+                    <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[1] ? formatTime(item?.breakTime[1]) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td>{item?.onLeave ? <p style={{ color: "red" }}>Leave</p> : item.inTime ? formatTime(item?.inTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td >
                       {item?.onLeave ? '' : item.outTime ? formatTime(item?.outTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>
