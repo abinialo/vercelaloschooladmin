@@ -243,7 +243,7 @@ const Attandance = () => {
     setCourseId('');
     setBatchId('');
     setStatus('');
-    setDate(dayjs());
+setDate(dayjs().format('YYYY-MM-DD'));
     setSearchText('');
 
     localStorage.removeItem('att_courseId');
