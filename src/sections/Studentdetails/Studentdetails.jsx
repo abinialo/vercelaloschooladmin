@@ -124,6 +124,20 @@ const Studentdetails = () => {
         }
     };
 
+    
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Invalid Date";
+    }
+    return date.toLocaleString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      // second: "numeric",
+      hour12: true,
+      timeZone: "UTC",
+    });
+  };
 
     return (
         <>
@@ -429,28 +443,28 @@ const Studentdetails = () => {
                                             <div>
                                                 <div className='text-[#00000080]'>Break-in</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[0] ? new Date(item.breakTime[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[0] ? formatTime(item?.breakTime[0]): "-"}
 
                                                 </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Break-out</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[1] ? new Date(item.breakTime[1]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[1] ? formatTime(item?.breakTime[1]): "-"}
 
                                                 </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Check-in</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>Leave</span> : item.inTime ? new Date(item.inTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>Leave</span> : item.inTime ? formatTime(item?.inTime) : "-"}
 
                                                 </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Check-out</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.outTime ? new Date(item.outTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }) : "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.outTime ? formatTime(item?.outTime) : "-"}
                                                 </p>
                                             </div>
                                         </div>
