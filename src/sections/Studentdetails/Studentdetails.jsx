@@ -3,7 +3,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import profile from '../../assets/dashboardimgs/profile.png';
 import Import from '../../assets/dashboardimgs/Import.png';
 import { Form, useParams } from 'react-router-dom';
-import { getAttendanceStudentList, getStudentAttendencemonth, getUserId, updatedetailsuser, updateUser } from '../../api/Serviceapi'
+import { getAttendanceStudentList, getStudentAttendencemonth, getUserId, makeabsent, updatedetailsuser, updateUser } from '../../api/Serviceapi'
 import Modal from 'react-modal';
 import UpdateStudent from '../../component/updatestudent/UpdateStudent';
 import styles from './Studentdetails.module.css';
@@ -124,20 +124,34 @@ const Studentdetails = () => {
         }
     };
 
-    
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
+    const [absentloading,setAbsentloading]=useState(false)
+
+    const createabsent= async()=>{
+        setAbsentloading(true)
+        try {
+            await makeabsent(id);
+            getUserById(id)
+            setAbsentloading(false)
+        } catch (err) {
+            console.error("Error updating status:", err);
+            setAbsentloading(false)
+            toast.error(err?.response?.data?.message)
+        }
     }
-    return date.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      // second: "numeric",
-      hour12: true,
-      timeZone: "UTC",
-    });
-  };
+
+    const formatTime = (dateString) => {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+            return "Invalid Date";
+        }
+        return date.toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            // second: "numeric",
+            hour12: true,
+            timeZone: "UTC",
+        });
+    };
 
     return (
         <>
@@ -172,12 +186,7 @@ const Studentdetails = () => {
                                         <div onClick={() => setIsOpen(true)} style={{ cursor: 'pointer' }} className='text-transparent bg-clip-text bg-gradient-to-b 
                                         from-[#144196] to-[#061530] font-[500] px-[40px] p-2 '>
                                             <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit
-
-
                                         </div>
-
-
-
                                     </div>
 
                                     <div className='grid grid-cols-2 lg:grid-cols-7 md:grid-cols-3 sm:grid-cols-2 text-[14px]'>
@@ -372,11 +381,15 @@ const Studentdetails = () => {
                                     <div className="flex justify-between items-center pb-[10px]">
                                         <h2 className='text-[22px] font-[500] text-center md:text-left'>{user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
                                         <div className="flex justify-between items-center pb-[10px]">
+                                            <div>
+                                                <button className={` ${styles.absent}`} onClick={createabsent}>{absentloading?'...':'Make Absent'}</button>
+                                            </div>
                                             <div onClick={() => setIsOpen(true)} className='text-transparent bg-clip-text bg-gradient-to-b from-[#144196] to-[#061530] flex items-center font-[500] px-[40px] p-2 cursor-pointer '>
                                                 <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>
                                             <div>
                                                 <Switch value={status} onChange={onChange} size="small" />
                                             </div>
+
                                         </div>
                                     </div>
 
@@ -443,14 +456,14 @@ const Studentdetails = () => {
                                             <div>
                                                 <div className='text-[#00000080]'>Break-in</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[0] ? formatTime(item?.breakTime[0]): "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[0] ? formatTime(item?.breakTime[0]) : "-"}
 
                                                 </p>
                                             </div>
                                             <div>
                                                 <div className='text-[#00000080]'>Break-out</div>
                                                 <p className='font-[500]'>
-                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[1] ? formatTime(item?.breakTime[1]): "-"}
+                                                    {item?.onLeave ? <span style={{ color: 'red' }}>-</span> : item.breakTime[1] ? formatTime(item?.breakTime[1]) : "-"}
 
                                                 </p>
                                             </div>

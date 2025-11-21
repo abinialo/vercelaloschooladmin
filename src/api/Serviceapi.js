@@ -351,3 +351,10 @@ export const excelAttendance = (
 
   return apiService.get(url);
 };
+
+export const makeabsent = (id) => {
+    const userId = sessionStorage.getItem('userId');
+    const date= new Date().toLocaleDateString("en-CA")
+
+  return apiService.post(`/leave/admin/create`,{'userId':id,'date' :date,'approverId':userId} );
+};
