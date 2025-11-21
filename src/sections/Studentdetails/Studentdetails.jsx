@@ -124,14 +124,15 @@ const Studentdetails = () => {
         }
     };
 
-    const [absentloading,setAbsentloading]=useState(false)
+    const [absentloading, setAbsentloading] = useState(false)
 
-    const createabsent= async()=>{
+    const createabsent = async () => {
         setAbsentloading(true)
         try {
             await makeabsent(id);
+            // setAbsentloading(false)
             getUserById(id)
-            setAbsentloading(false)
+
         } catch (err) {
             console.error("Error updating status:", err);
             setAbsentloading(false)
@@ -382,7 +383,7 @@ const Studentdetails = () => {
                                         <h2 className='text-[22px] font-[500] text-center md:text-left'>{user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
                                         <div className="flex justify-between items-center pb-[10px]">
                                             <div>
-                                                <button className={` ${styles.absent}`} onClick={createabsent}>{absentloading?'...':'Make Absent'}</button>
+                                                <button className={` ${styles.absent}`} onClick={createabsent}>{absentloading ? '...' : 'Make Absent'}</button>
                                             </div>
                                             <div onClick={() => setIsOpen(true)} className='text-transparent bg-clip-text bg-gradient-to-b from-[#144196] to-[#061530] flex items-center font-[500] px-[40px] p-2 cursor-pointer '>
                                                 <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>

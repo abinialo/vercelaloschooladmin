@@ -76,11 +76,11 @@ const LeaveRequest = () => {
   const startIndex = (offset - 1) * limit + 1;
   const endIndex = Math.min(offset * limit, totallist);
 
-  useEffect(() => {
-    const today = new Date();
-    const formattedDate = today.toISOString().split("T")[0]; // YYYY-MM-DD
-    setDate(formattedDate);
-  }, []);
+  // useEffect(() => {
+  //   const today = new Date();
+  //   const formattedDate = today.toISOString().split("T")[0]; // YYYY-MM-DD
+  //   setDate(formattedDate);
+  // }, []);
 
   useEffect(() => {
     const totalPages = Math.ceil(totallist / limit);
@@ -104,9 +104,9 @@ const LeaveRequest = () => {
   const batchIds = query.get("batchId");
   const searchTexts = query.get("search");
 
-  useEffect(() => {
-    if (dates) setDate(dates);
-  }, [dates]);
+  // useEffect(() => {
+  //   if (dates) setDate(dates);
+  // }, [dates]);
 
   useEffect(() => {
     if (courseIds) setCourseId(courseIds);
@@ -136,7 +136,7 @@ const LeaveRequest = () => {
   };
 
   useEffect(() => {
-    if (!date) return;
+    // if (!date) return;
     getleavelist()
   }, [offset, date, status, searchText, courseId, batchId, leaveType])
 
@@ -309,6 +309,7 @@ const LeaveRequest = () => {
     setBatchId('');
     setLeaveType('');
     setSearchText('');
+    setDate('')
   }
 
 
@@ -563,7 +564,7 @@ const LeaveRequest = () => {
                 />
               </div>
               <div>
-                {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || leaveType?.toString().trim() || searchText) && (
+                {(status?.toString().trim() || courseId?.toString().trim() || batchId?.toString().trim() || leaveType?.toString().trim() || searchText || date) && (
                   <button className={styles.clear} onClick={handlefilterSearch}>
                     <IoIosCloseCircle />
                   </button>
