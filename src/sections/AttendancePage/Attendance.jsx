@@ -81,7 +81,7 @@ const Attandance = () => {
   function handleClick(date, courseId, batchId, searchText) {
     const params = new URLSearchParams();
 
-    if (date) params.append("date", date);
+    // if (date) params.append("date", date);
     if (courseId) params.append("courseId", courseId);
     if (batchId) params.append("batchId", batchId);
     if (searchText) params.append("search", searchText);
