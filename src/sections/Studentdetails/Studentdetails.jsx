@@ -3,7 +3,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import profile from '../../assets/dashboardimgs/profile.png';
 import Import from '../../assets/dashboardimgs/Import.png';
 import { Form, useParams } from 'react-router-dom';
-import { getAttendanceStudentList, getStudentAttendencemonth, getUserId, makeabsent, updatedetailsuser, updateUser } from '../../api/Serviceapi'
+import { attendancestudentrate, getAttendanceStudentList, getStudentAttendencemonth, getUserId, makeabsent, updatedetailsuser, updateUser } from '../../api/Serviceapi'
 import Modal from 'react-modal';
 import UpdateStudent from '../../component/updatestudent/UpdateStudent';
 import styles from './Studentdetails.module.css';
@@ -12,6 +12,9 @@ import Skeleton from '@mui/material/Skeleton';
 import nodata from '../../assets/trans.png'
 import { Switch } from 'antd';
 import { toast, ToastContainer } from 'react-toastify';
+import dayjs from 'dayjs';
+import { DatePicker } from 'antd';
+import { use } from 'react';
 
 const Studentdetails = () => {
     const { id } = useParams();
@@ -21,6 +24,14 @@ const Studentdetails = () => {
     const [totalcount, setTotalcount] = useState(null)
     const [studentattendance, setAttendance] = useState({})
     const [status, setStatus] = useState(true)
+    const [selectedRange, setSelectedRange] = useState([
+        {
+            startDate: dayjs().startOf("month").toDate(),
+            endDate: dayjs().endOf("month").toDate(),
+            key: "selection",
+        },
+    ]);
+    const { RangePicker } = DatePicker;
 
     useEffect(() => {
 
@@ -153,6 +164,34 @@ const Studentdetails = () => {
             timeZone: "UTC",
         });
     };
+
+    const [Studentattendancerate, setStudentAttendance] = useState({});
+
+    const [rateLoading, setRateLoading] = useState(false);
+    const studentrate = async () => {
+        setRateLoading(true)
+        try {
+
+
+            const formatDate = (date) => date ? date.toLocaleDateString('en-CA') : '';
+
+            const fromDate = selectedRange.length ? formatDate(selectedRange[0].startDate) : '';
+            const toDate = selectedRange.length ? formatDate(selectedRange[0].endDate) : '';
+
+            const response = await attendancestudentrate(id, fromDate, toDate);
+            console.log('response', response.data?.data, studentattendance.attendanceRate)
+            setStudentAttendance(response?.data?.data);
+            setRateLoading(false)
+
+        } catch (error) {
+            console.log(error);
+            setRateLoading(false)
+        }
+    };
+
+    useEffect(() => {
+        studentrate()
+    }, [selectedRange])
 
     return (
         <>
@@ -432,17 +471,44 @@ const Studentdetails = () => {
                             <div className='bg-[#F8F8F8] px-[20px] py-[10px] rounded-[10px]'>
                                 <div className='flex justify-between items-center'>
                                     <h4 className='text-[16px] font-medium'>Attendance Details</h4>
+                                    <div>
+                                        <RangePicker
+                                            format="YYYY-MM-DD"
+                                            onChange={(dates) => {
+                                                if (dates && dates.length === 2) {
+                                                    setSelectedRange([
+                                                        {
+                                                            startDate: dates[0].toDate(),
+                                                            endDate: dates[1].toDate(),
+                                                            key: "selection",
+                                                        },
+                                                    ]);
+                                                }
+                                            }}
+                                            value={[
+                                                dayjs(selectedRange[0].startDate),
+                                                dayjs(selectedRange[0].endDate),
+                                            ]}
+                                        />
+                                    </div>
                                     {/* <div className='text-white  bg-gradient-to-b from-[#144196] to-[#061530] text-[12px] px-[40px] p-2 rounded-lg'>Make Absent</div> */}
                                 </div>
                                 {totalcount && (
-                                    <div className='grid grid-cols-2 lg:grid-cols-2 md:grid-cols-2 gap-2'>
+                                    <div className='grid grid-cols-2 lg:grid-cols-3 md:grid-cols-2 gap-2'>
                                         <div className='bg-white rounded-[10px] px-[20px] py-[10px] mt-5'>
-                                            <p className='text-[#F81111] text-[12px]'>No: Of Days Absents this month</p>
+                                            <p className='text-[#F81111] text-[11px]'>No Of Days Absents this month</p>
                                             <p className='text-[#F81111] text-[28px] font-[600]'>{totalcount?.total?.currentMonth || 0}</p>
                                         </div>
                                         <div className='bg-white rounded-[10px] px-[20px] py-[10px] mt-5 '>
-                                            <p className='text-[#F81111] text-[12px]'>No: Of Days Absents last month</p>
+                                            <p className='text-[#F81111] text-[12px]'>No Of Days Absents last month</p>
                                             <p className='text-[#F81111] text-[28px] font-[600]'>{totalcount?.total?.prevMonth || 0}</p>
+                                        </div>
+                                        <div className='bg-white rounded-[10px] px-[20px] py-[10px] mt-5 '>
+                                            <p className='text-[#F81111] text-[12px]'>Attendance Rate</p>
+                                            <p className='text-[#F81111] text-[12px]'>
+                                              Present Days : { Studentattendancerate?.presentDays || 0} 
+                                            </p>
+                                            <p className='text-[#F81111] text-[28px] font-[600] '>{Studentattendancerate?.attendanceRate || 0}</p>
                                         </div>
                                     </div>
                                 )

@@ -54,3 +54,17 @@ body {
 .ant-switch-checked:hover:not(.ant-switch-disabled) {
     background-color: green !important;
 }
+
+
+.ant-picker-outlined:focus,
+.ant-picker-outlined:focus-within {
+  border-color: #d9d9d9 !important;
+  box-shadow: none !important;
+  background-color: #ffffff !important;
+}
+.ant-picker-range .ant-picker-active-bar {
+  background: black!important;
+}
+.ant-picker:hover {
+  border-color: black !important;
+}

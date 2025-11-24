@@ -355,6 +355,9 @@ export const excelAttendance = (
 export const makeabsent = (id) => {
     const userId = sessionStorage.getItem('userId');
     const date= new Date().toLocaleDateString("en-CA")
-
   return apiService.post(`/leave/admin/create`,{'userId':id,'date' :date,'approverId':userId} );
+};
+
+export const attendancestudentrate = (userid,fromdate,todate) => {
+  return apiService.get(`attendance/studentrate?userId=${userid}&fromDate=${fromdate}&toDate=${todate}`);
 };
