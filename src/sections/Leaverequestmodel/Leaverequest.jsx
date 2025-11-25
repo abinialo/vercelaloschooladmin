@@ -360,6 +360,8 @@ const LeaveRequest = () => {
                     <MenuItem value="Sick">Sick</MenuItem>
                     <MenuItem value="permission">Permission</MenuItem>
                     <MenuItem value="earlyPermission">Early Permission</MenuItem>
+                    <MenuItem value="other">Others</MenuItem>
+
 
                   </Select>
 

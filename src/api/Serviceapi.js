@@ -352,10 +352,10 @@ export const excelAttendance = (
   return apiService.get(url);
 };
 
-export const makeabsent = (id) => {
+export const makeabsent = (id,discription) => {
     const userId = sessionStorage.getItem('userId');
     const date= new Date().toLocaleDateString("en-CA")
-  return apiService.post(`/leave/admin/create`,{'userId':id,'date' :date,'approverId':userId} );
+  return apiService.post(`/leave/admin/create`,{'userId':id,'date' :date,'approverId':userId,'discription':discription} );
 };
 
 export const attendancestudentrate = (userid,fromdate,todate) => {

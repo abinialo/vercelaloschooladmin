@@ -136,20 +136,29 @@ const Studentdetails = () => {
     };
 
     const [absentloading, setAbsentloading] = useState(false)
-
-    const createabsent = async () => {
-        setAbsentloading(true)
-        try {
-            await makeabsent(id);
-            // setAbsentloading(false)
-            getUserById(id)
-
-        } catch (err) {
-            console.error("Error updating status:", err);
-            setAbsentloading(false)
-            toast.error(err?.response?.data?.message)
-        }
+    const [discription, setdiscription] = useState('')
+     const [error,setError]=useState('')
+  const createabsent = async () => {
+    if (!discription.trim()) {
+        setError("Description is required");
+        return;
     }
+
+    setAbsentloading(true);
+    try {
+        await makeabsent(id, discription);
+        setAbsentloading(false);
+        attendancelist();
+        setAbsentModel(false);
+        setdiscription('');
+        setError('');
+    } catch (err) {
+        console.error("Error updating status:", err);
+        setAbsentloading(false);
+        toast.error(err?.response?.data?.message);
+    }
+};
+
 
     const formatTime = (dateString) => {
         const date = new Date(dateString);
@@ -192,6 +201,10 @@ const Studentdetails = () => {
     useEffect(() => {
         studentrate()
     }, [selectedRange])
+
+
+    const [absentModel, setAbsentModel] = useState(false)
+
 
     return (
         <>
@@ -422,7 +435,7 @@ const Studentdetails = () => {
                                         <h2 className='text-[22px] font-[500] text-center md:text-left'>{user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
                                         <div className="flex justify-between items-center pb-[10px]">
                                             <div>
-                                                <button className={` ${styles.absent}`} onClick={createabsent}>{absentloading ? '...' : 'Make Absent'}</button>
+                                                <button className={` ${styles.absent}`} onClick={() => setAbsentModel(true)}>Make Absent</button>
                                             </div>
                                             <div onClick={() => setIsOpen(true)} className='text-transparent bg-clip-text bg-gradient-to-b from-[#144196] to-[#061530] flex items-center font-[500] px-[40px] p-2 cursor-pointer '>
                                                 <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>
@@ -506,7 +519,7 @@ const Studentdetails = () => {
                                         <div className='bg-white rounded-[10px] px-[20px] py-[10px] mt-5 '>
                                             <p className='text-[#F81111] text-[12px]'>Attendance Rate</p>
                                             <p className='text-[#F81111] text-[12px]'>
-                                              Present Days : { Studentattendancerate?.presentDays || 0} 
+                                                Present Days : {Studentattendancerate?.presentDays || 0}
                                             </p>
                                             <p className='text-[#F81111] text-[28px] font-[600] '>{Studentattendancerate?.attendanceRate || 0}</p>
                                         </div>
@@ -662,6 +675,58 @@ const Studentdetails = () => {
                 }}
             >
                 <UpdateStudent closeModal={() => setIsOpen(false)} id={id} onSuccess={() => getUserById(id)} />
+            </Modal>
+
+
+            <Modal
+                isOpen={absentModel}
+                onRequestClose={() => {setAbsentModel(false), setdiscription(''),setError('')}}
+                contentLabel="Make Absent"
+                isCloseButtonShown={true}
+                style={{
+                    overlay: {
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgb(21 21 21 / 81%)', // gray overlay
+                        zIndex: 1000,
+                    },
+                    content: {
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        padding: '2rem',
+                        backgroundColor: '#fff',
+                        borderRadius: '8px',
+                        width: '500px',
+                        height: 'max-content',
+                        overflow: 'auto',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                        zIndex: 1001,
+                    },
+                }}
+
+            >
+
+
+                <div>
+                    <label className='font-[500]'>Description</label>
+                    <div className='my-[20px]'>
+                        <textarea
+                            placeholder="Enter description"
+                            className={styles.textarea}
+                            value={discription}
+                            onChange={(e) => {setdiscription(e.target.value), setError("")}}
+                        ></textarea>
+                        <p className="text-red-500 text-[12px]">{error}</p>
+                    </div>
+                </div>
+                <button onClick={createabsent} className='bg-[#144196] text-white py-[5px] px-[10px] rounded-[5px] m-auto' disabled={absentloading} style={{ cursor: absentloading ? 'not-allowed' : 'pointer' }}>
+                    {absentloading ? 'Loading...' : 'Submit'}
+                </button>
             </Modal>
         </>
     )
