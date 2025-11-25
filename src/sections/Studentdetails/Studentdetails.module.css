@@ -23,6 +23,7 @@
   border: none;
   color: white;
   font-size: 15px;
+  cursor: pointer;
 }
 .textarea{
   width:100%;

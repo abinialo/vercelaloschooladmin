@@ -135,29 +135,45 @@ const Studentdetails = () => {
         }
     };
 
+    const [isDisabledToday, setIsDisabledToday] = useState(false);
+
+    useEffect(() => {
+        const savedDate = localStorage.getItem(`absentSubmittedDate_${id}`);
+        const today = new Date().toLocaleDateString(); // "11/25/2025" format
+
+        if (savedDate === today) {
+            setIsDisabledToday(true);  // already submitted today
+        } else {
+            setIsDisabledToday(false); // allow submit
+        }
+    }, []);
+
+
     const [absentloading, setAbsentloading] = useState(false)
     const [discription, setdiscription] = useState('')
-     const [error,setError]=useState('')
-  const createabsent = async () => {
-    if (!discription.trim()) {
-        setError("Description is required");
-        return;
-    }
+    const [error, setError] = useState('')
+    const createabsent = async () => {
+        if (!discription.trim()) {
+            setError("Description is required");
+            return;
+        }
 
-    setAbsentloading(true);
-    try {
-        await makeabsent(id, discription);
-        setAbsentloading(false);
-        attendancelist();
-        setAbsentModel(false);
-        setdiscription('');
-        setError('');
-    } catch (err) {
-        console.error("Error updating status:", err);
-        setAbsentloading(false);
-        toast.error(err?.response?.data?.message);
-    }
-};
+        setAbsentloading(true);
+        try {
+            await makeabsent(id, discription);
+            setAbsentloading(false);
+            attendancelist();
+            setAbsentModel(false);
+            setdiscription('');
+            setError('');
+            localStorage.setItem(`absentSubmittedDate_${id}`, new Date().toLocaleDateString());
+            setIsDisabledToday(true);
+        } catch (err) {
+            console.error("Error updating status:", err);
+            setAbsentloading(false);
+            toast.error(err?.response?.data?.message);
+        }
+    };
 
 
     const formatTime = (dateString) => {
@@ -435,7 +451,7 @@ const Studentdetails = () => {
                                         <h2 className='text-[22px] font-[500] text-center md:text-left'>{user?.name?.replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
                                         <div className="flex justify-between items-center pb-[10px]">
                                             <div>
-                                                <button className={` ${styles.absent}`} onClick={() => setAbsentModel(true)}>Make Absent</button>
+                                                <button className={` ${styles.absent}`}  onClick={() => setAbsentModel(true)}>Make Absent</button>
                                             </div>
                                             <div onClick={() => setIsOpen(true)} className='text-transparent bg-clip-text bg-gradient-to-b from-[#144196] to-[#061530] flex items-center font-[500] px-[40px] p-2 cursor-pointer '>
                                                 <EditOutlinedIcon className="text-[#144196]" sx={{ fontSize: '14px', cursor: 'pointer' }} /> Edit</div>
@@ -680,7 +696,7 @@ const Studentdetails = () => {
 
             <Modal
                 isOpen={absentModel}
-                onRequestClose={() => {setAbsentModel(false), setdiscription(''),setError('')}}
+                onRequestClose={() => { setAbsentModel(false), setdiscription(''), setError('') }}
                 contentLabel="Make Absent"
                 isCloseButtonShown={true}
                 style={{
@@ -719,14 +735,20 @@ const Studentdetails = () => {
                             placeholder="Enter description"
                             className={styles.textarea}
                             value={discription}
-                            onChange={(e) => {setdiscription(e.target.value), setError("")}}
+                            onChange={(e) => { setdiscription(e.target.value), setError("") }}
                         ></textarea>
                         <p className="text-red-500 text-[12px]">{error}</p>
                     </div>
                 </div>
-                <button onClick={createabsent} className='bg-[#144196] text-white py-[5px] px-[10px] rounded-[5px] m-auto' disabled={absentloading} style={{ cursor: absentloading ? 'not-allowed' : 'pointer' }}>
-                    {absentloading ? 'Loading...' : 'Submit'}
+                <button
+                    onClick={createabsent}
+                    className='bg-[#144196] text-white py-[5px] px-[10px] rounded-[5px] m-auto'
+                    disabled={absentloading || isDisabledToday}
+                    style={{ cursor: absentloading || isDisabledToday ? 'not-allowed' : 'pointer' }}
+                >
+                    {absentloading ? 'Loading...' : isDisabledToday ? 'Submitted Today' : 'Submit'}
                 </button>
+
             </Modal>
         </>
     )
