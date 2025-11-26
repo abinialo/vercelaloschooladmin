@@ -23,6 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { IoIosCloseCircle } from "react-icons/io";
 import { toast, ToastContainer } from 'react-toastify';
+import { FaEye } from "react-icons/fa";
 
 
 const theme = createTheme({
@@ -312,6 +313,19 @@ const LeaveRequest = () => {
     setDate('')
   }
 
+  const [resonModel, setReasonModel] = useState(false)
+const [leaveReson,setLeaveReason]= useState('')
+  const handleReasonModel = async(id) => {
+    setReasonModel(true)
+    try {
+      let res = await getLeaveRequestById(id)
+      // setData(res.data?.data?.result[0])
+      setLeaveReason(res?.data?.data?.result[0]?.discription)
+    } catch (err) {
+      console.log(err)
+    }
+
+  }
 
   return (
     <>
@@ -590,6 +604,7 @@ const LeaveRequest = () => {
                 <th>Duration</th>
                 <th>From</th>
                 <th>To</th>
+                <th>Reason</th>
                 <th>Status</th>
               </tr>
               {loading ?
@@ -623,6 +638,9 @@ const LeaveRequest = () => {
                             :
                             <td>{item?.toDate?.split("T")[0]}</td>
                           }
+                          <td onClick={() => handleReasonModel(item._id)} style={{cursor:'pointer'}}><FaEye />
+</td>
+
                           <td className={styles.green} style={{
                             color: item.status === 'Approved' && 'green' || item.status === 'Created' && '#144196' || item.status === 'Rejected' && 'red',
                             cursor: item?.status == 'Created' && 'pointer'
@@ -792,6 +810,39 @@ const LeaveRequest = () => {
             </div>
           </div>
         </div>
+      </Modal>
+      <Modal
+        isOpen={resonModel}
+        onRequestClose={() => {setReasonModel(false),setLeaveReason('')}}
+        contentLabel="Delete Student"
+        style={{
+          overlay: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgb(21 21 21 / 81%)', // gray overlay
+            zIndex: 1000,
+          },
+          content: {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            padding: '1rem',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            width: '500px',
+            height: 'max-content',
+            overflow: 'auto',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            zIndex: 1001,
+          },
+        }}
+      >
+        <p className='font-[600] text-[20px] text-center'>Reason</p>
+        <p className='my-[30px] text-center' style={{textTransform:'capitalize'}}>{leaveReson}</p>
       </Modal>
     </>
   )
