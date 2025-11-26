@@ -178,7 +178,7 @@ export const getAttendance = (
   date,
   status
 ) => {
-  let url = `/attendance?limit=${limit}&page=${offset}&value=${searchtext}&courseId=${courseId}&batchId=${batchId}&date=${date}`;
+  let url = `/attendance/admin?limit=${limit}&page=${offset}&value=${searchtext}&courseId=${courseId}&batchId=${batchId}&date=${date}`;
 
   if (status !== "") {
     url += `&onLeave=${status}`;
@@ -289,7 +289,7 @@ export const getStudentAttendencemonth = (userId) => {
 };
 
 export const getAttendanceStudentList = (userId) => {
-  return apiService.get(`/attendance?userId=${userId}&limit=4`);
+  return apiService.get(`/attendance/admin?userId=${userId}&limit=4`);
 };
 
 export const getTodayrate = () => {
