@@ -232,21 +232,21 @@ const LeaveRequest = () => {
 
   const [reasonerror, setReasonerror] = useState('')
 
-  const validation = () => {
-    if (reason.trim() === '') {
-      setReasonerror('Reason is required');
-      return false;
-    }
-    setReasonerror('');
-    return true;
-  };
+  // const validation = () => {
+  //   if (reason.trim() === '') {
+  //     setReasonerror('Reason is required');
+  //     return false;
+  //   }
+  //   setReasonerror('');
+  //   return true;
+  // };
 
   const [idloading, setIdlloading] = useState(false)
 
   const handleUpdateClick = async (id, status, adminId, reason) => {
-    if (!validation()) {
-      return;
-    }
+    // if (!validation()) {
+    //   return;
+    // }
     setIdlloading(true)
     try {
       let res = await updateLeaveRequest(id, status, adminId, reason)
@@ -783,7 +783,7 @@ const [leaveReson,setLeaveReason]= useState('')
                   <label>Description</label>
                   <textarea
                     disabled
-                    style={{ color: 'grey', cursor: 'not-allowed' }}
+                    style={{ color: 'grey', cursor: 'auto' }}
                     placeholder="Enter description"
                     className={styles.description}
                     value={data?.discription}
@@ -792,14 +792,14 @@ const [leaveReson,setLeaveReason]= useState('')
               </div>
               <div className={styles.gridss}>
                 <div className={styles.grid3}>
-                  <label>Reason <span style={{ color: "red" }}>*</span></label>
+                  <label>Reason</label>
                   <textarea
                     placeholder="Enter Reason"
-                    className={styles.description}
+                    className={styles.description2}
                     value={reason}
                     onChange={(e) => { setReason(e.target.value), setReasonerror('') }}
                   ></textarea>
-                  {reasonerror && <p style={{ color: "red", fontSize: "12px" }}>{reasonerror}</p>}
+                  {/* {reasonerror && <p style={{ color: "red", fontSize: "12px" }}>{reasonerror}</p>} */}
 
                 </div>
               </div>

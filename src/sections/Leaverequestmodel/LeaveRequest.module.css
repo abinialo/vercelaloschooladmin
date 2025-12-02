@@ -342,6 +342,18 @@
 }
 .description {
   width: 100%;
+  height: 70px;
+  padding: 10px;
+  resize: none; /* prevents manual resizing */
+  overflow: auto; /* enables scroll when content overflows */
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  background-color: #f2f2f2;
+  outline: none;
+}
+.description2 {
+  width: 100%;
   height: 50px;
   padding: 10px;
   resize: none; /* prevents manual resizing */
