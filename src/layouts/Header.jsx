@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react'
+import React, { useState, useLayoutEffect, useEffect, useRef } from 'react'
 import styles from './Header.module.css'
 import logo from '../assets/aloschoolimages/logo1.png'
 import employee from '../assets/aloschoolimages/employee.png'
@@ -41,6 +41,9 @@ const Header = ({ setLoginUser }) => {
   const [notification, setNotification] = useState(false)
   const [notificationlist, setNotificationlist] = useState([])
   const [isread, setIsread] = useState(false)
+
+  const notificationRef = useRef(null);
+
   const handleToggleNavbar = () => {
     setIsNavbarOpen(true);
   };
@@ -90,6 +93,7 @@ const Header = ({ setLoginUser }) => {
     sessionStorage.removeItem('authToken');
     localStorage.removeItem('userId');
     sessionStorage.removeItem('userId');
+    localStorage.removeItem('username');
     localStorage.removeItem('att_courseId');
     localStorage.removeItem('att_batchId');
     localStorage.removeItem('att_status');
@@ -129,6 +133,23 @@ const Header = ({ setLoginUser }) => {
     }
 
   }
+
+  useEffect(() => {
+  function handleClickOutside(event) {
+    // If notification is open AND click is outside the box
+    if (notification && notificationRef.current && !notificationRef.current.contains(event.target)) {
+      setNotification(false);
+    }
+  }
+
+  // Add listener
+  document.addEventListener("mousedown", handleClickOutside);
+
+  // Cleanup
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [notification]);
 
   let updatenotification = async (id) => {
 
@@ -321,7 +342,7 @@ const Header = ({ setLoginUser }) => {
       {notification &&
 
         <div className={styles.notification}>
-          <div className={styles.notification_content}>
+          <div ref={notificationRef} className={styles.notification_content}>
             <div className={styles.notification_header}>
               <p className={styles.notification_title}>Notifications</p>
               <IoMdCloseCircle style={{ cursor: 'pointer', fontSize: '20px' }} onClick={() => setNotification(false)} />

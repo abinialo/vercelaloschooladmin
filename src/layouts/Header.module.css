@@ -251,6 +251,7 @@
   display: flex;
   justify-content: end;
   padding: 0px 10px;
+   pointer-events: none; 
 }
 
 .notification_content{
@@ -262,6 +263,7 @@
   overflow: auto;
   cursor: pointer;
   padding: 10px 10px;
+   pointer-events: auto; 
 }
 
 .notification_read {

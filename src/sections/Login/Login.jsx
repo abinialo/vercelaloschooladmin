@@ -65,8 +65,17 @@ const Login = ({ setLoginUser }) => {
           localStorage.setItem('userId', userId);
           sessionStorage.setItem('userId', userId);
           localStorage.setItem('username', userName);
+          
           localStorage.removeItem('att_date');
-
+          localStorage.removeItem('activestatus');
+          localStorage.removeItem('status');
+          localStorage.removeItem('courseId');
+          localStorage.removeItem('batchId');
+          localStorage.removeItem('searchText');
+          localStorage.removeItem('att_courseId');
+          localStorage.removeItem('att_batchId');
+          localStorage.removeItem('att_status');
+          localStorage.removeItem('att_searchText');
           setLoginUser(true);
           navigate("/dashboard");
 
@@ -75,7 +84,7 @@ const Login = ({ setLoginUser }) => {
       } catch (err) {
         console.error("Login failed:", err);
         toast.error(err?.response?.data?.message)
-      }finally{
+      } finally {
         setLoading(false)
       }
     }
@@ -99,7 +108,7 @@ const Login = ({ setLoginUser }) => {
                 </div>
                 <div className={styles.para}>
                   <p>
-                   Empowering growth through learning and technology, creating a future driven by knowledge and innovation.
+                    Empowering growth through learning and technology, creating a future driven by knowledge and innovation.
                   </p>
                 </div>
               </div>
@@ -163,7 +172,7 @@ const Login = ({ setLoginUser }) => {
 
                 {/* Submit Button */}
                 <div className={styles.formDivBtn}>
-                  <button type="submit">{loading?'Signing in...':"Sign in"}</button>
+                  <button type="submit">{loading ? 'Signing in...' : "Sign in"}</button>
                 </div>
               </form>
             </div>
