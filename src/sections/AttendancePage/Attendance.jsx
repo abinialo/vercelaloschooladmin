@@ -242,7 +242,7 @@ const Attandance = () => {
   const handlefilterSearch = () => {
     setCourseId('');
     setBatchId('');
-    setStatus('');
+    setStatus(false);
     setDate(dayjs().format('YYYY-MM-DD'));
     setSearchText('');
 
