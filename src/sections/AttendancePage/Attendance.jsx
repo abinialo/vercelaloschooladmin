@@ -65,7 +65,7 @@ const Attandance = () => {
   // const [status, setStatus] = useState('');
   const [courseId, setCourseId] = useState(() => localStorage.getItem('att_courseId') || '');
   const [batchId, setBatchId] = useState(() => localStorage.getItem('att_batchId') || '');
-  const [status, setStatus] = useState(() => localStorage.getItem('att_status') || '');
+  const [status, setStatus] = useState(() => localStorage.getItem('att_status') || 'false');
   const [date, setDate] = useState(() => {
     const saved = localStorage.getItem('att_date');
     return saved ? dayjs(saved).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD');
@@ -243,7 +243,7 @@ const Attandance = () => {
     setCourseId('');
     setBatchId('');
     setStatus('');
-setDate(dayjs().format('YYYY-MM-DD'));
+    setDate(dayjs().format('YYYY-MM-DD'));
     setSearchText('');
 
     localStorage.removeItem('att_courseId');
@@ -342,9 +342,10 @@ setDate(dayjs().format('YYYY-MM-DD'));
                     border: 'none'
                   }}
                 >
-                  <MenuItem value={""}>All</MenuItem>
                   <MenuItem value={false}>Present</MenuItem>
                   <MenuItem value={true}>Absent</MenuItem>
+                  <MenuItem value={"noLeave"}>Not Checked In</MenuItem>
+
                 </Select>
               </FormControl>
             </div>
@@ -381,11 +382,9 @@ setDate(dayjs().format('YYYY-MM-DD'));
                     )
                   })}
                 </Select>
-
               </FormControl>
             </div>
             <div className={styles.selectWrapper}>
-
               <FormControl
                 variant="outlined"
                 size="small"
@@ -396,7 +395,6 @@ setDate(dayjs().format('YYYY-MM-DD'));
                   border: 'none'
                 }}
               >
-
                 <Select
                   value={batchId}
                   onChange={handleChange}
@@ -603,11 +601,28 @@ setDate(dayjs().format('YYYY-MM-DD'));
 
 
                   <tr key={item._id}>
-                    <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.name}</td>
-                    <td style={{ color: item?.onLeave && "red" }}>{item.userDetails?.studentId}</td>
-                    <td style={{ color: item?.onLeave && "red" }}>{item.userDetails?.mobileNo}</td>
+                    {item.userDetails?.name ?
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.name}</td>
+                      :
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.name}</td>
+                    }
+                    {item.userDetails?.studentId ?
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.name}</td>
+                      :
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.studentId}</td>
+                    }
+                    {item.userDetails?.mobileNo ?
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.mobileNo}</td>
+                      :
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.mobileNo}</td>
+                    }
                     <td style={{ color: item?.onLeave && "red" }}>{item.courseDetails?.courseName}</td>
-                    <td style={{ color: item?.onLeave && "red" }}>{item.date?.split("T")[0]}</td>
+                    {item.date ?
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.date?.split("T")[0]}</td>
+                      :
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>   {date}
+                      </td>
+                    }
                     <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[0] ? formatTime(item?.breakTime[0]) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td style={{ color: item?.onLeave && "red" }}>{item.breakTime?.length > 0 ? item?.breakTime[1] ? formatTime(item?.breakTime[1]) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p> : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>
                     <td>{item?.onLeave ? <p style={{ color: "red" }}>Leave</p> : item.inTime ? formatTime(item?.inTime) : <p style={{ background: "none", WebkitBackgroundClip: "initial", WebkitTextFillColor: "initial" }}>--:--</p>}</td>

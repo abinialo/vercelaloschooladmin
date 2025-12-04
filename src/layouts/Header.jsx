@@ -135,32 +135,33 @@ const Header = ({ setLoginUser }) => {
   }
 
   useEffect(() => {
-  function handleClickOutside(event) {
-    // If notification is open AND click is outside the box
-    if (notification && notificationRef.current && !notificationRef.current.contains(event.target)) {
-      setNotification(false);
+    function handleClickOutside(event) {
+      // If notification is open AND click is outside the box
+      if (notification && notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotification(false);
+      }
     }
-  }
 
-  // Add listener
-  document.addEventListener("mousedown", handleClickOutside);
+    // Add listener
+    document.addEventListener("mousedown", handleClickOutside);
 
-  // Cleanup
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [notification]);
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [notification]);
 
   let updatenotification = async (id) => {
-
     try {
-      setIsread(true)
-      const res = await updateNotification(id, isread);
-      notificationget()
+      const res = await updateNotification(id, true);  
+      notificationget();
+      navigate('/attendence/leaverequest'),
+       setNotification(false) 
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Error updating notifications:', error);
     }
-  }
+  };
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -172,7 +173,7 @@ const Header = ({ setLoginUser }) => {
 
 
 
-  return (
+  return (  
     <>
       <div className={styles.aloschool}>
         <div className={styles.menu_toggle} onClick={handleToggleNavbar}><IoMenu /></div>
@@ -354,7 +355,7 @@ const Header = ({ setLoginUser }) => {
               const firstLetter = item.message?.charAt(0).toUpperCase(); // Get first letter
 
               return (
-                <div className={styles.notification_box} onClick={() => updatenotification(item?._id)}>
+                <div className={styles.notification_box} onClick={() => { updatenotification(item?._id)}}>
                   <div className="flex items-center gap-3">
                     <div>
                       <div className="w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-semibold">
