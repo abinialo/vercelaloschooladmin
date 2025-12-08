@@ -607,7 +607,7 @@ const Attandance = () => {
                       <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.name}</td>
                     }
                     {item.userDetails?.studentId ?
-                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.name}</td>
+                      <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.userDetails?.studentId}</td>
                       :
                       <td style={{ color: item?.onLeave && "red", textTransform: "capitalize" }}>{item.studentId}</td>
                     }
