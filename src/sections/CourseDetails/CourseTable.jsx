@@ -37,13 +37,12 @@ const CourseTable = () => {
   const [limit, setLimit] = useState(7);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [page, setPage] = useState(1); // page number
-
+  const [page, setPage] = useState(1); 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [studentTotalCount, setStudentTotalCount] = useState(0);
-  // Calculate visible range
+ 
   const startIndex = (page - 1) * limit + 1;
   const endIndex = Math.min(page * limit, totalItems);
   const handlePageChange = (event, value) => {

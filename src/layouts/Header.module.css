@@ -368,3 +368,45 @@
     display: none;
   }
 }
+.academic {
+  display: flex;
+  flex-direction: column;
+}
+
+.academic_button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* padding: 12px; */
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.academic_dropdown {
+  margin-left: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dropdown_item {
+  background: transparent;
+  border: none;
+  color: #cfcfcf;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  padding-top:6px;
+}
+
+.dropdown_item:hover {
+  color: #fff;
+}
+
+.navactive {
+  color: #fff;
+  font-weight: 600;
+}

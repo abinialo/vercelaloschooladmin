@@ -18,6 +18,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Enquiry from './sections/Enquiry/Enquiry';
 import Application from './sections/Application/Application';
 import Details from './sections/details/Details';
+import TermExam from './sections/Academicdetails/TermExam';
+import SemesterExam from './sections/Academicdetails/SemExam';
 
 
 function App() {
@@ -64,6 +66,11 @@ function App() {
             <Route index element={<Attendance />} />
             <Route path="leaverequest/:date?/:courseId?/:batchId?/:searchText?" element={<LeaveRequest />} />
           </Route>
+          <Route path="/academic" element={<Header />}>
+  <Route path="term-exam" element={<TermExam />} />
+  <Route path="semester-exam" element={<SemesterExam />} />
+</Route>
+
 
           <Route path="/events" element={<Header />}>
             <Route index element={<Eventlist />} />

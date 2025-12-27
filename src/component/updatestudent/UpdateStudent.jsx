@@ -45,7 +45,10 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
         student_profile: '',
         student_original: '',
         student_dob: null,
-        inStatus: ""
+        inStatus: "",
+        // id_card_number:'',
+        ID:''
+
     })
 
     const [Errors, setErrors] = useState({
@@ -63,7 +66,9 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
         student_aadhar: '',
         student_profile: '',
         student_original: '',
-        student_dob: ''
+        student_dob: '',
+        // id_card_number:'',
+       ID:''
     });
     const validation = () => {
         let newErrors = {}
@@ -156,6 +161,14 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
         if (!Formdata.student_original) {
             newErrors.student_original = "Original Document is required";
             setErrors(prev => ({ ...prev, student_original: newErrors.student_original }));
+        }
+        // if(!Formdata.id_card_number){
+        //     newErrors.id_card_number="Id card number is required";
+        //     setErrors(prev=>({...prev,id_card_number:newErrors.id_card_number}));
+        // }
+        if(!Formdata.ID){
+            newErrors.register_number="Register number is required";
+            setErrors(prev=>({...prev,register_number:newErrors}));
         }
         return newErrors
     }
@@ -291,7 +304,10 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
                 student_profile: userData.profileURL || '',
                 student_original: userData.certificateURL || '',
                 student_dob: userData.DOB ? dayjs(userData.DOB) : null,
-                inStatus: userData.inStatus?.toLowerCase() || ""
+                inStatus: userData.inStatus?.toLowerCase() || "",
+                ID:userData.ID || ''
+
+
             });
 
             if (userData.aadharURL) {
@@ -507,6 +523,36 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
                                 <input className={styles.input_field} style={{ color: 'grey', cursor: 'not-allowed' }} disabled onChange={(e) => setFormdata({ ...Formdata, student_id: e.target.value })} value={Formdata.student_id} id='id' type="text" placeholder='0245687' />
                                 {/* <p>{Errors.student_id}</p> */}
                             </div>
+                             {/* <div className={styles.student_id}>
+        <label>
+            ID Card Number<span className={styles.important}>*</span>
+        </label>
+        <input
+            className={styles.input_field}
+            value={Formdata.id_card_number}
+            onChange={(e) =>
+                setFormdata({ ...Formdata, id_card_number: e.target.value })
+            }
+            type="text"
+            placeholder="IDCardNumber"
+        />
+        <p className={styles.error}>{Errors.id_card_number}</p>
+    </div> */}
+     <div className={styles.student_id}>
+        <label>
+            Register Number<span className={styles.important}>*</span>
+        </label>
+        <input
+            className={styles.input_field}
+            value={Formdata.ID}
+            onChange={(e) =>
+                setFormdata({ ...Formdata, ID: e.target.value })
+            }
+            type="text"
+            placeholder="RegisterNumber"
+        />
+        <p className={styles.error}>{Errors.register_number}</p>
+    </div>
                         </div>
                         <div className={styles.second_detail}>
                             <div className={styles.student_phone}>

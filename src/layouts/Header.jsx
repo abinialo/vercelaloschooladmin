@@ -31,6 +31,8 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { format } from "date-fns";
 import { FaQuestionCircle } from "react-icons/fa";
 import { FaRegIdBadge } from "react-icons/fa";
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+
 
 
 const Header = ({ setLoginUser }) => {
@@ -41,6 +43,8 @@ const Header = ({ setLoginUser }) => {
   const [notification, setNotification] = useState(false)
   const [notificationlist, setNotificationlist] = useState([])
   const [isread, setIsread] = useState(false)
+  const [isAcademicOpen, setIsAcademicOpen] = useState(false);
+
 
   const notificationRef = useRef(null);
 
@@ -213,6 +217,43 @@ const Header = ({ setLoginUser }) => {
 
                     Course</button>
                 </div>
+                    <div className={styles.academic}>
+                     <button className={`${styles.academic_button} ${
+                      location.pathname.startsWith('/academic') ? styles.navactive : ''  }`}
+                                onClick={() => setIsAcademicOpen(!isAcademicOpen)} >
+                               <FaBullseye className={styles.outline_academic_icon} />
+
+                               <span className={styles.menu_text}>Academic Details</span>
+
+                                <span className={styles.dropdown_icon}>
+                                {isAcademicOpen ? <FaChevronUp /> : <FaChevronDown />}
+                             </span>
+                         </button>
+
+  {isAcademicOpen && (
+    <div className={styles.academic_dropdown}>
+      <button
+        className={`${styles.dropdown_item} ${
+          location.pathname === '/academic/term-exam' ? styles.navactive : ''
+        }`}
+        onClick={() => navigate('/academic/term-exam')}
+      >
+        Term Exam
+      </button>
+
+      <button
+        className={`${styles.dropdown_item} ${
+          location.pathname === '/academic/semester-exam' ? styles.navactive : ''
+        }`}
+        onClick={() => navigate('/academic/semester-exam')}
+      >
+        Semester Exam
+      </button>
+    </div>
+  )}
+</div>
+
+
                 <div className={styles.events}>
                   <button className={`${styles.events_button} ${location.pathname == '/events' ? styles.navactive : ''}`} onClick={() => navigate('/events')}>{location.pathname == '/events' ? <PiFlagPennantFill className={styles.filled_flag_icon} /> : <PiFlagPennantLight className={styles.outline_flag_icon} />}  Events</button>
                 </div>

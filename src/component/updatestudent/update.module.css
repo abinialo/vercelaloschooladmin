@@ -73,6 +73,7 @@
   display: flex;
   gap: 10px;
   margin-top: 30px;
+  width: 100%;
 }
 
 .student_name,
@@ -99,7 +100,7 @@
   outline: none;
   border: none;
   background-color: #f2f2f2;
-  padding-left: 15px;
+  padding-left: 10px;
 }
 
 .student_bloodgroup,
