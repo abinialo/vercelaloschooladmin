@@ -224,63 +224,74 @@ const Sem = () => {
       </table>
 
       {viewModal && viewRecord && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalCard}>
-            <div className={styles.modalHeader}>
-              <h3>Semester Details</h3>
-              <button
-                className={styles.closeIcon}
-                onClick={() => setViewModal(false)}
-              >
-                ✕
-              </button>
-            </div>
+  <div className={styles.modalOverlay}>
+    <div className={styles.modalCard}>
+      <div className={styles.modalHeader}>
+        <h3>Semester Details</h3>
+        <button
+          className={styles.closeIcon}
+          onClick={() => setViewModal(false)}
+        >
+          ✕
+        </button>
+      </div>
 
-            <div className={styles.infoCards}>
-              <div className={styles.infoCard}>
-                <span className={styles.label}>Name</span>
-                <p className={styles.value}>{viewRecord.name}</p>
-              </div>
-            
-              <div className={styles.infoCard}>
-                <span className={styles.label}>Student ID</span>
-                <p className={styles.value}>{viewRecord.studentId}</p>
-              </div>
-            
-              <div className={styles.infoCard}>
-                <span className={styles.label}>Term / Semester</span>
-                <p className={styles.value}>{viewRecord.term}</p>
-              </div>
-            </div>
-
-            <table className={styles.marksTable}>
-              <thead>
-                <tr>
-                  <th>Subject</th>
-                  <th>Marks</th>
-                  <th>Total</th>
-                  <th>Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {viewRecord.subjects.map((s, i) => (
-                  <tr key={i}>
-                    <td>{s.subject}</td>
-                    <td>{s.mark}</td>
-                    <td>100</td>
-                    <td>{s.mark}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className={styles.modalFooter}>
-              <strong>Total Marks:</strong> {viewRecord.total} &nbsp; | &nbsp;
-              <strong>Percentage:</strong> {viewRecord.percentage}
-            </div>
-          </div>
+      {/* INFO CARDS */}
+      <div className={styles.infoCards}>
+        <div className={styles.infoCard}>
+          <span className={styles.label}>Name</span>
+          <p className={styles.value}>{viewRecord.name || "-"}</p>
         </div>
-      )}
+
+        <div className={styles.infoCard}>
+          <span className={styles.label}>Student ID</span>
+          <p className={styles.value}>{viewRecord.studentId || "-"}</p>
+        </div>
+
+        <div className={styles.infoCard}>
+          <span className={styles.label}>Semester</span>
+          <p className={styles.value}>{viewRecord.semester || "-"}</p>
+        </div>
+      </div>
+
+      {/* MARKS TABLE */}
+      <table className={styles.marksTable}>
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Total</th>
+            <th>Percentage</th>
+          </tr>
+        </thead>
+        <tbody>
+          {viewRecord.subjects && viewRecord.subjects.length > 0 ? (
+            viewRecord.subjects.map((s, i) => (
+              <tr key={i}>
+                <td>{s.subject || "-"}</td>
+                <td>{s.mark ?? 0}</td>
+                <td>100</td>
+                <td>{s.mark ? `${s.mark}%` : "0%"}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className={styles.noData}>
+                No Subject Marks Found
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <div className={styles.modalFooter}>
+        <strong>Total Marks:</strong> {viewRecord.total || 0} &nbsp; | &nbsp;
+        <strong>Percentage:</strong> {viewRecord.percentage || "0%"}
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

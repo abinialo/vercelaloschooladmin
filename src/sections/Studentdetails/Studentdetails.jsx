@@ -53,6 +53,8 @@ const Studentdetails = () => {
   const [termModal, setTermModal] = useState(false);
   const [academic, setAcademic] = useState("");
   const [marks, setMarks] = useState([{ subject: "", mark: "" }]);
+  const [errors, setErrors] = useState({});
+
 
   console.log("Performance Details 👉", user?.performanceDetails);
 
@@ -244,11 +246,44 @@ const Studentdetails = () => {
     }
   };
 
+
   useEffect(() => {
     studentrate();
   }, [selectedRange]);
 
   const [absentModel, setAbsentModel] = useState(false);
+
+
+
+  const validateForm = () => {
+  let newErrors = {};
+
+  // Academic validation
+  if (!academic.trim()) {
+    newErrors.academic = "Academic term is required";
+  }
+
+  // Marks validation
+  if (!marks.length) {
+    newErrors.marks = "At least one subject is required";
+  }
+
+  marks.forEach((m, index) => {
+    if (!m.subject.trim()) {
+      newErrors[`subject_${index}`] = "Subject name is required";
+    }
+
+    if (m.mark === "" || isNaN(m.mark)) {
+      newErrors[`mark_${index}`] = "Valid mark is required";
+    } else if (m.mark < 0 || m.mark > 100) {
+      newErrors[`mark_${index}`] = "Mark must be between 0 and 100";
+    }
+  });
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
   const saveTermSem = async () => {
     if (!academic.trim()) {
       toast.error("Academic is required");
@@ -1054,79 +1089,130 @@ const Studentdetails = () => {
         </button>
       </Modal>
       <Modal
-        isOpen={termModal}
-        onRequestClose={() => setTermModal(false)}
-        style={{
-          overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
-          content: {
-            width: "600px",
-            margin: "auto",
-            maxHeight: "100vh",
-            borderRadius: "10px",
-          },
-        }}
-      >
-        <h3 className="text-lg font-semibold mb-4">
-          {editMode ? "Edit Term / Sem Detail" : "Add Term / Sem Detail"}
-        </h3>
+  isOpen={termModal}
+  onRequestClose={() => setTermModal(false)}
+  style={{
+    overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
+    content: {
+      width: "600px",
+      margin: "auto",
+      borderRadius: "10px",
+      padding: "24px",
+    },
+  }}
+>
+  <h3 className="text-lg font-semibold mb-6">
+    {editMode ? "Edit Term / Sem Detail" : "Add Term / Sem Detail"}
+  </h3>
 
-        {/* Academic */}
-        <label className="text-sm font-medium">Academic (Term / Sem)</label>
+  
+  <div className="mb-5">
+    <label className="text-sm font-medium block mb-1">
+      Academic (Term / Sem)
+    </label>
+    <input
+      type="text"
+      value={academic}
+      onChange={(e) => {
+        setAcademic(e.target.value);
+        setErrors((prev) => ({ ...prev, academic: "" }));
+      }}
+      className={`w-full border rounded p-2 ${
+        errors.academic ? "border-red-500" : "border-gray-300"
+      }`}
+      placeholder="Term / Sem"
+    />
+    {errors.academic && (
+      <p className="text-red-500 text-sm mt-1">{errors.academic}</p>
+    )}
+  </div>
+
+  
+  <div className="mb-5">
+    <label className="text-sm font-medium block mb-2">Marks</label>
+
+    {marks.map((m, i) => (
+  <div key={i} className="mb-4">
+    <div className="flex gap-4">
+    
+      <div className="w-1/2">
         <input
           type="text"
-          value={academic}
-          onChange={(e) => setAcademic(e.target.value)}
-          className="w-full border rounded p-2 my-2"
-          placeholder="Term  / Sem "
+          placeholder="Subject"
+          value={m.subject}
+          className={`border rounded p-2 w-full ${
+            errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
+          }`}
+          onChange={(e) => {
+            const copy = [...marks];
+            copy[i].subject = e.target.value;
+            setMarks(copy);
+            setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
+          }}
         />
+        {errors[`subject_${i}`] && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors[`subject_${i}`]}
+          </p>
+        )}
+      </div>
 
-        {/* Marks */}
-        <label className="text-sm font-medium">Marks</label>
-        {marks.map((m, i) => (
-          <div key={i} className="flex gap-2 my-2">
-            <input
-              type="text"
-              placeholder="Subject"
-              value={m.subject}
-              className="border p-2 w-1/2"
-              onChange={(e) => {
-                const copy = [...marks];
-                copy[i].subject = e.target.value;
-                setMarks(copy);
-              }}
-            />
-            <input
-              type="number"
-              placeholder="Mark"
-              value={m.mark}
-              className="border p-2 w-1/2"
-              onChange={(e) => {
-                const copy = [...marks];
-                copy[i].mark = e.target.value;
-                setMarks(copy);
-              }}
-            />
-          </div>
-        ))}
+      {/* Mark */}
+      <div className="w-1/2">
+        <input
+          type="number"
+          placeholder="Mark"
+          value={m.mark}
+          className={`border rounded p-2 w-full ${
+            errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
+          }`}
+          onChange={(e) => {
+            const copy = [...marks];
+            copy[i].mark = e.target.value;
+            setMarks(copy);
+            setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
+          }}
+        />
+        {errors[`mark_${i}`] && (
+          <p className="text-red-500 text-sm mt-1">
+            {errors[`mark_${i}`]}
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+))}
 
-        <button
-          className="text-blue-600 text-sm"
-          onClick={() => setMarks([...marks, { subject: "", mark: "" }])}
-        >
-          + Add Subject
-        </button>
+    <button
+      className="text-blue-600 text-sm mt-2"
+      onClick={() => setMarks([...marks, { subject: "", mark: "" }])}
+    >
+      + Add Subject
+    </button>
+  </div>
 
-        {/* Save */}
-        <div className="flex justify-end gap-3 mt-5">
-          <button onClick={() => setTermModal(false)}>Cancel</button>
-          <button
-            className="bg-[#144196] text-white px-4 py-2 rounded"
-            onClick={saveTermSem}
-          >
-            {editMode ? "Update" : "Save"}
-          </button>
-        </div>
-      </Modal>
+  {/* Actions */}
+  <div className="flex justify-end gap-4 mt-6">
+    <button
+      className="px-4 py-2 border rounded"
+      onClick={() => setTermModal(false)}
+    >
+      Cancel
+    </button>
+
+    <button
+      className="bg-[#144196] text-white px-5 py-2 rounded"
+      onClick={() => {
+        if (validateForm()) {
+          saveTermSem();
+        }
+      }}
+    >
+      {editMode ? "Update" : "Save"}
+    </button>
+  </div>
+</Modal>
+
     </>
   );
 };
