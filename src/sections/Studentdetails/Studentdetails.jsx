@@ -46,6 +46,9 @@ const Studentdetails = () => {
   ]);
   const [editMode, setEditMode] = useState(false);
   const [termList, setTermList] = useState([]);
+const [saving, setSaving] = useState(false);
+
+const [deletingId, setDeletingId] = useState(null);
 
   const [performanceId, setPerformanceId] = useState(null);
 
@@ -258,9 +261,9 @@ const Studentdetails = () => {
   const validateForm = () => {
   let newErrors = {};
 
-  // Academic validation
+ 
   if (!academic.trim()) {
-    newErrors.academic = "Academic term is required";
+    newErrors.academic = "Academic  is required";
   }
 
   // Marks validation
@@ -284,55 +287,62 @@ const Studentdetails = () => {
   return Object.keys(newErrors).length === 0;
 };
 
-  const saveTermSem = async () => {
-    if (!academic.trim()) {
-      toast.error("Academic is required");
-      return;
-    }
+ const saveTermSem = async () => {
+    if (saving) return; // ✅ HARD BLOCK
+  if (!academic.trim()) {
+    toast.error("Academic is required");
+    return;
+  }
 
-    const total = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
-    const average = marks.length ? (total / marks.length).toFixed(2) : 0;
+  setSaving(true);
 
-    const payload = {
-      Academic: academic,
-      Marks: marks,
-      total,
-      average,
-    };
+  const total = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
+  const average = marks.length ? (total / marks.length).toFixed(2) : 0;
 
-    try {
-      if (editMode && performanceId) {
-        await updateTermSem(performanceId, payload);
-        toast.success("Term / Sem Updated");
-      } else {
-        await createTermSem({
-          userId: id,
-          ...payload,
-        });
-        toast.success("Term / Sem Added");
-      }
-
-      getTermDetails();
-
-      setTermModal(false);
-      setAcademic("");
-      setMarks([{ subject: "", mark: "" }]);
-      setEditMode(false);
-      setPerformanceId(null);
-    } catch (err) {
-      toast.error("Failed to save");
-    }
+  const payload = {
+    Academic: academic,
+    Marks: marks,
+    total,
+    average,
   };
 
-  const openEditTermSem = (record) => {
-    setEditMode(true);
-    setPerformanceId(record._id);
+  try {
+    if (editMode && performanceId) {
+      await updateTermSem(performanceId, payload);
+      toast.success("Term / Sem Updated");
+    } else {
+      await createTermSem({
+        userId: id,
+        ...payload,
+      });
+      toast.success("Term / Sem Added");
+    }
 
-    setAcademic(record.Academic);
-    setMarks(record.Marks || [{ subject: "", mark: "" }]);
+    await getTermDetails();
 
-    setTermModal(true);
-  };
+    setTermModal(false);
+    setAcademic("");
+    setMarks([{ subject: "", mark: "" }]);
+    setEditMode(false);
+    setPerformanceId(null);
+  } catch (err) {
+    toast.error("Failed to save");
+    console.error(err);
+  } finally {
+    setSaving(false);
+  }
+};
+
+const openEditTermSem = (record) => {
+  if (saving) return;
+
+  setEditMode(true);
+  setPerformanceId(record._id);
+  setAcademic(record.Academic);
+  setMarks(record.Marks || [{ subject: "", mark: "" }]);
+  setTermModal(true);
+};
+
 
   const getTermDetails = async () => {
     try {
@@ -351,47 +361,72 @@ const Studentdetails = () => {
     getTermDetails();
   }, [id]);
 
-  const handleDeleteTermSem = (termId) => {
-    toast(
-      ({ closeToast }) => (
-        <div>
-          <p className="font-medium mb-2">
-            Are you sure you want to delete this Term / Sem record?
-          </p>
+const handleDeleteTermSem = (termId) => {
+  toast(
+    ({ closeToast }) => (
+      <div>
+        <p className="font-medium mb-2">
+          Are you sure you want to delete this Term / Sem record?
+        </p>
 
-          <div className="flex justify-end gap-3">
-            <button className="px-3 py-1 border rounded" onClick={closeToast}>
-              Cancel
-            </button>
+        <div className="flex justify-end gap-3">
+          <button
+            className="px-3 py-1 border rounded"
+            onClick={closeToast}
+          >
+            Cancel
+          </button>
 
-            <button
-              className="px-3 py-1 bg-red-600 text-white rounded"
-              onClick={async () => {
-                try {
-                  await deleteTermSemApi(termId);
-                  toast.success("Term / Sem Deleted Successfully");
-                  getTermDetails();
-                } catch (err) {
-                  toast.error("Failed to delete record");
-                  console.error(err);
-                }
+          <button
+            className="px-3 py-1 bg-red-600 text-white rounded flex items-center gap-2"
+            onClick={async (e) => {
+              const btn = e.currentTarget;
+
+              // 🔒 LOCK BUTTON
+              btn.disabled = true;
+              btn.innerHTML = `
+                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Deleting...
+              `;
+
+              try {
+                await deleteTermSemApi(termId);
+                toast.success("Term / Sem Deleted Successfully");
+                await getTermDetails();
                 closeToast();
-              }}
-            >
-              Delete
-            </button>
-          </div>
+              } catch (err) {
+                toast.error("Failed to delete record");
+                btn.disabled = false;
+                btn.innerHTML = "Delete";
+              }
+            }}
+          >
+            Delete
+          </button>
         </div>
-      ),
-      {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        closeButton: false,
-      }
-    );
-  };
+      </div>
+    ),
+    {
+      position: "top-center",
+      autoClose: false,
+      closeOnClick: false,
+      draggable: false,
+      closeButton: false,
+    }
+  );
+};
+
+const closeTermModal = () => {
+  setTermModal(false);
+
+  // reset form
+  setAcademic("");
+  setMarks([{ subject: "", mark: "" }]);
+  setErrors({});
+  setEditMode(false);
+  setPerformanceId(null);
+};
+
 
   return (
     <>
@@ -726,7 +761,7 @@ const Studentdetails = () => {
                 </div>
               </div>
             </div>
-            {/* ===== TERM / SEM DETAILS ===== */}
+      
             <div className="bg-[#F8F8F8] mt-3 p-3 rounded-[10px]">
               <h4 className="text-[16px] font-medium mb-3">
                 Term / Semester Details
@@ -751,12 +786,27 @@ const Studentdetails = () => {
                         onClick={() => openEditTermSem(p)}
                       />
 
-                      <span
-                        className="text-red-600 text-sm cursor-pointer"
-                        onClick={() => handleDeleteTermSem(p._id)}
-                      >
-                        Delete
-                      </span>
+                   <span
+  className={`text-red-600 text-sm flex items-center gap-2 ${
+    deletingId === p._id
+      ? "opacity-50 cursor-not-allowed"
+      : "cursor-pointer"
+  }`}
+  onClick={() => {
+    if (!deletingId) handleDeleteTermSem(p._id);
+  }}
+>
+  {deletingId === p._id ? (
+    <>
+      <span className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
+      Deleting...
+    </>
+  ) : (
+    "Delete"
+  )}
+</span>
+
+
                     </div>
                   </div>
                 ))
@@ -999,7 +1049,7 @@ const Studentdetails = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgb(21 21 21 / 81%)", // gray overlay
+            backgroundColor: "rgb(21 21 21 / 81%)", 
             zIndex: 1000,
           },
           content: {
@@ -1106,26 +1156,32 @@ const Studentdetails = () => {
   </h3>
 
   
-  <div className="mb-5">
-    <label className="text-sm font-medium block mb-1">
-      Academic (Term / Sem)
-    </label>
-    <input
-      type="text"
-      value={academic}
-      onChange={(e) => {
-        setAcademic(e.target.value);
-        setErrors((prev) => ({ ...prev, academic: "" }));
-      }}
-      className={`w-full border rounded p-2 ${
-        errors.academic ? "border-red-500" : "border-gray-300"
-      }`}
-      placeholder="Term / Sem"
-    />
-    {errors.academic && (
-      <p className="text-red-500 text-sm mt-1">{errors.academic}</p>
-    )}
-  </div>
+ <div className="mb-5">
+  <label className="text-sm font-medium block mb-1">
+    Academic (Term / Sem)
+  </label>
+
+  <select
+    value={academic}
+    onChange={(e) => {
+      setAcademic(e.target.value);
+      setErrors((prev) => ({ ...prev, academic: "" }));
+    }}
+    className={`w-full border rounded p-2 bg-white ${
+      errors.academic ? "border-red-500" : "border-gray-300"
+    }`}
+  >
+    <option value="">Select Term / Sem</option>
+    <option value="Term 1">Term 1</option>
+    <option value="Term 2">Term 2</option>
+    <option value="Sem 1">Semester 1</option>
+    <option value="Sem 2">Semester 2</option>
+  </select>
+
+  {errors.academic && (
+    <p className="text-red-500 text-sm mt-1">{errors.academic}</p>
+  )}
+</div>
 
   
   <div className="mb-5">
@@ -1157,7 +1213,6 @@ const Studentdetails = () => {
         )}
       </div>
 
-      {/* Mark */}
       <div className="w-1/2">
         <input
           type="number"
@@ -1191,25 +1246,36 @@ const Studentdetails = () => {
     </button>
   </div>
 
-  {/* Actions */}
+ 
   <div className="flex justify-end gap-4 mt-6">
-    <button
-      className="px-4 py-2 border rounded"
-      onClick={() => setTermModal(false)}
-    >
-      Cancel
-    </button>
+   <button
+  className="px-4 py-2 border rounded"
+  onClick={closeTermModal}
+>
+  Cancel
+</button>
+
 
     <button
-      className="bg-[#144196] text-white px-5 py-2 rounded"
-      onClick={() => {
-        if (validateForm()) {
-          saveTermSem();
-        }
-      }}
-    >
-      {editMode ? "Update" : "Save"}
-    </button>
+  type="button"  
+  disabled={saving}
+  className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${
+    saving ? "opacity-60 cursor-not-allowed" : ""
+  }`}
+  onClick={() => {
+    if (!saving && validateForm()) {
+      saveTermSem();
+    }
+  }}
+>
+  {saving ? (
+    <span className="flex items-center gap-2">
+      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Saving...
+    </span>
+  ) : editMode ? "Update" : "Save"}
+</button>
+
   </div>
 </Modal>
 

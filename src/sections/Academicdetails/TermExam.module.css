@@ -252,9 +252,7 @@ text-align: center;
   margin-top: 4px;
 }
 
-/* ===================== RESPONSIVE ===================== */
 
-/* TABLET (≤ 768px) */
 @media (max-width: 768px) {
   .headerBar {
     flex-direction: column;
@@ -294,7 +292,7 @@ text-align: center;
   }
 }
 
-/* MOBILE (≤ 480px) */
+
 @media (max-width: 480px) {
   .container {
     padding: 8px;
@@ -315,7 +313,6 @@ text-align: center;
     width: 100%;
   }
 
-  /* TABLE SCROLL */
   .table,
   .marksTable {
     display: block;
@@ -328,7 +325,7 @@ text-align: center;
     padding: 6px 12px;
   }
 
-  /* MODAL */
+ 
   .modalOverlay {
     padding: 10px;
   }
@@ -355,4 +352,36 @@ text-align: center;
     text-align: center;
     font-size: 13px;
   }
+}
+.paginationWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+.paginationWrap :global(.MuiPaginationItem-root) {
+  color: #ffffff;
+  background: linear-gradient(to bottom, #144196, #061530);
+  border-radius: 50%;
+  min-width: 36px;
+  height: 36px;
+  font-weight: 500;
+}
+
+
+.paginationWrap :global(.MuiPaginationItem-root:hover) {
+  background: linear-gradient(to bottom, #1b55c4, #0a1f4a);
+}
+
+
+.paginationWrap :global(.MuiPaginationItem-root.Mui-selected) {
+  background: linear-gradient(to bottom, #2b6fff, #0d2f7a);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+
+.paginationWrap :global(.MuiPaginationItem-icon) {
+  color: #ffffff;
 }

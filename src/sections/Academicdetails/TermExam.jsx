@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./TermExam.module.css";
+import Pagination from "@mui/material/Pagination";
 import {
   getPerformance,
   getCourse,
@@ -10,7 +11,6 @@ import {
 const TermExam = () => {
   const [performance, setPerformance] = useState([]);
   const [users, setUsers] = useState([]);
-
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
 
@@ -21,6 +21,10 @@ const TermExam = () => {
 
   const [viewModal, setViewModal] = useState(false);
   const [viewRecord, setViewRecord] = useState(null);
+
+
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
 
   useEffect(() => {
     fetchCourses();
@@ -38,37 +42,49 @@ const TermExam = () => {
   };
 
   const fetchPerformance = async () => {
-    try {
-      const res = await getPerformance();
-      const apiData = res?.data?.data?.data || [];
+  try {
+    const res = await getPerformance();
+    const apiData = res?.data?.data?.data || [];
 
-      const formatted = apiData.map((item) => ({
+    const formatted = apiData
+      .filter(
+        (item) =>
+          item.Academic === "Term 1" || item.Academic === "Term 2"
+      )
+      .map((item) => ({
         id: item._id,
         userId: item.userDetails?._id,
-
         name: item.userDetails?.name || "-",
         studentId: item.userDetails?.studentId || "-",
         term: item.Academic || "-",
 
+        courseId: item.courseDetails?._id || "",
         courseName: item.courseDetails?.courseName || "-",
+
+        batchId:
+          item.batchDetails?.length > 0
+            ? item.batchDetails[0]._id
+            : "",
         batchName:
-          item.batchDetails?.length > 0 ? item.batchDetails[0].batchName : "-",
+          item.batchDetails?.length > 0
+            ? item.batchDetails[0].batchName
+            : "-",
 
         total: item.total || 0,
         percentage: item.average ? `${item.average}%` : "0%",
         subjects: item.Marks || [],
       }));
 
-      setPerformance(formatted);
-    } catch (err) {
-      console.error("Performance fetch failed", err);
-    }
-  };
+    setPerformance(formatted);
+  } catch (err) {
+    console.error("Performance fetch failed", err);
+  }
+};
+
 
   const fetchCourses = async () => {
     try {
       const res = await getCourse(100, 0);
-      console.log("COURSE API RESPONSE 👉", res.data);
       setCourses(res?.data?.data?.data || []);
     } catch (err) {
       console.error("Course fetch error", err);
@@ -94,17 +110,38 @@ const TermExam = () => {
 
     fetchBatches();
     fetchUsers(search, courseId, "");
+    setPage(1);
   }, [courseId]);
 
   useEffect(() => {
     fetchUsers(search, courseId, batchId);
+    setPage(1);
   }, [batchId]);
 
-  const filteredData = performance.filter((row) => {
-    const userMatch = users.some((u) => u._id === row.userId);
-    const matchTerm = !term || row.term === term;
-    return userMatch && matchTerm;
-  });
+ const filteredData = performance.filter((row) => {
+  const userMatch = users.some((u) => u._id === row.userId);
+
+  const courseMatch =
+    !courseId || row.courseId === courseId;
+
+  const batchMatch =
+    !batchId || row.batchId === batchId;
+
+  const termMatch =
+    !term || row.term === term;
+
+  return userMatch && courseMatch && batchMatch && termMatch;
+});
+
+
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
+
+  const pageCount = Math.ceil(filteredData.length / rowsPerPage);
 
   const termOptions = [
     ...new Set(performance.map((p) => p.term).filter(Boolean)),
@@ -143,24 +180,21 @@ const TermExam = () => {
               </option>
             ))}
           </select>
+<select value={term} onChange={(e) => setTerm(e.target.value)}>
+  <option value="">All Terms</option>
+  <option value="Term 1">Term 1</option>
+  <option value="Term 2">Term 2</option>
+</select>
 
-          <select value={term} onChange={(e) => setTerm(e.target.value)}>
-            <option value="">All Terms</option>
-            {termOptions.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
 
           <input
             className={styles.search}
             placeholder="Search by name or ID..."
             value={search}
             onChange={(e) => {
-              const value = e.target.value;
-              setSearch(value);
-              fetchUsers(value, courseId, batchId);
+              setSearch(e.target.value);
+              fetchUsers(e.target.value, courseId, batchId);
+              setPage(1);
             }}
           />
         </div>
@@ -169,26 +203,26 @@ const TermExam = () => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th className={styles.gradientHeader}>Name</th>
-            <th className={styles.gradientHeader}>Student ID</th>
-            <th className={styles.gradientHeader}>Term</th>
-            <th className={styles.gradientHeader}>Course</th>
-            <th className={styles.gradientHeader}>Batch</th>
-            <th className={styles.gradientHeader}>Total</th>
-            <th className={styles.gradientHeader}>Percentage</th>
-            <th className={styles.gradientHeader}>Action</th>
+            <th>Name</th>
+            <th>Student ID</th>
+            <th>Term</th>
+            <th>Course</th>
+            <th>Batch</th>
+            <th>Total</th>
+            <th>Percentage</th>
+            <th>Action</th>
           </tr>
         </thead>
 
         <tbody>
-          {filteredData.length === 0 ? (
+          {paginatedData.length === 0 ? (
             <tr>
               <td colSpan="8" className={styles.noData}>
                 No Data Found
               </td>
             </tr>
           ) : (
-            filteredData.map((row) => (
+            paginatedData.map((row) => (
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{row.studentId}</td>
@@ -213,6 +247,16 @@ const TermExam = () => {
           )}
         </tbody>
       </table>
+
+     
+      <div className={styles.paginationWrap}>
+  <Pagination
+    count={pageCount || 1}
+    page={page}
+    onChange={(e, value) => setPage(value)}
+  />
+</div>
+
 
       {viewModal && viewRecord && (
         <div className={styles.modalOverlay}>

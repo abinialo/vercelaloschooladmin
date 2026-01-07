@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./TermExam.module.css";
+import Pagination from "@mui/material/Pagination";
 import {
   getPerformance,
   getCourse,
@@ -10,7 +11,6 @@ import {
 const Sem = () => {
   const [performance, setPerformance] = useState([]);
   const [users, setUsers] = useState([]);
-
   const [courses, setCourses] = useState([]);
   const [batches, setBatches] = useState([]);
 
@@ -21,6 +21,9 @@ const Sem = () => {
 
   const [viewModal, setViewModal] = useState(false);
   const [viewRecord, setViewRecord] = useState(null);
+
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
 
   useEffect(() => {
     fetchCourses();
@@ -52,15 +55,14 @@ const Sem = () => {
       const formatted = semData.map((item) => ({
         id: item._id,
         userId: item.userDetails?._id,
-
         name: item.userDetails?.name || "-",
         studentId: item.userDetails?.studentId || "-",
         semester: item.Academic || "-",
-
         courseName: item.courseDetails?.courseName || "-",
         batchName:
-          item.batchDetails?.length > 0 ? item.batchDetails[0].batchName : "-",
-
+          item.batchDetails?.length > 0
+            ? item.batchDetails[0].batchName
+            : "-",
         total: item.total || 0,
         percentage: item.average ? `${item.average}%` : "0%",
         subjects: item.Marks || [],
@@ -86,6 +88,7 @@ const Sem = () => {
       setBatches([]);
       setBatchId("");
       fetchUsers(search, "", "");
+      setPage(1);
       return;
     }
 
@@ -100,17 +103,29 @@ const Sem = () => {
 
     fetchBatches();
     fetchUsers(search, courseId, "");
+    setPage(1);
   }, [courseId]);
 
   useEffect(() => {
     fetchUsers(search, courseId, batchId);
+    setPage(1);
   }, [batchId]);
+
 
   const filteredData = performance.filter((row) => {
     const userMatch = users.some((u) => u._id === row.userId);
     const semMatch = !semester || row.semester === semester;
     return userMatch && semMatch;
   });
+
+
+  const startIndex = (page - 1) * rowsPerPage;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + rowsPerPage
+  );
+
+  const pageCount = Math.ceil(filteredData.length / rowsPerPage);
 
   const semesterOptions = [
     ...new Set(performance.map((p) => p.semester).filter(Boolean)),
@@ -150,26 +165,27 @@ const Sem = () => {
             ))}
           </select>
 
-          <select
-            value={semester}
-            onChange={(e) => setSemester(e.target.value)}
-          >
-            <option value="">All Semesters</option>
-            {semesterOptions.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+        <select
+  value={semester}
+  onChange={(e) => {
+    setSemester(e.target.value);
+    setPage(1);
+  }}
+>
+  <option value="">All Semesters</option>
+  <option value="Sem 1">Semester 1</option>
+  <option value="Sem 2">Semester 2</option>
+</select>
+
 
           <input
             className={styles.search}
             placeholder="Search by name or ID..."
             value={search}
             onChange={(e) => {
-              const value = e.target.value;
-              setSearch(value);
-              fetchUsers(value, courseId, batchId);
+              setSearch(e.target.value);
+              fetchUsers(e.target.value, courseId, batchId);
+              setPage(1);
             }}
           />
         </div>
@@ -190,14 +206,14 @@ const Sem = () => {
         </thead>
 
         <tbody>
-          {filteredData.length === 0 ? (
+          {paginatedData.length === 0 ? (
             <tr>
               <td colSpan="8" className={styles.noData}>
                 No Data Found
               </td>
             </tr>
           ) : (
-            filteredData.map((row) => (
+            paginatedData.map((row) => (
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{row.studentId}</td>
@@ -223,6 +239,16 @@ const Sem = () => {
         </tbody>
       </table>
 
+
+     <div className={styles.paginationWrap}>
+  <Pagination
+    count={pageCount || 1}
+    page={page}
+    onChange={(e, value) => setPage(value)}
+  />
+</div>
+
+
       {viewModal && viewRecord && (
   <div className={styles.modalOverlay}>
     <div className={styles.modalCard}>
@@ -236,7 +262,7 @@ const Sem = () => {
         </button>
       </div>
 
-      {/* INFO CARDS */}
+ 
       <div className={styles.infoCards}>
         <div className={styles.infoCard}>
           <span className={styles.label}>Name</span>
