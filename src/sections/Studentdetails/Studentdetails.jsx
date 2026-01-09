@@ -286,6 +286,26 @@ const [deletingId, setDeletingId] = useState(null);
   setErrors(newErrors);
   return Object.keys(newErrors).length === 0;
 };
+const checkExistingAcademic = (value) => {
+  const existing = termList.find(
+    (t) => t.Academic === value
+  );
+
+  if (existing) {
+    // 🔁 Switch to EDIT mode
+    setEditMode(true);
+    setPerformanceId(existing._id);
+    setMarks(existing.Marks || [{ subject: "", mark: "" }]);
+
+    toast.info("This term already exists. Editing instead.");
+  } else {
+    // ➕ New entry
+    setEditMode(false);
+    setPerformanceId(null);
+    setMarks([{ subject: "", mark: "" }]);
+  }
+};
+
 
  const saveTermSem = async () => {
     if (saving) return; // ✅ HARD BLOCK
@@ -1161,16 +1181,22 @@ const closeTermModal = () => {
     Academic (Term / Sem)
   </label>
 
-  <select
-    value={academic}
-    onChange={(e) => {
-      setAcademic(e.target.value);
-      setErrors((prev) => ({ ...prev, academic: "" }));
-    }}
-    className={`w-full border rounded p-2 bg-white ${
-      errors.academic ? "border-red-500" : "border-gray-300"
-    }`}
-  >
+ <select
+  value={academic}
+  onChange={(e) => {
+    const value = e.target.value;
+
+    setAcademic(value);
+    setErrors((prev) => ({ ...prev, academic: "" }));
+
+  
+    checkExistingAcademic(value);
+  }}
+  className={`w-full border rounded p-2 bg-white ${
+    errors.academic ? "border-red-500" : "border-gray-300"
+  }`}
+>
+
     <option value="">Select Term / Sem</option>
     <option value="Term 1">Term 1</option>
     <option value="Term 2">Term 2</option>
