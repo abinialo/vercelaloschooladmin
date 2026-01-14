@@ -41,38 +41,47 @@ const Sem = () => {
   };
 
   const fetchPerformance = async () => {
-    try {
-      const res = await getPerformance();
-      const apiData = res?.data?.data?.data || [];
+  try {
+    const res = await getPerformance();
+    const apiData = res?.data?.data?.data || [];
 
-      const semData = apiData.filter(
+    const formatted = apiData
+      .filter(
         (item) =>
           item.Academic &&
-          (item.Academic.toLowerCase().includes("sem") ||
-            item.Academic.toLowerCase().includes("semester"))
-      );
-
-      const formatted = semData.map((item) => ({
+          item.Academic.toLowerCase().startsWith("sem")
+      )
+      .map((item) => ({
         id: item._id,
         userId: item.userDetails?._id,
         name: item.userDetails?.name || "-",
         studentId: item.userDetails?.studentId || "-",
-        semester: item.Academic || "-",
+
+        semester: item.Academic,
+
+        courseId: item.courseDetails?._id || "",
         courseName: item.courseDetails?.courseName || "-",
+
+        batchId:
+          item.batchDetails?.length > 0
+            ? item.batchDetails[0]._id
+            : "",
         batchName:
           item.batchDetails?.length > 0
             ? item.batchDetails[0].batchName
             : "-",
+
         total: item.total || 0,
         percentage: item.average ? `${item.average}%` : "0%",
         subjects: item.Marks || [],
       }));
 
-      setPerformance(formatted);
-    } catch (err) {
-      console.error("Semester fetch failed", err);
-    }
-  };
+    setPerformance(formatted);
+  } catch (err) {
+    console.error("Semester fetch failed", err);
+  }
+};
+
 
   const fetchCourses = async () => {
     try {
@@ -112,11 +121,15 @@ const Sem = () => {
   }, [batchId]);
 
 
-  const filteredData = performance.filter((row) => {
-    const userMatch = users.some((u) => u._id === row.userId);
-    const semMatch = !semester || row.semester === semester;
-    return userMatch && semMatch;
-  });
+ const filteredData = performance.filter((row) => {
+  const userMatch = users.some((u) => u._id === row.userId);
+  const courseMatch = !courseId || row.courseId === courseId;
+  const batchMatch = !batchId || row.batchId === batchId;
+  const semMatch = !semester || row.semester === semester;
+
+  return userMatch && courseMatch && batchMatch && semMatch;
+});
+
 
 
   const startIndex = (page - 1) * rowsPerPage;
@@ -173,8 +186,11 @@ const Sem = () => {
   }}
 >
   <option value="">All Semesters</option>
-  <option value="Sem 1">Semester 1</option>
-  <option value="Sem 2">Semester 2</option>
+ {semesterOptions.map((s) => (
+    <option key={s} value={s}>
+      {s}
+    </option>
+  ))}
 </select>
 
 

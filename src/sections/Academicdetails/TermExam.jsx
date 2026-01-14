@@ -40,8 +40,7 @@ const TermExam = () => {
       console.error("User fetch error", err);
     }
   };
-
-  const fetchPerformance = async () => {
+const fetchPerformance = async () => {
   try {
     const res = await getPerformance();
     const apiData = res?.data?.data?.data || [];
@@ -49,14 +48,15 @@ const TermExam = () => {
     const formatted = apiData
       .filter(
         (item) =>
-          item.Academic === "Term 1" || item.Academic === "Term 2"
+          item.Academic &&
+          item.Academic.toLowerCase().startsWith("term")
       )
       .map((item) => ({
         id: item._id,
         userId: item.userDetails?._id,
         name: item.userDetails?.name || "-",
         studentId: item.userDetails?.studentId || "-",
-        term: item.Academic || "-",
+        term: item.Academic,
 
         courseId: item.courseDetails?._id || "",
         courseName: item.courseDetails?.courseName || "-",
@@ -80,6 +80,7 @@ const TermExam = () => {
     console.error("Performance fetch failed", err);
   }
 };
+
 
 
   const fetchCourses = async () => {
@@ -182,8 +183,11 @@ const TermExam = () => {
           </select>
 <select value={term} onChange={(e) => setTerm(e.target.value)}>
   <option value="">All Terms</option>
-  <option value="Term 1">Term 1</option>
-  <option value="Term 2">Term 2</option>
+  {termOptions.map((t) => (
+    <option key={t} value={t}>
+      {t}
+    </option>
+  ))}
 </select>
 
 

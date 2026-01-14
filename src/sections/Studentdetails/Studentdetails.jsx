@@ -51,6 +51,13 @@ const [saving, setSaving] = useState(false);
 const [deletingId, setDeletingId] = useState(null);
 
   const [performanceId, setPerformanceId] = useState(null);
+  const semesterTermMap = {
+  "Semester 1": ["Term 1", "Term 2", "Semester 1"],
+  "Semester 2": ["Term 3", "Term 4", "Semester 2"],
+};
+const [semester, setSemester] = useState("");
+const [academicOptions, setAcademicOptions] = useState([]);
+
 
   const { RangePicker } = DatePicker;
   const [termModal, setTermModal] = useState(false);
@@ -58,6 +65,37 @@ const [deletingId, setDeletingId] = useState(null);
   const [marks, setMarks] = useState([{ subject: "", mark: "" }]);
   const [errors, setErrors] = useState({});
 
+const handleSemesterChange = (value) => {
+  setSemester(value);
+  setAcademic("");
+  setErrors({});
+  setEditMode(false);
+  setPerformanceId(null);
+  setMarks([{ subject: "", mark: "" }]);
+
+  let options = semesterTermMap[value] || [];
+
+  // ❌ Remove already added terms (except when editing)
+  const existingAcademics = termList.map(t => t.Academic);
+
+  options = options.filter(opt => !existingAcademics.includes(opt));
+
+  setAcademicOptions(options);
+};
+const handleAcademicChange = (value) => {
+  setAcademic(value);
+  setErrors(prev => ({ ...prev, academic: "" }));
+
+  const existing = termList.find(t => t.Academic === value);
+
+  if (existing) {
+    // 🔁 EDIT MODE
+    setEditMode(true);
+    setPerformanceId(existing._id);
+    setMarks(existing.Marks || [{ subject: "", mark: "" }]);
+    toast.info("This term already exists. Editing instead.");
+  }
+};
 
   console.log("Performance Details 👉", user?.performanceDetails);
 
@@ -435,17 +473,17 @@ const handleDeleteTermSem = (termId) => {
     }
   );
 };
-
 const closeTermModal = () => {
   setTermModal(false);
-
-  // reset form
+  setSemester("");
   setAcademic("");
+  setAcademicOptions([]);
   setMarks([{ subject: "", mark: "" }]);
   setErrors({});
   setEditMode(false);
   setPerformanceId(null);
 };
+
 
 
   return (
@@ -1175,94 +1213,109 @@ const closeTermModal = () => {
     {editMode ? "Edit Term / Sem Detail" : "Add Term / Sem Detail"}
   </h3>
 
-  
- <div className="mb-5">
-  <label className="text-sm font-medium block mb-1">
-    Academic (Term / Sem)
-  </label>
+  {/* ================= Semester Dropdown ================= */}
+  <div className="mb-5">
+    <label className="text-sm font-medium block mb-1">Semester</label>
 
- <select
-  value={academic}
-  onChange={(e) => {
-    const value = e.target.value;
+    <select
+      value={semester}
+      onChange={(e) => handleSemesterChange(e.target.value)}
+      className="w-full border rounded p-2 bg-white"
+    >
+      <option value="">Select Semester</option>
+      <option value="Semester 1">Semester 1</option>
+      <option value="Semester 2">Semester 2</option>
+    </select>
+  </div>
 
-    setAcademic(value);
-    setErrors((prev) => ({ ...prev, academic: "" }));
+  {/* ================= Term / Sem Dropdown ================= */}
+  <div className="mb-5">
+    <label className="text-sm font-medium block mb-1">
+      Term / Sem
+    </label>
 
-  
-    checkExistingAcademic(value);
-  }}
-  className={`w-full border rounded p-2 bg-white ${
-    errors.academic ? "border-red-500" : "border-gray-300"
-  }`}
->
+    <select
+      value={academic}
+      onChange={(e) => {
+        const value = e.target.value;
+        setAcademic(value);
+        setErrors((prev) => ({ ...prev, academic: "" }));
+        checkExistingAcademic(value);
+      }}
+      disabled={!semester}
+      className={`w-full border rounded p-2 bg-white ${
+        errors.academic ? "border-red-500" : "border-gray-300"
+      }`}
+    >
+      <option value="">Select Term / Sem</option>
 
-    <option value="">Select Term / Sem</option>
-    <option value="Term 1">Term 1</option>
-    <option value="Term 2">Term 2</option>
-    <option value="Sem 1">Semester 1</option>
-    <option value="Sem 2">Semester 2</option>
-  </select>
+      {academicOptions.map((opt) => (
+        <option key={opt} value={opt}>
+          {opt}
+        </option>
+      ))}
+    </select>
 
-  {errors.academic && (
-    <p className="text-red-500 text-sm mt-1">{errors.academic}</p>
-  )}
-</div>
+    {errors.academic && (
+      <p className="text-red-500 text-sm mt-1">
+        {errors.academic}
+      </p>
+    )}
+  </div>
 
-  
+  {/* ================= Marks Section (UNCHANGED) ================= */}
   <div className="mb-5">
     <label className="text-sm font-medium block mb-2">Marks</label>
 
     {marks.map((m, i) => (
-  <div key={i} className="mb-4">
-    <div className="flex gap-4">
-    
-      <div className="w-1/2">
-        <input
-          type="text"
-          placeholder="Subject"
-          value={m.subject}
-          className={`border rounded p-2 w-full ${
-            errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
-          }`}
-          onChange={(e) => {
-            const copy = [...marks];
-            copy[i].subject = e.target.value;
-            setMarks(copy);
-            setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
-          }}
-        />
-        {errors[`subject_${i}`] && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors[`subject_${i}`]}
-          </p>
-        )}
-      </div>
+      <div key={i} className="mb-4">
+        <div className="flex gap-4">
+          <div className="w-1/2">
+            <input
+              type="text"
+              placeholder="Subject"
+              value={m.subject}
+              className={`border rounded p-2 w-full ${
+                errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
+              }`}
+              onChange={(e) => {
+                const copy = [...marks];
+                copy[i].subject = e.target.value;
+                setMarks(copy);
+                setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
+              }}
+            />
+            {errors[`subject_${i}`] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`subject_${i}`]}
+              </p>
+            )}
+          </div>
 
-      <div className="w-1/2">
-        <input
-          type="number"
-          placeholder="Mark"
-          value={m.mark}
-          className={`border rounded p-2 w-full ${
-            errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
-          }`}
-          onChange={(e) => {
-            const copy = [...marks];
-            copy[i].mark = e.target.value;
-            setMarks(copy);
-            setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
-          }}
-        />
-        {errors[`mark_${i}`] && (
-          <p className="text-red-500 text-sm mt-1">
-            {errors[`mark_${i}`]}
-          </p>
-        )}
+          <div className="w-1/2">
+            <input
+              type="number"
+              placeholder="Mark"
+              value={m.mark}
+              className={`border rounded p-2 w-full ${
+                errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
+              }`}
+              onChange={(e) => {
+                const copy = [...marks];
+                copy[i].mark = e.target.value;
+                setMarks(copy);
+                setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
+              }}
+            />
+            {errors[`mark_${i}`] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors[`mark_${i}`]}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-))}
+    ))}
 
     <button
       className="text-blue-600 text-sm mt-2"
@@ -1272,38 +1325,37 @@ const closeTermModal = () => {
     </button>
   </div>
 
- 
+  {/* ================= Buttons ================= */}
   <div className="flex justify-end gap-4 mt-6">
-   <button
-  className="px-4 py-2 border rounded"
-  onClick={closeTermModal}
->
-  Cancel
-</button>
-
+    <button
+      className="px-4 py-2 border rounded"
+      onClick={closeTermModal}
+    >
+      Cancel
+    </button>
 
     <button
-  type="button"  
-  disabled={saving}
-  className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${
-    saving ? "opacity-60 cursor-not-allowed" : ""
-  }`}
-  onClick={() => {
-    if (!saving && validateForm()) {
-      saveTermSem();
-    }
-  }}
->
-  {saving ? (
-    <span className="flex items-center gap-2">
-      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-      Saving...
-    </span>
-  ) : editMode ? "Update" : "Save"}
-</button>
-
+      type="button"
+      disabled={saving}
+      className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${
+        saving ? "opacity-60 cursor-not-allowed" : ""
+      }`}
+      onClick={() => {
+        if (!saving && validateForm()) {
+          saveTermSem();
+        }
+      }}
+    >
+      {saving ? (
+        <span className="flex items-center gap-2">
+          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          Saving...
+        </span>
+      ) : editMode ? "Update" : "Save"}
+    </button>
   </div>
 </Modal>
+
 
     </>
   );
