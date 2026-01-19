@@ -392,3 +392,20 @@ export const updateTermSem = (id, payload) => {
 export const deleteTermSem = (id) => {
   return apiService.delete(`/performance/${id}`);
 };
+// term wise toppers
+export const getDashboardTermToppers = (Term) => {
+  return apiService.get("/performance/leaderboard", {
+    params: {
+      Academic: Term,   // e.g. "Term 3"
+    },
+  });
+};
+
+// semester wise toppers
+export const getDashboardSemesterToppers = (semester) => {
+  return apiService.get("/performance/leaderboard", {
+    params: {
+      Academic: semester,  
+    },
+  });
+};
