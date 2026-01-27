@@ -290,7 +290,7 @@ export const getStudentAttendencemonth = (userId) => {
 };
 
 export const getAttendanceStudentList = (userId) => {
-  return apiService.get(`/attendance/admin?userId=${userId}&limit=4`);
+  return apiService.get(`/attendance?userId=${userId}&limit=4`);
 };
 
 export const getTodayrate = () => {
