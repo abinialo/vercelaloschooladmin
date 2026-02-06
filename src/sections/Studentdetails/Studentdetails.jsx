@@ -105,6 +105,30 @@ const Studentdetails = () => {
   //     getUserById(id);
   // }, [id]);
 
+  const getSemesterFromAcademic = (academic = "") => {
+  const value = academic.toLowerCase().replace(/\s+/g, "");
+
+  if (
+    value.includes("sem1") ||
+    value.includes("semester1") ||
+    value.includes("term1") ||
+    value.includes("term2")
+  ) {
+    return "Semester 1";
+  }
+
+  if (
+    value.includes("sem2") ||
+    value.includes("semester2") ||
+    value.includes("term3") ||
+    value.includes("term4")
+  ) {
+    return "Semester 2";
+  }
+
+  return "";
+};
+
   useEffect(() => {
     attdancemonth();
   }, []);
@@ -392,15 +416,28 @@ const Studentdetails = () => {
     }
   };
 
-  const openEditTermSem = (record) => {
-    if (saving) return;
+const openEditTermSem = (record) => {
+  if (saving) return;
 
-    setEditMode(true);
-    setPerformanceId(record._id);
-    setAcademic(record.Academic);
-    setMarks(record.Marks || [{ subject: "", mark: "" }]);
-    setTermModal(true);
-  };
+  const sem = getSemesterFromAcademic(record.Academic);
+
+  setEditMode(true);
+  setPerformanceId(record._id);
+  setSemester(sem);
+  setAcademic(record.Academic);
+  setMarks(record.Marks || [{ subject: "", mark: "" }]);
+
+  const options = semesterTermMap[sem] || [];
+
+  // If old value not in new options → add it so dropdown can display it
+  if (!options.includes(record.Academic)) {
+    options.push(record.Academic);
+  }
+
+  setAcademicOptions(options);
+  setTermModal(true);
+};
+
 
 
   const getTermDetails = async () => {
@@ -474,21 +511,17 @@ const Studentdetails = () => {
       }
     );
   };
-  const closeTermModal = () => {
-    setTermModal(false);
-    
-    // setAcademicOptions([]);
-    setMarks([{ subject: "", mark: "" }]);
-    setErrors({});
-    setEditMode(false);
-    setPerformanceId(null);
+ const closeTermModal = () => {
+  setTermModal(false);
+  setErrors({});
+  setMarks([{ subject: "", mark: "" }]);
+  setEditMode(false);
+  setPerformanceId(null);
+  setSemester("");
+  setAcademic("");
+  setAcademicOptions([]);
+};
 
-    if (!editMode) {
-    setSemester("");
-    setAcademic("");
-    setAcademicOptions([]);
-  }
-  };
 
 
 
