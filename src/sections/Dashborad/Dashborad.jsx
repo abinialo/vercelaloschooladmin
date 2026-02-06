@@ -21,8 +21,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
 import { getAttendancerate, getDashboardAttendencerate, getDashboardEvents, getDashboardLeave, getDashboardUser, getTodayrate, studentCount } from '../../api/Serviceapi'
 import {
-  getDashboardTermToppers,
-  getDashboardSemesterToppers,
+    getDashboardTermToppers,
+    getDashboardSemesterToppers,
 } from "../../api/Serviceapi";
 
 export const Dashboard = () => {
@@ -41,38 +41,38 @@ export const Dashboard = () => {
 
     const [Attendance, setAttendance] = useState([])
     const [termToppers, setTermToppers] = useState([]);
-const [semesterToppers, setSemesterToppers] = useState([]);
-const [term, setTerm] = useState("Term 1");
-const [semester, setSemester] = useState("Semester 1");
-useEffect(() => {
-    getTermToppers();
-}, [term]);
+    const [semesterToppers, setSemesterToppers] = useState([]);
+    const [term, setTerm] = useState("Term 1");
+    const [semester, setSemester] = useState("Semester 1");
+    useEffect(() => {
+        getTermToppers();
+    }, [term]);
 
-useEffect(() => {
-    getSemesterToppers();
-}, [semester]);
-const getTermToppers = async () => {
-  const res = await getDashboardTermToppers(term);
+    useEffect(() => {
+        getSemesterToppers();
+    }, [semester]);
+    const getTermToppers = async () => {
+        const res = await getDashboardTermToppers(term);
 
-  const filtered = (res?.data?.data || [])
-    .filter(item => item.Academic === term)
-    .sort((a, b) => b.average - a.average); 
+        const filtered = (res?.data?.data || [])
+            .filter(item => item.Academic === term)
+            .sort((a, b) => b.average - a.average);
 
-  setTermToppers(filtered);
-};
+        setTermToppers(filtered);
+    };
 
-const getSemesterToppers = async () => {
-  const res = await getDashboardSemesterToppers(semester);
+    const getSemesterToppers = async () => {
+        const res = await getDashboardSemesterToppers(semester);
 
-  const filtered = (res?.data?.data || [])
-    .filter(item =>
-      item.Academic === semester ||
-      (semester === "Semester 2" && item.Academic === "Sem 2")
-    )
-    .sort((a, b) => b.average - a.average);
+        const filtered = (res?.data?.data || [])
+            .filter(item =>
+                item.Academic === semester ||
+                (semester === "Semester 2" && item.Academic === "Sem 2")
+            )
+            .sort((a, b) => b.average - a.average);
 
-  setSemesterToppers(filtered);
-};
+        setSemesterToppers(filtered);
+    };
 
 
     useEffect(() => {
@@ -221,7 +221,7 @@ const getSemesterToppers = async () => {
 
                                 {studentData?.totalStudents > 2 && (
                                     <>
-                                       <Link to="/students">  +{studentData?.totalStudents - 2} <span>others</span></Link>
+                                        <Link to="/students">  +{studentData?.totalStudents - 2} <span>others</span></Link>
                                     </>
                                 )}
                             </div>
@@ -253,7 +253,7 @@ const getSemesterToppers = async () => {
 
                                 {studentData?.totalStudents > 2 && (
                                     <>
-                                      <Link to="/students">   +{studentData?.totalStudents - 2} <span>others</span></Link>
+                                        <Link to="/students">   +{studentData?.totalStudents - 2} <span>others</span></Link>
                                     </>
                                 )}
                             </div>
@@ -576,122 +576,121 @@ const getSemesterToppers = async () => {
                     </div>
                 </div>
                 {/* ================= TOPPERS SECTION ================= */}
-<div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-4 mt-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-4 mt-4">
 
-    {/* TERM TOPPERS */}
-    <div className={dashboradcss.dashcard} style={{ height: "320px" }}>
-        <div className="flex justify-between items-center mx-2 mb-3">
-            <h4 className="text-lg font-normal">Term Wise Toppers</h4>
+                    <div className={dashboradcss.dashcard} style={{ height: "320px",overflow:'auto' }}>
+                        <div className="flex justify-between items-center mx-2 mb-3">
+                            <h4 className="text-lg font-normal">Term Wise Toppers</h4>
 
-            <FormControl size="small">
-                <Select
-                    value={term}
-                    onChange={(e) => setTerm(e.target.value)}
-                    IconComponent={KeyboardArrowDownIcon}
-                    sx={{ height: "32px" }}
-                >
-                    <MenuItem value="Term 1">Term 1</MenuItem>
-                    <MenuItem value="Term 2">Term 2</MenuItem>
-                    <MenuItem value="Term 3">Term 3</MenuItem>
-                    <MenuItem value="Term 4">Term 4</MenuItem>
-                </Select>
-            </FormControl>
-        </div>
-{termToppers.length > 0 ? (
-  termToppers.map((s, i) => (
-    <div
-      key={s._id}
-      className="flex justify-between items-center px-3 py-2 border-b"
-    >
-      <div className="flex items-center gap-3">
-        <span className="font-bold">{i + 1}</span>
+                            <FormControl size="small">
+                                <Select
+                                    value={term}
+                                    onChange={(e) => setTerm(e.target.value)}
+                                    IconComponent={KeyboardArrowDownIcon}
+                                    sx={{ height: "32px" }}
+                                >
+                                    <MenuItem value="Term 1">Term 1</MenuItem>
+                                    <MenuItem value="Term 2">Term 2</MenuItem>
+                                    <MenuItem value="Term 3">Term 3</MenuItem>
+                                    <MenuItem value="Term 4">Term 4</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                        {termToppers.length > 0 ? (
+                            termToppers.map((s, i) => (
+                                <div
+                                    key={s._id}
+                                    className="flex justify-between items-center px-3 py-2 border-b"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-bold">{i + 1}</span>
 
-        <img
-          src={s.userDetails?.profileURL}
-          className="w-10 h-10 rounded-full"
-          alt="profile"
-        />
+                                        <img
+                                            src={s.userDetails?.profileURL}
+                                            className="w-10 h-10 rounded-full"
+                                            alt="profile"
+                                        />
 
-        <div>
-          <p className="text-sm">
-            {s.userDetails?.name}
-          </p>
-          <p className="text-xs text-gray-500">
-            {s.courseDetails?.courseName}
-          </p>
-        </div>
-      </div>
+                                        <div>
+                                            <p className="text-sm">
+                                                {s.userDetails?.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                {s.courseDetails?.courseName}
+                                            </p>
+                                        </div>
+                                    </div>
 
-      <div className="font-semibold">
-        {s.average}%
-      </div>
-    </div>
-  ))
-) : (
-  <p className="text-center text-gray-400 mt-10">
-    No Data Found
-  </p>
-)}
+                                    <div className="font-semibold">
+                                        {s.average}%
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-400 mt-10">
+                                No Data Found
+                            </p>
+                        )}
 
-    </div>
+                    </div>
 
-    
-    <div className={dashboradcss.dashcard} style={{ height: "320px" }}>
-        <div className="flex justify-between items-center mx-2 mb-3">
-            <h4 className="text-lg font-normal"> Semester Wise Toppers</h4>
 
-            <FormControl size="small">
-                <Select
-                    value={semester}
-                    onChange={(e) => setSemester(e.target.value)}
-                    IconComponent={KeyboardArrowDownIcon}
-                    sx={{ height: "32px" }}
-                >
-                    <MenuItem value="Semester 1">Semester 1</MenuItem>
-                    <MenuItem value="Semester 2">Semester 2</MenuItem>
-                </Select>
-            </FormControl>
-        </div>
+                    <div className={dashboradcss.dashcard} style={{ height: "320px",overflow:'auto' }}>
+                        <div className="flex justify-between items-center mx-2 mb-3">
+                            <h4 className="text-lg font-normal"> Semester Wise Toppers</h4>
 
-       {semesterToppers.length > 0 ? (
-  semesterToppers.map((s, i) => (
-    <div
-      key={s._id}
-      className="flex justify-between items-center px-3 py-2 border-b"
-    >
-      <div className="flex items-center gap-3">
-        <span className="font-bold">{i + 1}</span>
+                            <FormControl size="small">
+                                <Select
+                                    value={semester}
+                                    onChange={(e) => setSemester(e.target.value)}
+                                    IconComponent={KeyboardArrowDownIcon}
+                                    sx={{ height: "32px" }}
+                                >
+                                    <MenuItem value="Semester 1">Semester 1</MenuItem>
+                                    <MenuItem value="Semester 2">Semester 2</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
 
-        <img
-          src={s.userDetails?.profileURL}
-          className="w-10 h-10 rounded-full"
-          alt="profile"
-        />
+                        {semesterToppers.length > 0 ? (
+                            semesterToppers.map((s, i) => (
+                                <div
+                                    key={s._id}
+                                    className="flex justify-between items-center px-3 py-2 border-b"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <span className="font-bold">{i + 1}</span>
 
-        <div>
-          <p className="text-sm">
-            {s.userDetails?.name}
-          </p>
-          <p className="text-xs text-gray-500">
-            {s.courseDetails?.courseName}
-          </p>
-        </div>
-      </div>
+                                        <img
+                                            src={s.userDetails?.profileURL}
+                                            className="w-10 h-10 rounded-full"
+                                            alt="profile"
+                                        />
 
-      <div className="font-semibold">
-        {s.average}%
-      </div>
-    </div>
-  ))
-) : (
-  <p className="text-center text-gray-400 mt-10">
-    No Data Found
-  </p>
-)}
+                                        <div>
+                                            <p className="text-sm">
+                                                {s.userDetails?.name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                {s.courseDetails?.courseName}
+                                            </p>
+                                        </div>
+                                    </div>
 
-    </div>
+                                    <div className="font-semibold">
+                                        {s.average}%
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-400 mt-10">
+                                No Data Found
+                            </p>
+                        )}
 
-</div>
+                    </div>
+
+                </div>
 
             </div>
         </>

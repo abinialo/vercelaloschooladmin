@@ -8,6 +8,7 @@ import {
   getUser,
 } from "../../api/Serviceapi";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { IoIosCloseCircle } from "react-icons/io";
 
 const theme = createTheme({
   components: {
@@ -68,6 +69,12 @@ const Sem = () => {
     setpage(totalPages);
   }, [totaluser, limit]);
 
+  const handlefilterSearch = () => {
+    setCourseId('');
+    setBatchId('');
+    setSearch('');
+
+  };
 
   useEffect(() => {
     fetchCourses();
@@ -253,6 +260,12 @@ const Sem = () => {
               setoffset(1)
             }}
           />
+
+          {(courseId?.toString().trim() || batchId?.toString().trim()) && (
+            <button className={styles.clear} onClick={handlefilterSearch}>
+              <IoIosCloseCircle />
+            </button>
+          )}
         </div>
       </div>
 

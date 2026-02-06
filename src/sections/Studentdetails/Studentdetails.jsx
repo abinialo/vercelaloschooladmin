@@ -47,17 +47,17 @@ const Studentdetails = () => {
   ]);
   const [editMode, setEditMode] = useState(false);
   const [termList, setTermList] = useState([]);
-const [saving, setSaving] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-const [deletingId, setDeletingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const [performanceId, setPerformanceId] = useState(null);
   const semesterTermMap = {
-  "Semester 1": ["Term 1", "Term 2", "Semester 1"],
-  "Semester 2": ["Term 3", "Term 4", "Semester 2"],
-};
-const [semester, setSemester] = useState("");
-const [academicOptions, setAcademicOptions] = useState([]);
+    "Semester 1": ["Term 1", "Term 2", "Semester 1"],
+    "Semester 2": ["Term 3", "Term 4", "Semester 2"],
+  };
+  const [semester, setSemester] = useState("");
+  const [academicOptions, setAcademicOptions] = useState([]);
 
 
   const { RangePicker } = DatePicker;
@@ -66,37 +66,37 @@ const [academicOptions, setAcademicOptions] = useState([]);
   const [marks, setMarks] = useState([{ subject: "", mark: "" }]);
   const [errors, setErrors] = useState({});
 
-const handleSemesterChange = (value) => {
-  setSemester(value);
-  setAcademic("");
-  setErrors({});
-  setEditMode(false);
-  setPerformanceId(null);
-  setMarks([{ subject: "", mark: "" }]);
+  const handleSemesterChange = (value) => {
+    setSemester(value);
+    setAcademic("");
+    setErrors({});
+    setEditMode(false);
+    setPerformanceId(null);
+    setMarks([{ subject: "", mark: "" }]);
 
-  let options = semesterTermMap[value] || [];
+    let options = semesterTermMap[value] || [];
 
-  // ❌ Remove already added terms (except when editing)
-  const existingAcademics = termList.map(t => t.Academic);
+    // ❌ Remove already added terms (except when editing)
+    const existingAcademics = termList.map(t => t.Academic);
 
-  options = options.filter(opt => !existingAcademics.includes(opt));
+    options = options.filter(opt => !existingAcademics.includes(opt));
 
-  setAcademicOptions(options);
-};
-const handleAcademicChange = (value) => {
-  setAcademic(value);
-  setErrors(prev => ({ ...prev, academic: "" }));
+    setAcademicOptions(options);
+  };
+  const handleAcademicChange = (value) => {
+    setAcademic(value);
+    setErrors(prev => ({ ...prev, academic: "" }));
 
-  const existing = termList.find(t => t.Academic === value);
+    const existing = termList.find(t => t.Academic === value);
 
-  if (existing) {
-    // 🔁 EDIT MODE
-    setEditMode(true);
-    setPerformanceId(existing._id);
-    setMarks(existing.Marks || [{ subject: "", mark: "" }]);
-    toast.info("This term already exists. Editing instead.");
-  }
-};
+    if (existing) {
+      // 🔁 EDIT MODE
+      setEditMode(true);
+      setPerformanceId(existing._id);
+      setMarks(existing.Marks || [{ subject: "", mark: "" }]);
+      toast.info("This term already exists. Editing instead.");
+    }
+  };
 
   console.log("Performance Details 👉", user?.performanceDetails);
 
@@ -298,109 +298,109 @@ const handleAcademicChange = (value) => {
 
 
   const validateForm = () => {
-  let newErrors = {};
+    let newErrors = {};
 
- 
-  if (!academic.trim()) {
-    newErrors.academic = "Academic  is required";
-  }
 
-  // Marks validation
-  if (!marks.length) {
-    newErrors.marks = "At least one subject is required";
-  }
-
-  marks.forEach((m, index) => {
-    if (!m.subject.trim()) {
-      newErrors[`subject_${index}`] = "Subject name is required";
+    if (!academic.trim()) {
+      newErrors.academic = "Academic  is required";
     }
 
-    if (m.mark === "" || isNaN(m.mark)) {
-      newErrors[`mark_${index}`] = "Valid mark is required";
-    } else if (m.mark < 0 || m.mark > 100) {
-      newErrors[`mark_${index}`] = "Mark must be between 0 and 100";
+    // Marks validation
+    if (!marks.length) {
+      newErrors.marks = "At least one subject is required";
     }
-  });
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
-const checkExistingAcademic = (value) => {
-  const existing = termList.find(
-    (t) => t.Academic === value
-  );
+    marks.forEach((m, index) => {
+      if (!m.subject.trim()) {
+        newErrors[`subject_${index}`] = "Subject name is required";
+      }
 
-  if (existing) {
-    // 🔁 Switch to EDIT mode
-    setEditMode(true);
-    setPerformanceId(existing._id);
-    setMarks(existing.Marks || [{ subject: "", mark: "" }]);
+      if (m.mark === "" || isNaN(m.mark)) {
+        newErrors[`mark_${index}`] = "Valid mark is required";
+      } else if (m.mark < 0 || m.mark > 100) {
+        newErrors[`mark_${index}`] = "Mark must be between 0 and 100";
+      }
+    });
 
-    toast.info("This term already exists. Editing instead.");
-  } else {
-    // ➕ New entry
-    setEditMode(false);
-    setPerformanceId(null);
-    setMarks([{ subject: "", mark: "" }]);
-  }
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  const checkExistingAcademic = (value) => {
+    const existing = termList.find(
+      (t) => t.Academic === value
+    );
 
+    if (existing) {
+      // 🔁 Switch to EDIT mode
+      setEditMode(true);
+      setPerformanceId(existing._id);
+      setMarks(existing.Marks || [{ subject: "", mark: "" }]);
 
- const saveTermSem = async () => {
-    if (saving) return; // ✅ HARD BLOCK
-  if (!academic.trim()) {
-    toast.error("Academic is required");
-    return;
-  }
-
-  setSaving(true);
-
-  const total = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
-  const average = marks.length ? (total / marks.length).toFixed(2) : 0;
-
-  const payload = {
-    Academic: academic,
-    Marks: marks,
-    total,
-    average,
+      toast.info("This term already exists. Editing instead.");
+    } else {
+      // ➕ New entry
+      setEditMode(false);
+      setPerformanceId(null);
+      setMarks([{ subject: "", mark: "" }]);
+    }
   };
 
-  try {
-    if (editMode && performanceId) {
-      await updateTermSem(performanceId, payload);
-      toast.success("Term / Sem Updated");
-    } else {
-      await createTermSem({
-        userId: id,
-        ...payload,
-      });
-      toast.success("Term / Sem Added");
+
+  const saveTermSem = async () => {
+    if (saving) return; // ✅ HARD BLOCK
+    if (!academic.trim()) {
+      toast.error("Academic is required");
+      return;
     }
 
-    await getTermDetails();
+    setSaving(true);
 
-    setTermModal(false);
-    setAcademic("");
-    setMarks([{ subject: "", mark: "" }]);
-    setEditMode(false);
-    setPerformanceId(null);
-  } catch (err) {
-    toast.error("Failed to save");
-    console.error(err);
-  } finally {
-    setSaving(false);
-  }
-};
+    const total = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
+    const average = marks.length ? (total / marks.length).toFixed(2) : 0;
 
-const openEditTermSem = (record) => {
-  if (saving) return;
+    const payload = {
+      Academic: academic,
+      Marks: marks,
+      total,
+      average,
+    };
 
-  setEditMode(true);
-  setPerformanceId(record._id);
-  setAcademic(record.Academic);
-  setMarks(record.Marks || [{ subject: "", mark: "" }]);
-  setTermModal(true);
-};
+    try {
+      if (editMode && performanceId) {
+        await updateTermSem(performanceId, payload);
+        toast.success("Term / Sem Updated");
+      } else {
+        await createTermSem({
+          userId: id,
+          ...payload,
+        });
+        toast.success("Term / Sem Added");
+      }
+
+      await getTermDetails();
+
+      setTermModal(false);
+      setAcademic("");
+      setMarks([{ subject: "", mark: "" }]);
+      setEditMode(false);
+      setPerformanceId(null);
+    } catch (err) {
+      toast.error("Failed to save");
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const openEditTermSem = (record) => {
+    if (saving) return;
+
+    setEditMode(true);
+    setPerformanceId(record._id);
+    setAcademic(record.Academic);
+    setMarks(record.Marks || [{ subject: "", mark: "" }]);
+    setTermModal(true);
+  };
 
 
   const getTermDetails = async () => {
@@ -420,70 +420,75 @@ const openEditTermSem = (record) => {
     getTermDetails();
   }, [id]);
 
-const handleDeleteTermSem = (termId) => {
-  toast(
-    ({ closeToast }) => (
-      <div>
-        <p className="font-medium mb-2">
-          Are you sure you want to delete this Term / Sem record?
-        </p>
+  const handleDeleteTermSem = (termId) => {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="font-medium mb-2">
+            Are you sure you want to delete this Term / Sem record?
+          </p>
 
-        <div className="flex justify-end gap-3">
-          <button
-            className="px-3 py-1 border rounded"
-            onClick={closeToast}
-          >
-            Cancel
-          </button>
+          <div className="flex justify-end gap-3">
+            <button
+              className="px-3 py-1 border rounded"
+              onClick={closeToast}
+            >
+              Cancel
+            </button>
 
-          <button
-            className="px-3 py-1 bg-red-600 text-white rounded flex items-center gap-2"
-            onClick={async (e) => {
-              const btn = e.currentTarget;
+            <button
+              className="px-3 py-1 bg-red-600 text-white rounded flex items-center gap-2"
+              onClick={async (e) => {
+                const btn = e.currentTarget;
 
-              // 🔒 LOCK BUTTON
-              btn.disabled = true;
-              btn.innerHTML = `
+                // 🔒 LOCK BUTTON
+                btn.disabled = true;
+                btn.innerHTML = `
                 <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                 Deleting...
               `;
 
-              try {
-                await deleteTermSemApi(termId);
-                toast.success("Term / Sem Deleted Successfully");
-                await getTermDetails();
-                closeToast();
-              } catch (err) {
-                toast.error("Failed to delete record");
-                btn.disabled = false;
-                btn.innerHTML = "Delete";
-              }
-            }}
-          >
-            Delete
-          </button>
+                try {
+                  await deleteTermSemApi(termId);
+                  toast.success("Term / Sem Deleted Successfully");
+                  await getTermDetails();
+                  closeToast();
+                } catch (err) {
+                  toast.error("Failed to delete record");
+                  btn.disabled = false;
+                  btn.innerHTML = "Delete";
+                }
+              }}
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-    ),
-    {
-      position: "top-center",
-      autoClose: false,
-      closeOnClick: false,
-      draggable: false,
-      closeButton: false,
-    }
-  );
-};
-const closeTermModal = () => {
-  setTermModal(false);
-  setSemester("");
-  setAcademic("");
-  setAcademicOptions([]);
-  setMarks([{ subject: "", mark: "" }]);
-  setErrors({});
-  setEditMode(false);
-  setPerformanceId(null);
-};
+      ),
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        closeButton: false,
+      }
+    );
+  };
+  const closeTermModal = () => {
+    setTermModal(false);
+    
+    // setAcademicOptions([]);
+    setMarks([{ subject: "", mark: "" }]);
+    setErrors({});
+    setEditMode(false);
+    setPerformanceId(null);
+
+    if (!editMode) {
+    setSemester("");
+    setAcademic("");
+    setAcademicOptions([]);
+  }
+  };
 
 
 
@@ -820,7 +825,7 @@ const closeTermModal = () => {
                 </div>
               </div>
             </div>
-      
+
             <div className="bg-[#F8F8F8] mt-3 p-3 rounded-[10px]">
               <h4 className="text-[16px] font-medium mb-3">
                 Term / Semester Details
@@ -845,25 +850,24 @@ const closeTermModal = () => {
                         onClick={() => openEditTermSem(p)}
                       />
 
-                   <span
-  className={`text-red-600 text-sm flex items-center gap-2 ${
-    deletingId === p._id
-      ? "opacity-50 cursor-not-allowed"
-      : "cursor-pointer"
-  }`}
-  onClick={() => {
-    if (!deletingId) handleDeleteTermSem(p._id);
-  }}
->
-  {deletingId === p._id ? (
-    <>
-      <span className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
-      Deleting...
-    </>
-  ) : (
-    "Delete"
-  )}
-</span>
+                      <span
+                        className={`text-red-600 text-sm flex items-center gap-2 ${deletingId === p._id
+                          ? "opacity-50 cursor-not-allowed"
+                          : "cursor-pointer"
+                          }`}
+                        onClick={() => {
+                          if (!deletingId) handleDeleteTermSem(p._id);
+                        }}
+                      >
+                        {deletingId === p._id ? (
+                          <>
+                            <span className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
+                            Deleting...
+                          </>
+                        ) : (
+                          "Delete"
+                        )}
+                      </span>
 
 
                     </div>
@@ -1108,7 +1112,7 @@ const closeTermModal = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgb(21 21 21 / 81%)", 
+            backgroundColor: "rgb(21 21 21 / 81%)",
             zIndex: 1000,
           },
           content: {
@@ -1193,169 +1197,170 @@ const closeTermModal = () => {
           {absentloading
             ? "Loading..."
             : isDisabledToday
-            ? "Submitted Today"
-            : "Submit"}
+              ? "Submitted Today"
+              : "Submit"}
         </button>
       </Modal>
       <Modal
-  isOpen={termModal}
-  onRequestClose={() => setTermModal(false)}
-  style={{
-    overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
-    content: {
-      width: "600px",
-      margin: "auto",
-      borderRadius: "10px",
-      padding: "24px",
-    },
-  }}
->
-  <h3 className="text-lg font-semibold mb-6">
-    {editMode ? "Edit Term / Sem Detail" : "Add Term / Sem Detail"}
-  </h3>
+        isOpen={termModal}
+        onRequestClose={() => setTermModal(false)}
+        style={{
+          overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
+          content: {
+            width: "600px",
+            margin: "auto",
+            borderRadius: "10px",
+            padding: "24px",
+          },
+        }}
+      >
+        <h3 className="text-lg font-semibold mb-6">
+          {editMode ? "Edit Term / Sem Detail" : "Add Term / Sem Detail"}
+        </h3>
 
-  {/* ================= Semester Dropdown ================= */}
-  <div className="mb-5">
-    <label className="text-sm font-medium block mb-1">Semester</label>
+        {/* ================= Semester Dropdown ================= */}
+        <div className="mb-5">
+          <label className="text-sm font-medium block mb-1">Semester</label>
 
-    <select
-      value={semester}
-      onChange={(e) => handleSemesterChange(e.target.value)}
-      className="w-full border rounded p-2 bg-white"
-    >
-      <option value="">Select Semester</option>
-      <option value="Semester 1">Semester 1</option>
-      <option value="Semester 2">Semester 2</option>
-    </select>
-  </div>
-
-  {/* ================= Term / Sem Dropdown ================= */}
-  <div className="mb-5">
-    <label className="text-sm font-medium block mb-1">
-      Term / Sem
-    </label>
-
-    <select
-      value={academic}
-      onChange={(e) => {
-        const value = e.target.value;
-        setAcademic(value);
-        setErrors((prev) => ({ ...prev, academic: "" }));
-        checkExistingAcademic(value);
-      }}
-      disabled={!semester}
-      className={`w-full border rounded p-2 bg-white ${
-        errors.academic ? "border-red-500" : "border-gray-300"
-      }`}
-    >
-      <option value="">Select Term / Sem</option>
-
-      {academicOptions.map((opt) => (
-        <option key={opt} value={opt}>
-          {opt}
-        </option>
-      ))}
-    </select>
-
-    {errors.academic && (
-      <p className="text-red-500 text-sm mt-1">
-        {errors.academic}
-      </p>
-    )}
-  </div>
-
-  {/* ================= Marks Section (UNCHANGED) ================= */}
-  <div className="mb-5">
-    <label className="text-sm font-medium block mb-2">Marks</label>
-
-    {marks.map((m, i) => (
-      <div key={i} className="mb-4">
-        <div className="flex gap-4">
-          <div className="w-1/2">
-            <input
-              type="text"
-              placeholder="Subject"
-              value={m.subject}
-              className={`border rounded p-2 w-full ${
-                errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
-              }`}
-              onChange={(e) => {
-                const copy = [...marks];
-                copy[i].subject = e.target.value;
-                setMarks(copy);
-                setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
-              }}
-            />
-            {errors[`subject_${i}`] && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors[`subject_${i}`]}
-              </p>
-            )}
-          </div>
-
-          <div className="w-1/2">
-            <input
-              type="number"
-              placeholder="Mark"
-              value={m.mark}
-              className={`border rounded p-2 w-full ${
-                errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
-              }`}
-              onChange={(e) => {
-                const copy = [...marks];
-                copy[i].mark = e.target.value;
-                setMarks(copy);
-                setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
-              }}
-            />
-            {errors[`mark_${i}`] && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors[`mark_${i}`]}
-              </p>
-            )}
-          </div>
+          <select
+            value={semester}
+            onChange={(e) => handleSemesterChange(e.target.value)}
+            className="w-full border rounded p-2 bg-white"
+            disabled={editMode}
+            style={{ cursor: editMode ? 'not-allowed' : 'pointer' }}
+          >
+            <option value="">Select Semester</option>
+            <option value="Semester 1">Semester 1</option>
+            <option value="Semester 2">Semester 2</option>
+          </select>
         </div>
-      </div>
-    ))}
 
-    <button
-      className="text-blue-600 text-sm mt-2"
-      onClick={() => setMarks([...marks, { subject: "", mark: "" }])}
-    >
-      + Add Subject
-    </button>
-  </div>
+        {/* ================= Term / Sem Dropdown ================= */}
+        <div className="mb-5">
+          <label className="text-sm font-medium block mb-1">
+            Term / Sem
+          </label>
 
-  {/* ================= Buttons ================= */}
-  <div className="flex justify-end gap-4 mt-6">
-    <button
-      className="px-4 py-2 border rounded"
-      onClick={closeTermModal}
-    >
-      Cancel
-    </button>
+          <select
+            style={{ cursor: editMode ? 'not-allowed' : 'pointer' }}
 
-    <button
-      type="button"
-      disabled={saving}
-      className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${
-        saving ? "opacity-60 cursor-not-allowed" : ""
-      }`}
-      onClick={() => {
-        if (!saving && validateForm()) {
-          saveTermSem();
-        }
-      }}
-    >
-      {saving ? (
-        <span className="flex items-center gap-2">
-          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-          Saving...
-        </span>
-      ) : editMode ? "Update" : "Save"}
-    </button>
-  </div>
-</Modal>
+            value={academic}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAcademic(value);
+              setErrors((prev) => ({ ...prev, academic: "" }));
+              checkExistingAcademic(value);
+            }}
+            disabled={editMode}
+            className={`w-full border rounded p-2 bg-white ${errors.academic ? "border-red-500" : "border-gray-300"
+              }`}
+          >
+            <option value="">Select Term / Sem</option>
+
+            {academicOptions.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+
+          {errors.academic && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.academic}
+            </p>
+          )}
+        </div>
+
+        {/* ================= Marks Section (UNCHANGED) ================= */}
+        <div className="mb-5">
+          <label className="text-sm font-medium block mb-2">Marks</label>
+
+          {marks.map((m, i) => (
+            <div key={i} className="mb-4">
+              <div className="flex gap-4">
+                <div className="w-1/2">
+                  <input
+                    type="text"
+                    placeholder="Subject"
+                    value={m.subject}
+
+                    className={`border rounded p-2 w-full ${errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
+                      }`}
+                    onChange={(e) => {
+                      const copy = [...marks];
+                      copy[i].subject = e.target.value;
+                      setMarks(copy);
+                      setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
+                    }}
+                  />
+                  {errors[`subject_${i}`] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors[`subject_${i}`]}
+                    </p>
+                  )}
+                </div>
+
+                <div className="w-1/2">
+                  <input
+                    type="number"
+                    placeholder="Mark"
+                    value={m.mark}
+                    className={`border rounded p-2 w-full ${errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
+                      }`}
+                    onChange={(e) => {
+                      const copy = [...marks];
+                      copy[i].mark = e.target.value;
+                      setMarks(copy);
+                      setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
+                    }}
+                  />
+                  {errors[`mark_${i}`] && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors[`mark_${i}`]}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+
+          <button
+            className="text-blue-600 text-sm mt-2"
+            onClick={() => setMarks([...marks, { subject: "", mark: "" }])}
+          >
+            + Add Subject
+          </button>
+        </div>
+
+        {/* ================= Buttons ================= */}
+        <div className="flex justify-end gap-4 mt-6">
+          <button
+            className="px-4 py-2 border rounded"
+            onClick={closeTermModal}
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            disabled={saving}
+            className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${saving ? "opacity-60 cursor-not-allowed" : ""
+              }`}
+            onClick={() => {
+              if (!saving && validateForm()) {
+                saveTermSem();
+              }
+            }}
+          >
+            {saving ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                Saving...
+              </span>
+            ) : editMode ? "Update" : "Save"}
+          </button>
+        </div>
+      </Modal>
 
 
     </>
