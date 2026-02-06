@@ -385,6 +385,10 @@ export const getUser = (
 export const getPerformance = (limit,offset,courseId,batchId,semester,value) => {
   return apiService.get(`/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&Academic=${semester}&value=${value}`);
 };
+
+export const Performanceuser = (id) => {
+  return apiService.get(`/performance?userId=${id}`);
+};
 export const updateTermSem = (id, payload) => {
   return apiService.put(`/performance/${id}`, payload);
 };

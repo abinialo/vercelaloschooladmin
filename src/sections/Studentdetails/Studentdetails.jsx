@@ -14,6 +14,7 @@ import {
   createTermSem,
   updateTermSem,
   getPerformance,
+  Performanceuser,
 } from "../../api/Serviceapi";
 import Modal from "react-modal";
 import { deleteTermSem as deleteTermSemApi } from "../../api/Serviceapi";
@@ -404,7 +405,7 @@ const openEditTermSem = (record) => {
 
   const getTermDetails = async () => {
     try {
-      const res = await getPerformance();
+      const res = await Performanceuser(id);
       const allTerms = res?.data?.data?.data || [];
 
       const filtered = allTerms.filter((item) => item.userId === id);
