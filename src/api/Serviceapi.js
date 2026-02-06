@@ -4,19 +4,7 @@ import apiService from "./apiService";
 import Form from "antd/es/form/Form";
 import { useState } from "react";
 
-export const getUser = (
-  limit,
-  offset,
-  value,
-  courseId,
-  status,
-  batchId,
-  activestatus
-) => {
-  return apiService.get(
-    `/user?limit=${limit}&offset=${offset}&value=${value}&courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}`
-  );
-};
+
 export const getUserFilter = (value) => {
   return apiService.get(`/user?value=${value}`);
 };
@@ -380,10 +368,22 @@ export const createTermSem = (payload) => {
 //   });
 // };
 
+export const getUser = (
+  limit,
+  offset,
+  value,
+  courseId,
+  status,
+  batchId,
+  activestatus
+) => {
+  return apiService.get(
+    `/user?limit=${limit}&offset=${offset}&value=${value}&courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}`
+  );
+};
 
-
-export const getPerformance = () => {
-  return apiService.get("/performance");
+export const getPerformance = (limit,offset,courseId,batchId,semester,value) => {
+  return apiService.get(`/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&Academic=${semester}&value=${value}`);
 };
 export const updateTermSem = (id, payload) => {
   return apiService.put(`/performance/${id}`, payload);

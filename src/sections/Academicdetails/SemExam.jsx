@@ -1,13 +1,35 @@
 import React, { useEffect, useState } from "react";
 import styles from "./TermExam.module.css";
-import Pagination from "@mui/material/Pagination";
+import Pagination from '@mui/material/Pagination';
 import {
   getPerformance,
   getCourse,
   getCourseBatchByCourseId,
   getUser,
 } from "../../api/Serviceapi";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
+const theme = createTheme({
+  components: {
+    MuiPaginationItem: {
+      styleOverrides: {
+        root: {
+          borderRadius: '8px',
+          border: '1px solid #e5e7eb',
+          color: '#1f2937', // text-gray-800
+          '&.Mui-selected': {
+            background: 'linear-gradient(to bottom, #144196, #061530)',
+            color: '#fff',
+            border: 'none',
+          },
+          '&:hover': {
+            backgroundColor: '#f3f4f6', // hover:bg-gray-100
+          },
+        },
+      },
+    },
+  },
+});
 const Sem = () => {
   const [performance, setPerformance] = useState([]);
   const [users, setUsers] = useState([]);
@@ -22,14 +44,40 @@ const Sem = () => {
   const [viewModal, setViewModal] = useState(false);
   const [viewRecord, setViewRecord] = useState(null);
 
-  const [page, setPage] = useState(1);
-  const rowsPerPage = 5;
+  // const [page, setPage] = useState(1);
+  // const rowsPerPage = 5;
+
+  const [limit, setlimit] = useState(8);
+  const [totaluser, settotal] = useState(0);
+  const [totalpages, setpage] = useState(0);
+  const [offset, setoffset] = useState(1);
+
+  const startIndex = (offset - 1) * limit + 1;
+  const endIndex = Math.min(offset * limit, totaluser);
+
+  const handlePageChange = (event, value) => {
+    if (value !== offset) {
+      setoffset(value);
+    } else {
+      fetchPerformance(); // reload if same page clicked
+    }
+  };
+
+  useEffect(() => {
+    const totalPages = Math.ceil(totaluser / limit);
+    setpage(totalPages);
+  }, [totaluser, limit]);
+
 
   useEffect(() => {
     fetchCourses();
-    fetchPerformance();
+    // fetchPerformance();
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    fetchPerformance();
+  }, [search, courseId, batchId, semester, offset]);
 
   const fetchUsers = async (value = "", cId = "", bId = "") => {
     try {
@@ -41,46 +89,47 @@ const Sem = () => {
   };
 
   const fetchPerformance = async () => {
-  try {
-    const res = await getPerformance();
-    const apiData = res?.data?.data?.data || [];
+    try {
+      const res = await getPerformance(limit, offset - 1, courseId, batchId, semester, search);
+      const apiData = res?.data?.data?.data || [];
+      settotal(res?.data?.data?.totalCount);
 
-    const formatted = apiData
-      .filter(
-        (item) =>
-          item.Academic &&
-          item.Academic.toLowerCase().startsWith("sem")
-      )
-      .map((item) => ({
-        id: item._id,
-        userId: item.userDetails?._id,
-        name: item.userDetails?.name || "-",
-        studentId: item.userDetails?.studentId || "-",
+      const formatted = apiData
+        .filter(
+          (item) =>
+            item.Academic &&
+            item.Academic.toLowerCase().startsWith("sem")
+        )
+        .map((item) => ({
+          id: item._id,
+          userId: item.userDetails?._id,
+          name: item.userDetails?.name || "-",
+          studentId: item.userDetails?.studentId || "-",
 
-        semester: item.Academic,
+          semester: item.Academic,
 
-        courseId: item.courseDetails?._id || "",
-        courseName: item.courseDetails?.courseName || "-",
+          courseId: item.courseDetails?._id || "",
+          courseName: item.courseDetails?.courseName || "-",
 
-        batchId:
-          item.batchDetails?.length > 0
-            ? item.batchDetails[0]._id
-            : "",
-        batchName:
-          item.batchDetails?.length > 0
-            ? item.batchDetails[0].batchName
-            : "-",
+          batchId:
+            item.batchDetails?.length > 0
+              ? item.batchDetails[0]._id
+              : "",
+          batchName:
+            item.batchDetails?.length > 0
+              ? item.batchDetails[0].batchName
+              : "-",
 
-        total: item.total || 0,
-        percentage: item.average ? `${item.average}%` : "0%",
-        subjects: item.Marks || [],
-      }));
+          total: item.total || 0,
+          percentage: item.average ? `${item.average}%` : "0%",
+          subjects: item.Marks || [],
+        }));
 
-    setPerformance(formatted);
-  } catch (err) {
-    console.error("Semester fetch failed", err);
-  }
-};
+      setPerformance(formatted);
+    } catch (err) {
+      console.error("Semester fetch failed", err);
+    }
+  };
 
 
   const fetchCourses = async () => {
@@ -97,7 +146,7 @@ const Sem = () => {
       setBatches([]);
       setBatchId("");
       fetchUsers(search, "", "");
-      setPage(1);
+      setoffset(1);
       return;
     }
 
@@ -112,33 +161,33 @@ const Sem = () => {
 
     fetchBatches();
     fetchUsers(search, courseId, "");
-    setPage(1);
+    setoffset(1);
   }, [courseId]);
 
   useEffect(() => {
     fetchUsers(search, courseId, batchId);
-    setPage(1);
+    setoffset(1);
   }, [batchId]);
 
 
- const filteredData = performance.filter((row) => {
-  const userMatch = users.some((u) => u._id === row.userId);
-  const courseMatch = !courseId || row.courseId === courseId;
-  const batchMatch = !batchId || row.batchId === batchId;
-  const semMatch = !semester || row.semester === semester;
+  const filteredData = performance.filter((row) => {
+    const userMatch = users.some((u) => u._id === row.userId);
+    const courseMatch = !courseId || row.courseId === courseId;
+    const batchMatch = !batchId || row.batchId === batchId;
+    const semMatch = !semester || row.semester === semester;
 
-  return userMatch && courseMatch && batchMatch && semMatch;
-});
+    return userMatch && courseMatch && batchMatch && semMatch;
+  });
 
 
 
-  const startIndex = (page - 1) * rowsPerPage;
-  const paginatedData = filteredData.slice(
-    startIndex,
-    startIndex + rowsPerPage
-  );
+  // const startIndex = (page - 1) * rowsPerPage;
+  // const paginatedData = filteredData.slice(
+  //   startIndex,
+  //   startIndex + rowsPerPage
+  // );
 
-  const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+  // const pageCount = Math.ceil(filteredData.length / rowsPerPage);
 
   const semesterOptions = [
     ...new Set(performance.map((p) => p.semester).filter(Boolean)),
@@ -178,20 +227,20 @@ const Sem = () => {
             ))}
           </select>
 
-        <select
-  value={semester}
-  onChange={(e) => {
-    setSemester(e.target.value);
-    setPage(1);
-  }}
->
-  <option value="">All Semesters</option>
- {semesterOptions.map((s) => (
-    <option key={s} value={s}>
-      {s}
-    </option>
-  ))}
-</select>
+          <select
+            value={semester}
+            onChange={(e) => {
+              setSemester(e.target.value);
+              setoffset(1);
+            }}
+          >
+            <option value="">All Semesters</option>
+            {semesterOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
 
 
           <input
@@ -201,7 +250,7 @@ const Sem = () => {
             onChange={(e) => {
               setSearch(e.target.value);
               fetchUsers(e.target.value, courseId, batchId);
-              setPage(1);
+              setoffset(1)
             }}
           />
         </div>
@@ -222,14 +271,9 @@ const Sem = () => {
         </thead>
 
         <tbody>
-          {paginatedData.length === 0 ? (
-            <tr>
-              <td colSpan="8" className={styles.noData}>
-                No Data Found
-              </td>
-            </tr>
-          ) : (
-            paginatedData.map((row) => (
+          {totalpages > 0 ? (
+
+            performance.map((row) => (
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{row.studentId}</td>
@@ -251,88 +295,115 @@ const Sem = () => {
                 </td>
               </tr>
             ))
-          )}
-        </tbody>
-      </table>
 
-
-     <div className={styles.paginationWrap}>
-  <Pagination
-    count={pageCount || 1}
-    page={page}
-    onChange={(e, value) => setPage(value)}
-  />
-</div>
-
-
-      {viewModal && viewRecord && (
-  <div className={styles.modalOverlay}>
-    <div className={styles.modalCard}>
-      <div className={styles.modalHeader}>
-        <h3>Semester Details</h3>
-        <button
-          className={styles.closeIcon}
-          onClick={() => setViewModal(false)}
-        >
-          ✕
-        </button>
-      </div>
-
- 
-      <div className={styles.infoCards}>
-        <div className={styles.infoCard}>
-          <span className={styles.label}>Name</span>
-          <p className={styles.value}>{viewRecord.name || "-"}</p>
-        </div>
-
-        <div className={styles.infoCard}>
-          <span className={styles.label}>Student ID</span>
-          <p className={styles.value}>{viewRecord.studentId || "-"}</p>
-        </div>
-
-        <div className={styles.infoCard}>
-          <span className={styles.label}>Semester</span>
-          <p className={styles.value}>{viewRecord.semester || "-"}</p>
-        </div>
-      </div>
-
-      {/* MARKS TABLE */}
-      <table className={styles.marksTable}>
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Marks</th>
-            <th>Total</th>
-            <th>Percentage</th>
-          </tr>
-        </thead>
-        <tbody>
-          {viewRecord.subjects && viewRecord.subjects.length > 0 ? (
-            viewRecord.subjects.map((s, i) => (
-              <tr key={i}>
-                <td>{s.subject || "-"}</td>
-                <td>{s.mark ?? 0}</td>
-                <td>100</td>
-                <td>{s.mark ? `${s.mark}%` : "0%"}</td>
-              </tr>
-            ))
           ) : (
             <tr>
-              <td colSpan="4" className={styles.noData}>
-                No Subject Marks Found
+              <td colSpan="8" className={styles.noData}>
+                No Data Found
               </td>
             </tr>
           )}
         </tbody>
       </table>
 
-      <div className={styles.modalFooter}>
-        <strong>Total Marks:</strong> {viewRecord.total || 0} &nbsp; | &nbsp;
-        <strong>Percentage:</strong> {viewRecord.percentage || "0%"}
+      <div className='flex justify-between my-4 ms-auto w-[50%]'>
+
+        {totalpages > 0 &&
+
+
+          <ThemeProvider theme={theme} >
+            <div className="flex justify-center ">
+              <Pagination
+                count={totalpages}
+                page={offset}
+                onChange={handlePageChange}
+                showFirstButton
+                showLastButton
+              />
+            </div>
+          </ThemeProvider>
+        }
+
+
+        {totalpages > 0 &&
+
+          <div className="flex justify-between items-center">
+            <p className="text-gray-600 text-sm">
+              Showing {startIndex} – {endIndex} of {totaluser} students
+            </p>
+          </div>
+
+
+        }
       </div>
-    </div>
-  </div>
-)}
+      {viewModal && viewRecord && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalCard}>
+            <div className={styles.modalHeader}>
+              <h3>Semester Details</h3>
+              <button
+                className={styles.closeIcon}
+                onClick={() => setViewModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+
+            <div className={styles.infoCards}>
+              <div className={styles.infoCard}>
+                <span className={styles.label}>Name</span>
+                <p className={styles.value}>{viewRecord.name || "-"}</p>
+              </div>
+
+              <div className={styles.infoCard}>
+                <span className={styles.label}>Student ID</span>
+                <p className={styles.value}>{viewRecord.studentId || "-"}</p>
+              </div>
+
+              <div className={styles.infoCard}>
+                <span className={styles.label}>Semester</span>
+                <p className={styles.value}>{viewRecord.semester || "-"}</p>
+              </div>
+            </div>
+
+            {/* MARKS TABLE */}
+            <table className={styles.marksTable}>
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Marks</th>
+                  <th>Total</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody>
+                {viewRecord.subjects && viewRecord.subjects.length > 0 ? (
+                  viewRecord.subjects.map((s, i) => (
+                    <tr key={i}>
+                      <td>{s.subject || "-"}</td>
+                      <td>{s.mark ?? 0}</td>
+                      <td>100</td>
+                      <td>{s.mark ? `${s.mark}%` : "0%"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className={styles.noData}>
+                      No Subject Marks Found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            <div className={styles.modalFooter}>
+              <strong>Total Marks:</strong> {viewRecord.total || 0} &nbsp; | &nbsp;
+              <strong>Percentage:</strong> {viewRecord.percentage || "0%"}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
