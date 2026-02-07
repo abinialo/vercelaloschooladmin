@@ -41,7 +41,7 @@ const Sem = () => {
   const [courseId, setCourseId] = useState("");
   const [batchId, setBatchId] = useState("");
   const [semester, setSemester] = useState("");
-
+  const [academic, setAcademic] = useState("");
   const [viewModal, setViewModal] = useState(false);
   const [viewRecord, setViewRecord] = useState(null);
 
@@ -73,6 +73,8 @@ const Sem = () => {
     setCourseId('');
     setBatchId('');
     setSearch('');
+    setSemester('');
+    setAcademic('');
 
   };
 
@@ -84,7 +86,7 @@ const Sem = () => {
 
   useEffect(() => {
     fetchPerformance();
-  }, [search, courseId, batchId, semester, offset]);
+  }, [search, courseId, batchId, semester, offset, academic]);
 
   const fetchUsers = async (value = "", cId = "", bId = "") => {
     try {
@@ -97,7 +99,7 @@ const Sem = () => {
 
   const fetchPerformance = async () => {
     try {
-      const res = await getPerformance(limit, offset - 1, courseId, batchId, semester, search);
+      const res = await getPerformance(limit, offset - 1, courseId, batchId, semester, search, academic);
       const apiData = res?.data?.data?.data || [];
       settotal(res?.data?.data?.totalCount);
 
@@ -113,7 +115,8 @@ const Sem = () => {
           name: item.userDetails?.name || "-",
           studentId: item.userDetails?.studentId || "-",
 
-          semester: item.Academic,
+          Academic: item.Academic,
+          exam: item.exam,
 
           courseId: item.courseDetails?._id || "",
           courseName: item.courseDetails?.courseName || "-",
@@ -242,13 +245,31 @@ const Sem = () => {
             }}
           >
             <option value="">All Semesters</option>
-            {semesterOptions.map((s) => (
+            {/* {semesterOptions.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
-            ))}
+            ))} */}
+            <option value="sem1">Semester 1</option>
+            <option value="sem2">Semester 2</option>
           </select>
-
+          <select
+            value={academic}
+            onChange={(e) => {
+              setAcademic(e.target.value);
+              setoffset(1);
+            }}
+          >
+            <option value="">All</option>
+            {/* {semesterOptions.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))} */}
+            <option value="Term1">Term 1</option>
+            <option value="Term2">Term 2</option>
+            <option value="Semester">Semester</option>
+          </select>
 
           <input
             className={styles.search}
@@ -261,7 +282,7 @@ const Sem = () => {
             }}
           />
 
-          {(courseId?.toString().trim() || batchId?.toString().trim()) && (
+          {(courseId?.toString().trim() || batchId?.toString().trim() || semester?.toString().trim() || academic?.toString().trim()) && (
             <button className={styles.clear} onClick={handlefilterSearch}>
               <IoIosCloseCircle />
             </button>
@@ -275,6 +296,7 @@ const Sem = () => {
             <th>Name</th>
             <th>Student ID</th>
             <th>Semester</th>
+            <th>Academic</th>
             <th>Course</th>
             <th>Batch</th>
             <th>Total</th>
@@ -290,7 +312,8 @@ const Sem = () => {
               <tr key={row.id}>
                 <td>{row.name}</td>
                 <td>{row.studentId}</td>
-                <td>{row.semester}</td>
+                <td>{row.exam}</td>
+                <td>{row.Academic}</td>
                 <td>{row.courseName}</td>
                 <td>{row.batchName}</td>
                 <td>{row.total}</td>
@@ -376,7 +399,7 @@ const Sem = () => {
 
               <div className={styles.infoCard}>
                 <span className={styles.label}>Semester</span>
-                <p className={styles.value}>{viewRecord.semester || "-"}</p>
+                <p className={styles.value}>{viewRecord.exam || "-"}({viewRecord.Academic})</p>
               </div>
             </div>
 
@@ -384,20 +407,22 @@ const Sem = () => {
             <table className={styles.marksTable}>
               <thead>
                 <tr>
+                  <th>Subject Code</th>
                   <th>Subject</th>
                   <th>Marks</th>
-                  <th>Total</th>
-                  <th>Percentage</th>
+                  {/* <th>Total</th> */}
+                  {/* <th>Percentage</th> */}
                 </tr>
               </thead>
               <tbody>
                 {viewRecord.subjects && viewRecord.subjects.length > 0 ? (
                   viewRecord.subjects.map((s, i) => (
                     <tr key={i}>
-                      <td>{s.subject || "-"}</td>
+                      <td>{s.subjectCode}</td>
+                      <td>{s.subjectName || "-"}</td>
                       <td>{s.mark ?? 0}</td>
-                      <td>100</td>
-                      <td>{s.mark ? `${s.mark}%` : "0%"}</td>
+                      {/* <td>100</td> */}
+                      {/* <td>{s.mark ? `${s.mark}%` : "0%"}</td> */}
                     </tr>
                   ))
                 ) : (

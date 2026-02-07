@@ -412,16 +412,16 @@ const Addstudent = ({ closeModal, onStudentAdded }) => {
         setErrors(prev => ({ ...prev, student_address: error }));
     };
 
-      const qualivalidation = (value) => {
+    const qualivalidation = (value) => {
         let error = "";
 
-         if (!value.trim()) {
-           error = "Qualification is required";
+        if (!value.trim()) {
+            error = "Qualification is required";
         }
 
         setErrors(prev => ({ ...prev, student_qualification: error }));
     };
-  
+
     return (
         <>
             <div className={styles.add_student}>

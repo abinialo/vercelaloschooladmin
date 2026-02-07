@@ -157,10 +157,10 @@ const Header = ({ setLoginUser }) => {
 
   let updatenotification = async (id) => {
     try {
-      const res = await updateNotification(id, true);  
+      const res = await updateNotification(id, true);
       notificationget();
       navigate('/attendence/leaverequest'),
-       setNotification(false) 
+        setNotification(false)
     } catch (error) {
       console.error('Error updating notifications:', error);
     }
@@ -177,7 +177,7 @@ const Header = ({ setLoginUser }) => {
 
 
 
-  return (  
+  return (
     <>
       <div className={styles.aloschool}>
         <div className={styles.menu_toggle} onClick={handleToggleNavbar}><IoMenu /></div>
@@ -217,41 +217,13 @@ const Header = ({ setLoginUser }) => {
 
                     Course</button>
                 </div>
-                    <div className={styles.academic}>
-                     <button className={`${styles.academic_button} ${
-                      location.pathname.startsWith('/academic') ? styles.navactive : ''  }`}
-                                onClick={() => setIsAcademicOpen(!isAcademicOpen)} >
-                               <FaBullseye className={styles.outline_academic_icon} />
-
-                               <span className={styles.menu_text}>Academic Details</span>
-
-                                <span className={styles.dropdown_icon}>
-                                {isAcademicOpen ? <FaChevronUp /> : <FaChevronDown />}
-                             </span>
-                         </button>
-
-  {isAcademicOpen && (
-    <div className={styles.academic_dropdown}>
-      <button
-        className={`${styles.dropdown_item} ${
-          location.pathname === '/academic/term-exam' ? styles.navactive : ''
-        }`}
-        onClick={() => navigate('/academic/term-exam')}
-      >
-        Term Exam
-      </button>
-
-      <button
-        className={`${styles.dropdown_item} ${
-          location.pathname === '/academic/semester-exam' ? styles.navactive : ''
-        }`}
-        onClick={() => navigate('/academic/semester-exam')}
-      >
-        Semester Exam
-      </button>
-    </div>
-  )}
-</div>
+                <div className={styles.dashboard}>
+                  <button className={`${styles.dashboard_button} ${location.pathname == '/academic' ? styles.navactive : ''}`} 
+                  onClick={() => navigate('/academic')}> {location.pathname == '/academic' ? 
+                  <IoPieChart className={styles.filled_chart_icon} /> : <IoPieChartOutline className={styles.outline_chart_icon} />}
+                  Academic</button>
+                </div>
+                
 
 
                 <div className={styles.events}>
@@ -396,7 +368,7 @@ const Header = ({ setLoginUser }) => {
               const firstLetter = item.message?.charAt(0).toUpperCase(); // Get first letter
 
               return (
-                <div className={styles.notification_box} onClick={() => { updatenotification(item?._id)}}>
+                <div className={styles.notification_box} onClick={() => { updatenotification(item?._id) }}>
                   <div className="flex items-center gap-3">
                     <div>
                       <div className="w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-semibold">

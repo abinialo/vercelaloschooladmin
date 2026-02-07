@@ -382,10 +382,21 @@ export const getUser = (
   );
 };
 
-export const getPerformance = (limit,offset,courseId,batchId,semester,value) => {
-  return apiService.get(`/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&Academic=${semester}&value=${value}`);
+export const getPerformance = (limit,offset,courseId,batchId,semester,value,academic) => {
+  return apiService.get(`/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`);
 };
 
+export const getSubjects = (courseId,batchId,semester) => {
+  return apiService.get(`/subject?&courseId=${courseId}&batchId=${batchId}&exam=${semester}`);
+};
+
+export const addsubject = (id, payload) => {
+  return apiService.post(`/subject/`, payload);
+};
+
+export const updatesubject = (id, payload) => {
+  return apiService.put(`/subject/${id}`, payload);
+};
 export const Performanceuser = (id) => {
   return apiService.get(`/performance?userId=${id}`);
 };
@@ -397,12 +408,8 @@ export const deleteTermSem = (id) => {
   return apiService.delete(`/performance/${id}`);
 };
 // term wise toppers
-export const getDashboardTermToppers = (Term) => {
-  return apiService.get("/performance/leaderboard", {
-    params: {
-      Academic: Term,   // e.g. "Term 3"
-    },
-  });
+export const getDashboardTermToppers = (academic,semester,courseId,batchId) => {
+  return apiService.get(`/performance/leaderboard?Academic=${academic}&exam=${semester}&courseId=${courseId}&batchId=${batchId}`);
 };
 
 // semester wise toppers

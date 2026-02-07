@@ -19,7 +19,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from 'dayjs';
-import { getAttendancerate, getDashboardAttendencerate, getDashboardEvents, getDashboardLeave, getDashboardUser, getTodayrate, studentCount } from '../../api/Serviceapi'
+import { getAttendancerate, getCourse, getCourseBatchByCourseId, getDashboardAttendencerate, getDashboardEvents, getDashboardLeave, getDashboardUser, getTodayrate, studentCount } from '../../api/Serviceapi'
 import {
     getDashboardTermToppers,
     getDashboardSemesterToppers,
@@ -42,37 +42,72 @@ export const Dashboard = () => {
     const [Attendance, setAttendance] = useState([])
     const [termToppers, setTermToppers] = useState([]);
     const [semesterToppers, setSemesterToppers] = useState([]);
-    const [term, setTerm] = useState("Term 1");
-    const [semester, setSemester] = useState("Semester 1");
+    const [academic, setAcademic] = useState("");
+    const [semester, setSemester] = useState("");
+    const [courseId, setCourseId] = useState("");
+    const [batchId, setBatchId] = useState("");
+    const [courses, setCourses] = useState([]);
+    const [batches, setBatches] = useState([]);
+    const fetchCourses = async () => {
+        try {
+            const res = await getCourse(100, 0);
+            setCourses(res?.data?.data?.data || []);
+        } catch (err) {
+            console.error("Course fetch error", err);
+        }
+    };
+    useEffect(() => {
+        fetchCourses();
+        // fetchPerformance();
+        // fetchUsers();
+    }, []);
+    useEffect(() => {
+        if (!courseId) {
+            setBatches([]);
+            setBatchId("");
+            // fetchUsers(search, "", "");
+            // setoffset(1);
+            return;
+        }
+
+        const fetchBatches = async () => {
+            try {
+                const res = await getCourseBatchByCourseId(courseId, 100, 0);
+                setBatches(res?.data?.data?.data || []);
+            } catch {
+                setBatches([]);
+            }
+        };
+
+        fetchBatches();
+        // fetchUsers(search, courseId, "");
+        // setoffset(1);
+    }, [courseId]);
+
     useEffect(() => {
         getTermToppers();
-    }, [term]);
+    }, [academic, semester, courseId, batchId]);
 
-    useEffect(() => {
-        getSemesterToppers();
-    }, [semester]);
+    // useEffect(() => {
+    //     getSemesterToppers();
+    // }, [semester]);
     const getTermToppers = async () => {
-        const res = await getDashboardTermToppers(term);
-
-        const filtered = (res?.data?.data || [])
-            .filter(item => item.Academic === term)
-            .sort((a, b) => b.average - a.average);
-
-        setTermToppers(filtered);
+        const res = await getDashboardTermToppers(academic, semester, courseId, batchId);
+        setTermToppers(res?.data?.data || []);
     };
 
-    const getSemesterToppers = async () => {
-        const res = await getDashboardSemesterToppers(semester);
+    // const getSemesterToppers = async () => {
+    //     const res = await getDashboardSemesterToppers(semester);
 
-        const filtered = (res?.data?.data || [])
-            .filter(item =>
-                item.Academic === semester ||
-                (semester === "Semester 2" && item.Academic === "Sem 2")
-            )
-            .sort((a, b) => b.average - a.average);
+    //     const filtered = (res?.data?.data || [])
+    //         .filter(item =>
+    //             item.Academic === semester ||
+    //             (semester === "Semester 2" && item.Academic === "Sem 2")
+    //         )
+    //         .sort((a, b) => b.average - a.average);
 
-        setSemesterToppers(filtered);
-    };
+    //     setSemesterToppers(filtered);
+    // };
 
 
     useEffect(() => {
@@ -453,7 +488,7 @@ export const Dashboard = () => {
                         </div>
 
                     </div>
-                    <div className={`${dashboradcss.dashcard} row-span-3`} style={{ height: '741px', overflowY: 'hidden' }}>
+                    <div className={`${dashboradcss.dashcard} h-100 `} style={{ height: '420px', overflowY: 'hidden' }}>
                         <div className="flex justify-between items-center mx-2 mb-[20px]">
                             <div><h4 className=' text-lg font-normal'>Events</h4></div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -534,7 +569,7 @@ export const Dashboard = () => {
                         </div>
 
                     </div>
-                    <div className={`${dashboradcss.dashcard} lg:col-span-2 md:col-span-2 col-span-1 mt-2 h-100`} style={{ height: '300px', overflowY: 'hidden' }}>
+                    <div className={`${dashboradcss.dashcard} `} style={{ height: '320px', overflowY: 'hidden' }}>
                         <div className="flex justify-between items-center mx-2 my-[10px]">
                             <div><h4 className=' text-lg font-normal'>Student List</h4></div>
                             <div><Link to='/students'><img src={resizeicon} alt="resizeicon" /></Link></div>
@@ -574,68 +609,111 @@ export const Dashboard = () => {
 
 
                     </div>
-                </div>
-                {/* ================= TOPPERS SECTION ================= */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-4 mt-4">
+                    <div className="lg:col-span-2 md:col-span-2 col-span-1  ">
 
-                    <div className={dashboradcss.dashcard} style={{ height: "320px",overflow:'auto' }}>
-                        <div className="flex justify-between items-center mx-2 mb-3">
-                            <h4 className="text-lg font-normal">Term Wise Toppers</h4>
+                        <div className={dashboradcss.dashcard} style={{ height: "320px", overflow: 'auto' }}>
+                            <div className="flex justify-between items-center mx-2 mb-3">
+                                <h4 className="text-lg font-normal">Toppers</h4>
 
-                            <FormControl size="small">
-                                <Select
-                                    value={term}
-                                    onChange={(e) => setTerm(e.target.value)}
-                                    IconComponent={KeyboardArrowDownIcon}
-                                    sx={{ height: "32px" }}
+
+
+
+
+
+                                <select
+                                    value={courseId}
+                                    onChange={(e) => {
+                                        setCourseId(e.target.value);
+                                        setBatchId("");
+                                    }}
+                                    className="border border-gray-300 rounded-md px-2 py-1"
                                 >
-                                    <MenuItem value="Term 1">Term 1</MenuItem>
-                                    <MenuItem value="Term 2">Term 2</MenuItem>
-                                    <MenuItem value="Term 3">Term 3</MenuItem>
-                                    <MenuItem value="Term 4">Term 4</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </div>
-                        {termToppers.length > 0 ? (
-                            termToppers.map((s, i) => (
-                                <div
-                                    key={s._id}
-                                    className="flex justify-between items-center px-3 py-2 border-b"
+                                    <option value="">All Courses</option>
+                                    {courses.map((c) => (
+                                        <option key={c._id} value={c._id}>
+                                            {c.courseName}
+                                        </option>
+                                    ))}
+                                </select>
+
+
+                                <select
+                                    value={batchId}
+                                    disabled={!courseId}
+                                    onChange={(e) => setBatchId(e.target.value)}
+                                    className="border border-gray-300 rounded-md px-2 py-1"
+
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <span className="font-bold">{i + 1}</span>
+                                    <option value="">All Batches</option>
+                                    {batches.map((b) => (
+                                        <option key={b._id} value={b._id}>
+                                            {b.batchName}
+                                        </option>
+                                    ))}
+                                </select>
 
-                                        <img
-                                            src={s.userDetails?.profileURL}
-                                            className="w-10 h-10 rounded-full"
-                                            alt="profile"
-                                        />
+                                <select
+                                    value={semester}
+                                    onChange={(e) => setSemester(e.target.value)}
+                                    className="border border-gray-300 rounded-md px-2 py-1"
 
-                                        <div>
-                                            <p className="text-sm">
-                                                {s.userDetails?.name}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                {s.courseDetails?.courseName}
-                                            </p>
+                                >
+                                    <option value="sem1">Semester 1</option>
+                                    <option value="sem2">Semester 2</option>
+                                </select>
+
+                                {/* <FormControl size="small"> */}
+                                <select
+                                    value={academic}
+                                    onChange={(e) => setAcademic(e.target.value)}
+                                    className="border border-gray-300 rounded-md px-2 py-1"
+                                >
+                                    <option value="Term1">Term 1</option>
+                                    <option value="Term2">Term 2</option>
+                                    <option value="Semester">Semester</option>
+                                </select>
+                                {/* </FormControl> */}
+                            </div>
+                            {termToppers.length > 0 ? (
+                                termToppers.map((s, i) => (
+                                    <div
+                                        key={s._id}
+                                        className="flex justify-between items-center px-3 py-2 border-b"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-bold">{i + 1}</span>
+
+                                            <img
+                                                src={s.userDetails?.profileURL}
+                                                className="w-10 h-10 rounded-full"
+                                                alt="profile"
+                                            />
+
+                                            <div>
+                                                <p className="text-sm">
+                                                    {s.userDetails?.name}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    {s.courseDetails?.courseName}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div className="font-semibold">
+                                            {s.average}%
                                         </div>
                                     </div>
+                                ))
+                            ) : (
+                                <p className="text-center text-gray-400 mt-10">
+                                    No Data Found
+                                </p>
+                            )}
 
-                                    <div className="font-semibold">
-                                        {s.average}%
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-center text-gray-400 mt-10">
-                                No Data Found
-                            </p>
-                        )}
-
-                    </div>
+                        </div>
 
 
-                    <div className={dashboradcss.dashcard} style={{ height: "320px",overflow:'auto' }}>
+                        {/* <div className={dashboradcss.dashcard} style={{ height: "320px",overflow:'auto' }}>
                         <div className="flex justify-between items-center mx-2 mb-3">
                             <h4 className="text-lg font-normal"> Semester Wise Toppers</h4>
 
@@ -688,9 +766,11 @@ export const Dashboard = () => {
                             </p>
                         )}
 
-                    </div>
+                    </div> */}
 
+                    </div>
                 </div>
+
 
             </div>
         </>

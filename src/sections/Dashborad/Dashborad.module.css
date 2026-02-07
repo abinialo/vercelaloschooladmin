@@ -17,7 +17,14 @@
     border-radius: 50%;
 
 }
-
+.filters select {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px !important;
+  border: none;
+  background: #f5f5f5;
+  font-size: 14px;
+}
 .adminactive {
     display: flex;
     align-items: center;

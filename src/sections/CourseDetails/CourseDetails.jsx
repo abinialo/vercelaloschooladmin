@@ -6,7 +6,7 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons"; // ⬅️ New i
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import nodata from '../../assets/nodata.jpg'
 import Skeleton from '@mui/material/Skeleton';
-import { useParams, useNavigate } from "react-router-dom"; // ⬅️ useNavigate is already here
+import { useParams, useNavigate, Link } from "react-router-dom"; // ⬅️ useNavigate is already here
 import {
   getCourseById,
   getCourseBatch,
@@ -14,6 +14,7 @@ import {
   getCourseBatchByCourseId,
 } from "../../api/Serviceapi";
 import { toast, ToastContainer } from 'react-toastify';
+import { FaArrowRightLong } from "react-icons/fa6";
 
 
 import EditCourseModal from "./EditCourseModel";
@@ -145,8 +146,8 @@ const CourseDetails = () => {
 
   return (
     <div className={styles.container}>
-                    <ToastContainer />
-      
+      <ToastContainer />
+
       {/* ⬅️ Updated Header */}
       <div className={styles.header}>
         <button className={styles.backBtn} onClick={goBack}>
@@ -235,7 +236,12 @@ const CourseDetails = () => {
               const isComplete = new Date(batch.endDate) < new Date();
               return (
                 <div className={styles.divcards} key={batch._id}>
-                  <p className={styles.divcardspara1}>{batch.batchName}</p>
+                  <div className="flex justify-between items-center">
+                    <p className={styles.divcardspara1}>{batch.batchName}</p>
+                    <Link to={`/course/Subjects/${id}/${batch._id}`}>
+                      <FaArrowRightLong />
+                    </Link>
+                  </div>
                   <p className={styles.divcardspara2}>
                     No of Students : {batch.noOfStudents}
                   </p>
@@ -289,7 +295,7 @@ const CourseDetails = () => {
         </div>
 
         <div className='flex justify-between items-end ms-auto w-[50%]'>
-         
+
           {totalPages > 0 && (
             <ThemeProvider theme={theme}>
               <div className="flex justify-end mt-4">
@@ -303,7 +309,7 @@ const CourseDetails = () => {
               </div>
             </ThemeProvider>
           )}
-           {totalPages > 0 &&
+          {totalPages > 0 &&
             <div className="flex justify-between items-center">
               <p className="text-gray-600 text-sm">
                 Showing {startIndex} – {endIndex} of {totalItems} Batches

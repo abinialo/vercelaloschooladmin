@@ -15,6 +15,7 @@ import {
   updateTermSem,
   getPerformance,
   Performanceuser,
+  deleteTermSem,
 } from "../../api/Serviceapi";
 import Modal from "react-modal";
 import { deleteTermSem as deleteTermSemApi } from "../../api/Serviceapi";
@@ -28,7 +29,9 @@ import { Switch } from "antd";
 import { toast, ToastContainer } from "react-toastify";
 import dayjs from "dayjs";
 import { DatePicker } from "antd";
+import { set } from "date-fns";
 // import { use } from 'react';
+import { getSubjects } from "../../api/Serviceapi";
 
 const Studentdetails = () => {
   const { id } = useParams();
@@ -46,88 +49,151 @@ const Studentdetails = () => {
     },
   ]);
   const [editMode, setEditMode] = useState(false);
-  const [termList, setTermList] = useState([]);
-  const [saving, setSaving] = useState(false);
-
-  const [deletingId, setDeletingId] = useState(null);
-
-  const [performanceId, setPerformanceId] = useState(null);
-  const semesterTermMap = {
-    "Semester 1": ["Term 1", "Term 2", "Semester 1"],
-    "Semester 2": ["Term 3", "Term 4", "Semester 2"],
-  };
-  const [semester, setSemester] = useState("");
-  const [academicOptions, setAcademicOptions] = useState([]);
-
-
   const { RangePicker } = DatePicker;
   const [termModal, setTermModal] = useState(false);
-  const [academic, setAcademic] = useState("");
-  const [marks, setMarks] = useState([{ subject: "", mark: "" }]);
-  const [errors, setErrors] = useState({});
+  const [Academic, setAcademic] = useState("");
+  const [sem, setSem] = useState('sem1');
 
-  const handleSemesterChange = (value) => {
-    setSemester(value);
-    setAcademic("");
-    setErrors({});
-    setEditMode(false);
-    setPerformanceId(null);
-    setMarks([{ subject: "", mark: "" }]);
+  // sub
 
-    let options = semesterTermMap[value] || [];
+  const [subjects, setSubjects] = useState([]);
+  const [marks, setMarks] = useState([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
 
-    // ❌ Remove already added terms (except when editing)
-    const existingAcademics = termList.map(t => t.Academic);
+  const handleSemesterChange = (event) => {
 
-    options = options.filter(opt => !existingAcademics.includes(opt));
-
-    setAcademicOptions(options);
+    setSem(event.target.value)
   };
-  const handleAcademicChange = (value) => {
-    setAcademic(value);
-    setErrors(prev => ({ ...prev, academic: "" }));
 
-    const existing = termList.find(t => t.Academic === value);
 
-    if (existing) {
-      // 🔁 EDIT MODE
-      setEditMode(true);
-      setPerformanceId(existing._id);
-      setMarks(existing.Marks || [{ subject: "", mark: "" }]);
-      toast.info("This term already exists. Editing instead.");
+  const fetchSubjects = async () => {
+    if (!user?.courseDetails?._id || !user?.batchDetails?._id || !sem) return;
+
+    setSubjectsLoading(true);
+    try {
+      const res = await getSubjects(
+        user.courseDetails._id,
+        user.batchDetails._id,
+        sem.toLowerCase() // API expects sem1, sem2
+      );
+
+      const subjectList = res?.data?.data?.[0]?.subjects || [];
+
+      setSubjects(subjectList);
+
+      // Prepare marks state for each subject
+      const initialMarks = subjectList.map((sub) => ({
+        subjectCode: sub.subjectCode,
+        subjectName: sub.subjectName,
+        mark: "",
+      }));
+
+      setMarks(initialMarks);
+    } catch (err) {
+      console.error("Error fetching subjects:", err);
+    } finally {
+      setSubjectsLoading(false);
     }
   };
 
-  console.log("Performance Details 👉", user?.performanceDetails);
+  useEffect(() => {
+    if (termModal && !editMode) {
+      fetchSubjects();
+    }
+  }, [sem]);
 
-  // useEffect(() => {
+  const [formError, setFormError] = useState("");
+const [editingId, setEditingId] = useState(null);
 
-  //     getUserById(id);
-  // }, [id]);
+const openEditTermSem = (record) => {
+  setEditMode(true);
+  setTermModal(true);
 
-  const getSemesterFromAcademic = (academic = "") => {
-  const value = academic.toLowerCase().replace(/\s+/g, "");
+  setEditingId(record._id);
+  setAcademic(record.Academic || "");
+  setSem(record.semester || "sem1");
 
-  if (
-    value.includes("sem1") ||
-    value.includes("semester1") ||
-    value.includes("term1") ||
-    value.includes("term2")
-  ) {
-    return "Semester 1";
-  }
+  // Convert API Marks → UI format
+  const formattedMarks = (record.Marks || []).map((m) => ({
+    subjectCode: m.subjectCode || "",
+    subjectName: m.subjectName || m.subject || "",
+    mark: m.Mark || m.mark || "",
+  }));
 
-  if (
-    value.includes("sem2") ||
-    value.includes("semester2") ||
-    value.includes("term3") ||
-    value.includes("term4")
-  ) {
-    return "Semester 2";
-  }
+  setMarks(formattedMarks);
 
-  return "";
+  // Also set subjects list so UI labels show
+  const subjectList = formattedMarks.map((m) => ({
+    subjectCode: m.subjectCode,
+    subjectName: m.subjectName,
+  }));
+  setSubjects(subjectList);
 };
+
+ const handleSavePerformance = async () => {
+  setFormError("");
+
+  if (!Academic) return setFormError("Please select Term / Sem");
+  if (!marks.length) return setFormError("Marks not available");
+
+  for (let m of marks) {
+    if (m.mark === "") return setFormError(`Enter mark for ${m.subjectName}`);
+    if (isNaN(m.mark) || Number(m.mark) < 0)
+      return setFormError(`Invalid mark for ${m.subjectName}`);
+  }
+
+  const numericMarks = marks.map((m) => Number(m.mark));
+  const total = numericMarks.reduce((sum, m) => sum + m, 0);
+  const average = numericMarks.length
+    ? Number((total / numericMarks.length).toFixed(2))
+    : 0;
+
+  const payload = {
+    userId: id,
+    courseId: user?.courseDetails?._id,
+    batchId: user?.batchDetails?._id,
+    semester: sem,
+    Academic,
+    total,
+    average,
+    Marks: marks.map((m) => ({
+      subjectCode: m.subjectCode,
+      subjectName: m.subjectName,
+      mark: Number(m.mark),
+    })),
+  };
+
+  try {
+    if (editMode && editingId) {
+      await updateTermSem(editingId, payload);
+      toast.success("Marks updated successfully ✏️");
+    } else {
+      await createTermSem(payload);
+      toast.success("Marks saved successfully 🎉");
+    }
+
+    setTermModal(false);
+    setEditMode(false);
+    setEditingId(null);
+    setMarks([]);
+    setSubjects([]);
+    fetchPerformance();
+  } catch (err) {
+    toast.error(err?.response?.data?.message || "Operation failed");
+  }
+};
+
+
+
+  const totalMarks = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
+  const avgMarks = marks.length ? (totalMarks / marks.length).toFixed(2) : 0;
+
+  const handleMarkChange = (index, value) => {
+    const updated = [...marks];
+    updated[index].mark = value;
+    setMarks(updated);
+  };
+
 
   useEffect(() => {
     attdancemonth();
@@ -319,209 +385,60 @@ const Studentdetails = () => {
 
   const [absentModel, setAbsentModel] = useState(false);
 
-
-
-  const validateForm = () => {
-    let newErrors = {};
-
-
-    if (!academic.trim()) {
-      newErrors.academic = "Academic  is required";
-    }
-
-    // Marks validation
-    if (!marks.length) {
-      newErrors.marks = "At least one subject is required";
-    }
-
-    marks.forEach((m, index) => {
-      if (!m.subject.trim()) {
-        newErrors[`subject_${index}`] = "Subject name is required";
-      }
-
-      if (m.mark === "" || isNaN(m.mark)) {
-        newErrors[`mark_${index}`] = "Valid mark is required";
-      } else if (m.mark < 0 || m.mark > 100) {
-        newErrors[`mark_${index}`] = "Mark must be between 0 and 100";
-      }
-    });
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  const checkExistingAcademic = (value) => {
-    const existing = termList.find(
-      (t) => t.Academic === value
-    );
-
-    if (existing) {
-      // 🔁 Switch to EDIT mode
-      setEditMode(true);
-      setPerformanceId(existing._id);
-      setMarks(existing.Marks || [{ subject: "", mark: "" }]);
-
-      toast.info("This term already exists. Editing instead.");
-    } else {
-      // ➕ New entry
-      setEditMode(false);
-      setPerformanceId(null);
-      setMarks([{ subject: "", mark: "" }]);
-    }
-  };
-
-
-  const saveTermSem = async () => {
-    if (saving) return; // ✅ HARD BLOCK
-    if (!academic.trim()) {
-      toast.error("Academic is required");
-      return;
-    }
-
-    setSaving(true);
-
-    const total = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
-    const average = marks.length ? (total / marks.length).toFixed(2) : 0;
-
-    const payload = {
-      Academic: academic,
-      Marks: marks,
-      total,
-      average,
-    };
-
-    try {
-      if (editMode && performanceId) {
-        await updateTermSem(performanceId, payload);
-        toast.success("Term / Sem Updated");
-      } else {
-        await createTermSem({
-          userId: id,
-          ...payload,
-        });
-        toast.success("Term / Sem Added");
-      }
-
-      await getTermDetails();
-
-      setTermModal(false);
-      setAcademic("");
-      setMarks([{ subject: "", mark: "" }]);
-      setEditMode(false);
-      setPerformanceId(null);
-    } catch (err) {
-      toast.error("Failed to save");
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-const openEditTermSem = (record) => {
-  if (saving) return;
-
-  const sem = getSemesterFromAcademic(record.Academic);
-
-  setEditMode(true);
-  setPerformanceId(record._id);
-  setSemester(sem);
-  setAcademic(record.Academic);
-  setMarks(record.Marks || [{ subject: "", mark: "" }]);
-
-  const options = semesterTermMap[sem] || [];
-
-  // If old value not in new options → add it so dropdown can display it
-  if (!options.includes(record.Academic)) {
-    options.push(record.Academic);
-  }
-
-  setAcademicOptions(options);
-  setTermModal(true);
-};
-
-
-
-  const getTermDetails = async () => {
-    try {
-      const res = await Performanceuser(id);
-      const allTerms = res?.data?.data?.data || [];
-
-      const filtered = allTerms.filter((item) => item.userId === id);
-
-      setTermList(filtered);
-    } catch (err) {
-      console.error(err);
-    }
-  };
   useEffect(() => {
     getUserById(id);
-    getTermDetails();
+    // getTermDetails();
   }, [id]);
 
-  const handleDeleteTermSem = (termId) => {
-    toast(
-      ({ closeToast }) => (
-        <div>
-          <p className="font-medium mb-2">
-            Are you sure you want to delete this Term / Sem record?
-          </p>
 
-          <div className="flex justify-end gap-3">
-            <button
-              className="px-3 py-1 border rounded"
-              onClick={closeToast}
-            >
-              Cancel
-            </button>
+  const [termList, setTermList] = useState([]);
+  const [termLoading, setTermLoading] = useState(false);
 
-            <button
-              className="px-3 py-1 bg-red-600 text-white rounded flex items-center gap-2"
-              onClick={async (e) => {
-                const btn = e.currentTarget;
 
-                // 🔒 LOCK BUTTON
-                btn.disabled = true;
-                btn.innerHTML = `
-                <span class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Deleting...
-              `;
+  const fetchPerformance = async () => {
+    setTermLoading(true);
+    try {
+      const res = await Performanceuser(id);
 
-                try {
-                  await deleteTermSemApi(termId);
-                  toast.success("Term / Sem Deleted Successfully");
-                  await getTermDetails();
-                  closeToast();
-                } catch (err) {
-                  toast.error("Failed to delete record");
-                  btn.disabled = false;
-                  btn.innerHTML = "Delete";
-                }
-              }}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        draggable: false,
-        closeButton: false,
-      }
-    );
+      // 🔥 Correct path to records array
+      const records = res?.data?.data?.data || [];
+
+      setTermList(records);
+    } catch (err) {
+      console.error("Error fetching performance:", err);
+    } finally {
+      setTermLoading(false);
+    }
   };
- const closeTermModal = () => {
-  setTermModal(false);
-  setErrors({});
-  setMarks([{ subject: "", mark: "" }]);
-  setEditMode(false);
-  setPerformanceId(null);
-  setSemester("");
-  setAcademic("");
-  setAcademicOptions([]);
-};
 
+
+  useEffect(() => {
+    if (id) fetchPerformance();
+  }, [id]);
+
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+
+  const confirmDeleteTermSem = async () => {
+    if (!deleteId) return;
+
+    setDeleteLoading(true);
+    try {
+      await deleteTermSem(deleteId);
+
+      toast.success("Record deleted successfully 🗑️");
+
+      // Remove from UI
+      setTermList((prev) => prev.filter((item) => item._id !== deleteId));
+
+      setDeleteId(null); // close popup
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Failed to delete");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
 
 
@@ -787,10 +704,9 @@ const openEditTermSem = (record) => {
     whitespace-nowrap"
                           onClick={() => {
                             setEditMode(false);
-                            setPerformanceId(null);
                             setAcademic("");
-                            setMarks([{ subject: "", mark: "" }]);
                             setTermModal(true);
+                            setTimeout(fetchSubjects, 0); // ensure modal + user loaded
                           }}
                         >
                           + Add Term / Sem Detail
@@ -864,16 +780,20 @@ const openEditTermSem = (record) => {
                 Term / Semester Details
               </h4>
 
-              {termList.length > 0 ? (
+              {termLoading ? (
+                <p className="text-sm text-gray-500">Loading records...</p>
+              ) : termList.length > 0 ? (
                 termList.map((p) => (
                   <div
                     key={p._id}
                     className="flex justify-between items-center bg-white p-3 rounded mb-2"
                   >
                     <div>
-                      <p className="font-medium">{p.Academic}</p>
+                      <p className="font-medium">
+                        {p.Academic || "—"}
+                      </p>
                       <p className="text-sm text-gray-500">
-                        Total : {p.total} | Avg : {p.average}%
+                        Total : {p.total} | Avg : {p.average}
                       </p>
                     </div>
 
@@ -884,24 +804,11 @@ const openEditTermSem = (record) => {
                       />
 
                       <span
-                        className={`text-red-600 text-sm flex items-center gap-2 ${deletingId === p._id
-                          ? "opacity-50 cursor-not-allowed"
-                          : "cursor-pointer"
-                          }`}
-                        onClick={() => {
-                          if (!deletingId) handleDeleteTermSem(p._id);
-                        }}
+                        className="text-red-600 text-sm cursor-pointer"
+                        onClick={() => setDeleteId(p._id)}
                       >
-                        {deletingId === p._id ? (
-                          <>
-                            <span className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
-                            Deleting...
-                          </>
-                        ) : (
-                          "Delete"
-                        )}
+                        Delete
                       </span>
-
 
                     </div>
                   </div>
@@ -909,6 +816,8 @@ const openEditTermSem = (record) => {
               ) : (
                 <p className="text-sm text-gray-400">No Term / Sem Records</p>
               )}
+
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 gap-3 mt-3">
@@ -1234,6 +1143,7 @@ const openEditTermSem = (record) => {
               : "Submit"}
         </button>
       </Modal>
+
       <Modal
         isOpen={termModal}
         onRequestClose={() => setTermModal(false)}
@@ -1241,6 +1151,7 @@ const openEditTermSem = (record) => {
           overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
           content: {
             width: "600px",
+            height:'max-content',
             margin: "auto",
             borderRadius: "10px",
             padding: "24px",
@@ -1256,15 +1167,15 @@ const openEditTermSem = (record) => {
           <label className="text-sm font-medium block mb-1">Semester</label>
 
           <select
-            value={semester}
-            onChange={(e) => handleSemesterChange(e.target.value)}
+            value={sem}
+            onChange={(e) => handleSemesterChange(e)}
             className="w-full border rounded p-2 bg-white"
             disabled={editMode}
             style={{ cursor: editMode ? 'not-allowed' : 'pointer' }}
           >
-            <option value="">Select Semester</option>
-            <option value="Semester 1">Semester 1</option>
-            <option value="Semester 2">Semester 2</option>
+            {/* <option value="">Select Semester</option> */}
+            <option value="sem1">Semester 1</option>
+            <option value="sem2">Semester 2</option>
           </select>
         </div>
 
@@ -1275,122 +1186,119 @@ const openEditTermSem = (record) => {
           </label>
 
           <select
-            style={{ cursor: editMode ? 'not-allowed' : 'pointer' }}
-
-            value={academic}
-            onChange={(e) => {
-              const value = e.target.value;
-              setAcademic(value);
-              setErrors((prev) => ({ ...prev, academic: "" }));
-              checkExistingAcademic(value);
-            }}
+            className="w-full border rounded p-2 bg-white"
+            value={Academic}
+            onChange={(e) => setAcademic(e.target.value)}
             disabled={editMode}
-            className={`w-full border rounded p-2 bg-white ${errors.academic ? "border-red-500" : "border-gray-300"
-              }`}
           >
-            <option value="">Select Term / Sem</option>
-
-            {academicOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
+            <option value="">Select Term / Sem</option>   {/* ADD THIS */}
+            <option value="Term1">Term 1</option>
+            <option value="Term2">Term 2</option>
+            <option value="Semester">Semester</option>
           </select>
 
-          {errors.academic && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors.academic}
-            </p>
-          )}
+
         </div>
 
         {/* ================= Marks Section (UNCHANGED) ================= */}
         <div className="mb-5">
           <label className="text-sm font-medium block mb-2">Marks</label>
 
-          {marks.map((m, i) => (
-            <div key={i} className="mb-4">
-              <div className="flex gap-4">
-                <div className="w-1/2">
-                  <input
-                    type="text"
-                    placeholder="Subject"
-                    value={m.subject}
-
-                    className={`border rounded p-2 w-full ${errors[`subject_${i}`] ? "border-red-500" : "border-gray-300"
-                      }`}
-                    onChange={(e) => {
-                      const copy = [...marks];
-                      copy[i].subject = e.target.value;
-                      setMarks(copy);
-                      setErrors((prev) => ({ ...prev, [`subject_${i}`]: "" }));
-                    }}
-                  />
-                  {errors[`subject_${i}`] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[`subject_${i}`]}
-                    </p>
-                  )}
-                </div>
-
-                <div className="w-1/2">
-                  <input
-                    type="number"
-                    placeholder="Mark"
-                    value={m.mark}
-                    className={`border rounded p-2 w-full ${errors[`mark_${i}`] ? "border-red-500" : "border-gray-300"
-                      }`}
-                    onChange={(e) => {
-                      const copy = [...marks];
-                      copy[i].mark = e.target.value;
-                      setMarks(copy);
-                      setErrors((prev) => ({ ...prev, [`mark_${i}`]: "" }));
-                    }}
-                  />
-                  {errors[`mark_${i}`] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[`mark_${i}`]}
-                    </p>
-                  )}
-                </div>
+          {subjectsLoading ? (
+            <p className="text-sm text-gray-500">Loading subjects...</p>
+          ) : subjects.length === 0 ? (
+            <p className="text-sm text-red-500">No subjects found</p>
+          ) : (
+            subjects.map((sub, index) => (
+              <div key={sub.subjectCode} className="flex gap-3 mb-3 items-center">
+                <div className="w-1/3 text-sm font-medium">{sub.subjectCode}</div>
+                <div className="w-1/3 text-sm">{sub.subjectName}</div>
+                <input
+                  type="number"
+                  placeholder="Enter mark"
+                  value={marks[index]?.mark || ""}
+                  onChange={(e) => handleMarkChange(index, e.target.value)}
+                  className="w-1/3 border rounded p-2"
+                />
               </div>
-            </div>
-          ))}
+            ))
+          )}
+        </div>
+        {formError && (
+          <p className="text-red-500 text-sm mb-3">{formError}</p>
+        )}
 
-          <button
-            className="text-blue-600 text-sm mt-2"
-            onClick={() => setMarks([...marks, { subject: "", mark: "" }])}
-          >
-            + Add Subject
-          </button>
+        <div className="mt-4 text-sm font-medium">
+          Total: {totalMarks} <br />
+          Average: {avgMarks}
         </div>
 
         {/* ================= Buttons ================= */}
         <div className="flex justify-end gap-4 mt-6">
           <button
             className="px-4 py-2 border rounded"
-            onClick={closeTermModal}
+            onClick={() => {
+              setTermModal(false);   // close modal
+              setEditMode(false);    // exit edit mode
+              setAcademic("");       // reset academic
+              setMarks([]);          // clear marks
+              setSubjects([]);       // clear subjects
+              setFormError("");      // clear validation error
+            }}
+          >
+            Cancel
+          </button>
+
+
+        <button
+  type="button"
+  onClick={handleSavePerformance}
+  className="bg-[#144196] text-white px-5 py-2 rounded"
+>
+  {editMode ? "Update" : "Save"}
+</button>
+
+
+        </div>
+      </Modal>
+      <Modal
+        isOpen={!!deleteId}
+        onRequestClose={() => setDeleteId(null)}
+        style={{
+          overlay: { backgroundColor: "rgba(0,0,0,0.6)", zIndex: 1000 },
+          content: {
+            width: "350px",
+            margin: "auto",
+            height:'max-content',
+            borderRadius: "10px",
+            padding: "20px",
+            textAlign: "center",
+          },
+        }}
+      >
+        <h3 className="text-lg font-semibold mb-4">Delete Record?</h3>
+        <p className="text-sm text-gray-600 mb-6">
+          Are you sure you want to delete this Term / Sem record?
+        </p>
+
+        <div className="flex justify-center gap-4">
+          <button
+            className="px-4 py-2 border rounded"
+            onClick={() => setDeleteId(null)}
+            disabled={deleteLoading}
           >
             Cancel
           </button>
 
           <button
-            type="button"
-            disabled={saving}
-            className={`bg-[#144196] text-white px-5 py-2 rounded flex items-center justify-center ${saving ? "opacity-60 cursor-not-allowed" : ""
-              }`}
-            onClick={() => {
-              if (!saving && validateForm()) {
-                saveTermSem();
-              }
-            }}
+            className="bg-red-600 text-white px-4 py-2 rounded flex items-center gap-2"
+            onClick={confirmDeleteTermSem}
+            disabled={deleteLoading}
           >
-            {saving ? (
-              <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Saving...
-              </span>
-            ) : editMode ? "Update" : "Save"}
+            {deleteLoading && (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+            )}
+            Delete
           </button>
         </div>
       </Modal>
