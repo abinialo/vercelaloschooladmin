@@ -102,40 +102,40 @@ const Sem = () => {
       const res = await getPerformance(limit, offset - 1, courseId, batchId, semester, search, academic);
       const apiData = res?.data?.data?.data || [];
       settotal(res?.data?.data?.totalCount);
+      setPerformance(res?.data?.data?.data || []);
+      // const formatted = apiData
+      //   .filter(
+      //     (item) =>
+      //       item.Academic &&
+      //       item.Academic.toLowerCase().startsWith("sem")
+      //   )
+      //   .map((item) => ({
+      //     id: item._id,
+      //     userId: item.userDetails?._id,
+      //     name: item.userDetails?.name || "-",
+      //     studentId: item.userDetails?.studentId || "-",
 
-      const formatted = apiData
-        .filter(
-          (item) =>
-            item.Academic &&
-            item.Academic.toLowerCase().startsWith("sem")
-        )
-        .map((item) => ({
-          id: item._id,
-          userId: item.userDetails?._id,
-          name: item.userDetails?.name || "-",
-          studentId: item.userDetails?.studentId || "-",
+      //     Academic: item.Academic,
+      //     exam: item.exam,
 
-          Academic: item.Academic,
-          exam: item.exam,
+      //     courseId: item.courseDetails?._id || "",
+      //     courseName: item.courseDetails?.courseName || "-",
 
-          courseId: item.courseDetails?._id || "",
-          courseName: item.courseDetails?.courseName || "-",
+      //     batchId:
+      //       item.batchDetails?.length > 0
+      //         ? item.batchDetails[0]._id
+      //         : "",
+      //     batchName:
+      //       item.batchDetails?.length > 0
+      //         ? item.batchDetails[0].batchName
+      //         : "-",
 
-          batchId:
-            item.batchDetails?.length > 0
-              ? item.batchDetails[0]._id
-              : "",
-          batchName:
-            item.batchDetails?.length > 0
-              ? item.batchDetails[0].batchName
-              : "-",
+      //     total: item.total || 0,
+      //     percentage: item.average ? `${item.average}%` : "0%",
+      //     subjects: item.Marks || [],
+      //   }));
 
-          total: item.total || 0,
-          percentage: item.average ? `${item.average}%` : "0%",
-          subjects: item.Marks || [],
-        }));
-
-      setPerformance(formatted);
+      // setPerformance(formatted);
     } catch (err) {
       console.error("Semester fetch failed", err);
     }
@@ -310,14 +310,14 @@ const Sem = () => {
 
             performance.map((row) => (
               <tr key={row.id}>
-                <td>{row.name}</td>
-                <td>{row.studentId}</td>
+                <td>{row.userDetails.name}</td>
+                <td>{row.userDetails.studentId}</td>
                 <td>{row.exam}</td>
                 <td>{row.Academic}</td>
-                <td>{row.courseName}</td>
-                <td>{row.batchName}</td>
+                <td>{row.courseDetails.courseName}</td>
+                <td>{row.batchDetails[0]?.batchName}</td>
                 <td>{row.total}</td>
-                <td>{row.percentage}</td>
+                <td>{row.average}%</td>
                 <td>
                   <button
                     className={styles.viewBtn}
