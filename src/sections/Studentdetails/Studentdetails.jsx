@@ -152,7 +152,7 @@ const openEditTermSem = (record) => {
     userId: id,
     courseId: user?.courseDetails?._id,
     batchId: user?.batchDetails?._id,
-    semester: sem,
+    exam: sem,
     Academic,
     total,
     average,

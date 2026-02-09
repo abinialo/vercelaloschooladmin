@@ -389,12 +389,12 @@ const Sem = () => {
             <div className={styles.infoCards}>
               <div className={styles.infoCard}>
                 <span className={styles.label}>Name</span>
-                <p className={styles.value}>{viewRecord.name || "-"}</p>
+                <p className={styles.value}>{viewRecord.userDetails.name || "-"}</p>
               </div>
 
               <div className={styles.infoCard}>
                 <span className={styles.label}>Student ID</span>
-                <p className={styles.value}>{viewRecord.studentId || "-"}</p>
+                <p className={styles.value}>{viewRecord.userDetails.studentId || "-"}</p>
               </div>
 
               <div className={styles.infoCard}>
@@ -415,8 +415,8 @@ const Sem = () => {
                 </tr>
               </thead>
               <tbody>
-                {viewRecord.subjects && viewRecord.subjects.length > 0 ? (
-                  viewRecord.subjects.map((s, i) => (
+                {viewRecord.Marks && viewRecord.Marks.length > 0 ? (
+                  viewRecord.Marks.map((s, i) => (
                     <tr key={i}>
                       <td>{s.subjectCode}</td>
                       <td>{s.subjectName || "-"}</td>
