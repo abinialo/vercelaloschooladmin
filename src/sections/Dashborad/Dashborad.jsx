@@ -42,8 +42,8 @@ export const Dashboard = () => {
     const [Attendance, setAttendance] = useState([])
     const [termToppers, setTermToppers] = useState([]);
     const [semesterToppers, setSemesterToppers] = useState([]);
-    const [academic, setAcademic] = useState("");
-    const [semester, setSemester] = useState("");
+    const [academic, setAcademic] = useState("Term1");
+    const [semester, setSemester] = useState("sem1");
     const [courseId, setCourseId] = useState("");
     const [batchId, setBatchId] = useState("");
     const [courses, setCourses] = useState([]);

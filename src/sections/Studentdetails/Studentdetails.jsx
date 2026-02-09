@@ -111,13 +111,13 @@ const openEditTermSem = (record) => {
 
   setEditingId(record._id);
   setAcademic(record.Academic || "");
-  setSem(record.semester || "sem1");
+  setSem(record.exam || "sem1");
 
   // Convert API Marks → UI format
   const formattedMarks = (record.Marks || []).map((m) => ({
     subjectCode: m.subjectCode || "",
     subjectName: m.subjectName || m.subject || "",
-    mark: m.Mark || m.mark || "",
+    mark: m.mark ?? m.Mark ?? "",
   }));
 
   setMarks(formattedMarks);
@@ -790,7 +790,7 @@ const openEditTermSem = (record) => {
                   >
                     <div>
                       <p className="font-medium">
-                        {p.Academic || "—"}
+                        {p.Academic || "—"}({p.exam || "—"})
                       </p>
                       <p className="text-sm text-gray-500">
                         Total : {p.total} | Avg : {p.average}
@@ -1216,7 +1216,7 @@ const openEditTermSem = (record) => {
                 <input
                   type="number"
                   placeholder="Enter mark"
-                  value={marks[index]?.mark || ""}
+                  value={marks[index]?.mark ?? ""}
                   onChange={(e) => handleMarkChange(index, e.target.value)}
                   className="w-1/3 border rounded p-2"
                 />

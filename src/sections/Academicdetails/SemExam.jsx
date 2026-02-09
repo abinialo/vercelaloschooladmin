@@ -437,7 +437,7 @@ const Sem = () => {
 
             <div className={styles.modalFooter}>
               <strong>Total Marks:</strong> {viewRecord.total || 0} &nbsp; | &nbsp;
-              <strong>Percentage:</strong> {viewRecord.percentage || "0%"}
+              <strong>Percentage:</strong> {`${viewRecord.average}% ` || "0%"}
             </div>
           </div>
         </div>
