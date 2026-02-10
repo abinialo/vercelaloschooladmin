@@ -36,7 +36,7 @@
   width: 100%;
   border-collapse: collapse;
   background: #fff;
-  margin-top: 16px;
+  /* margin-top: 16px; */
 }
 
 .table th {
@@ -44,7 +44,7 @@
   background: #fafafa;
   font-weight: 600;
   border-bottom: 1px solid #e5e5e5;
-    color: #144196;
+  color: #144196;
 }
 
 .table td {
@@ -79,7 +79,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999;  
+  z-index: 99999;
 }
 
 .modalCard {
@@ -93,16 +93,13 @@
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
 }
 
-
-
 .modal {
   background: #ffffff;
-  width: 650px;             
+  width: 650px;
   max-width: 90%;
   border-radius: 14px;
   padding: 20px 24px;
   position: relative;
-
 
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
@@ -165,7 +162,7 @@
   /* -webkit-text-fill-color: transparent; */
   background-clip: text;
   /* color: transparent; */
-text-align: center;
+  text-align: center;
   font-weight: 600;
 }
 .studentInfo {
@@ -186,12 +183,11 @@ text-align: center;
   margin-top: 4px;
 }
 
-
 .marksTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 14px;
-  background: #fff;          
+  background: #fff;
 }
 
 .marksTable th {
@@ -208,9 +204,8 @@ text-align: center;
   font-size: 14px;
   border-bottom: 1px solid #e5e5e5;
   text-align: center;
-  background: #ffffff;     
+  background: #ffffff;
 }
-
 
 .modalFooter {
   margin-top: 16px;
@@ -252,7 +247,6 @@ text-align: center;
   margin-top: 4px;
 }
 
-
 @media (max-width: 768px) {
   .headerBar {
     flex-direction: column;
@@ -292,7 +286,6 @@ text-align: center;
   }
 }
 
-
 @media (max-width: 480px) {
   .container {
     padding: 8px;
@@ -325,7 +318,6 @@ text-align: center;
     padding: 6px 12px;
   }
 
- 
   .modalOverlay {
     padding: 10px;
   }
@@ -359,7 +351,6 @@ text-align: center;
   margin-top: 20px;
 }
 
-
 .paginationWrap :global(.MuiPaginationItem-root) {
   color: #ffffff;
   background: linear-gradient(to bottom, #144196, #061530);
@@ -369,18 +360,15 @@ text-align: center;
   font-weight: 500;
 }
 
-
 .paginationWrap :global(.MuiPaginationItem-root:hover) {
   background: linear-gradient(to bottom, #1b55c4, #0a1f4a);
 }
-
 
 .paginationWrap :global(.MuiPaginationItem-root.Mui-selected) {
   background: linear-gradient(to bottom, #2b6fff, #0d2f7a);
   color: #ffffff;
   font-weight: 600;
 }
-
 
 .paginationWrap :global(.MuiPaginationItem-icon) {
   color: #ffffff;

@@ -18,6 +18,9 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
     }
   }, [editData, semester]);
 
+  const [loading, setLoading] = useState(false);
+
+
   // Handle input change
   const handleChange = (index, field, value) => {
     const updated = [...subjects];
@@ -88,6 +91,7 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
     };
 
     try {
+      setLoading(true);
       if (isEdit) {
         await updatesubject(editData._id, payload);
       } else {
@@ -98,6 +102,8 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
       window.location.reload(); // Replace with refetch later if needed
     } catch (err) {
       console.error("Error saving subjects:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -118,9 +124,8 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
                 onChange={(e) =>
                   handleChange(index, "subjectCode", e.target.value)
                 }
-                className={`border p-2 rounded w-full ${
-                  errors[index]?.subjectCode ? "border-red-500" : ""
-                }`}
+                className={`border p-2 rounded w-full ${errors[index]?.subjectCode ? "border-red-500" : ""
+                  }`}
               />
               {errors[index]?.subjectCode && (
                 <p className="text-red-500 text-xs mt-1">
@@ -137,9 +142,8 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
                 onChange={(e) =>
                   handleChange(index, "subjectName", e.target.value)
                 }
-                className={`border p-2 rounded w-full ${
-                  errors[index]?.subjectName ? "border-red-500" : ""
-                }`}
+                className={`border p-2 rounded w-full ${errors[index]?.subjectName ? "border-red-500" : ""
+                  }`}
               />
               {errors[index]?.subjectName && (
                 <p className="text-red-500 text-xs mt-1">
@@ -170,11 +174,40 @@ const Subjectpopup = ({ closeModal, courseId, batchId, semester, editData }) => 
           Cancel
         </button>
         <button
+          disabled={loading}
+
           onClick={handleSubmit}
-          className="px-6 py-2 bg-gradient-to-b from-[#144196] to-[#061530] text-white rounded"
-        >
-          {isEdit ? "Update" : "Save"}
-        </button>
+          className={`px-6 py-2 rounded text-white flex items-center justify-center gap-2
+    ${loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-b from-[#144196] to-[#061530]"}
+  `}        >
+          {loading ? (
+            <>
+              {/* <svg
+        className="animate-spin h-4 w-4 text-white"
+        viewBox="0 0 24 24"
+        fill="none"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        />
+      </svg> */}
+              {isEdit ? "Updating..." : "Saving..."}
+            </>
+          ) : (
+            isEdit ? "Update" : "Save"
+          )}        </button>
       </div>
     </div>
   );

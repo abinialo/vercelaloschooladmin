@@ -6,9 +6,11 @@ import {
   getCourse,
   getCourseBatchByCourseId,
   getUser,
+  excelPerformance,
 } from "../../api/Serviceapi";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { IoIosCloseCircle } from "react-icons/io";
+import { MdOutlineFileDownload } from "react-icons/md";
 
 const theme = createTheme({
   components: {
@@ -203,6 +205,44 @@ const Sem = () => {
     ...new Set(performance.map((p) => p.semester).filter(Boolean)),
   ];
 
+
+  let getExcel = async () => {
+    try {
+      let res = await excelPerformance(courseId, batchId, semester, search, academic);
+      console.log("Axios response:", res);
+
+      // The Base64 string is here
+      let base64String = res.data.data;
+
+      if (!base64String) {
+        alert("No Excel file data found");
+        return;
+      }
+
+      // Clean (just in case)
+      base64String = base64String.replace(/\s/g, "");
+
+      // Convert Base64 → Blob
+      const byteCharacters = atob(base64String);
+      const byteNumbers = new Array(byteCharacters.length)
+        .fill()
+        .map((_, i) => byteCharacters.charCodeAt(i));
+      const byteArray = new Uint8Array(byteNumbers);
+
+      const blob = new Blob([byteArray], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Trigger download
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "Academicdetails.xlsx";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (err) {
+      console.log("Error downloading Excel:", err);
+    }
+  };
   return (
     <div className={styles.container}>
       <div className={styles.headerBar}>
@@ -289,7 +329,10 @@ const Sem = () => {
           )}
         </div>
       </div>
-
+      <div className='flex justify-end mt-4 w-[96%]'>
+        <button className='bg-gradient-to-b from-[#144196] to-[#061530] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
+        </button>
+      </div>
       <table className={styles.table}>
         <thead>
           <tr>

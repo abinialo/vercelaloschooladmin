@@ -41,6 +41,9 @@ const Studentdetails = () => {
   const [totalcount, setTotalcount] = useState(null);
   const [studentattendance, setAttendance] = useState({});
   const [status, setStatus] = useState(true);
+  const [termList, setTermList] = useState([]);
+  const [subjectLoading, setSubjectLoading] = useState(false);
+
   const [selectedRange, setSelectedRange] = useState([
     {
       startDate: dayjs().startOf("month").toDate(),
@@ -103,94 +106,155 @@ const Studentdetails = () => {
   }, [sem]);
 
   const [formError, setFormError] = useState("");
-const [editingId, setEditingId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
 
-const openEditTermSem = (record) => {
-  setEditMode(true);
-  setTermModal(true);
 
-  setEditingId(record._id);
-  setAcademic(record.Academic || "");
-  setSem(record.exam || "sem1");
 
-  // Convert API Marks → UI format
-  const formattedMarks = (record.Marks || []).map((m) => ({
-    subjectCode: m.subjectCode || "",
-    subjectName: m.subjectName || m.subject || "",
-    mark: m.mark ?? m.Mark ?? "",
-  }));
+  const openEditTermSem = (record) => {
+    setEditMode(true);
+    setTermModal(true);
 
-  setMarks(formattedMarks);
+    setEditingId(record._id);
+    setAcademic(record.Academic || "");
+    setSem(record.exam || "sem1");
 
-  // Also set subjects list so UI labels show
-  const subjectList = formattedMarks.map((m) => ({
-    subjectCode: m.subjectCode,
-    subjectName: m.subjectName,
-  }));
-  setSubjects(subjectList);
-};
+    // Convert API Marks → UI format
+    const formattedMarks = (record.Marks || []).map((m) => ({
+      subjectCode: m.subjectCode || "",
+      subjectName: m.subjectName || m.subject || "",
+      mark: m.mark ?? m.Mark ?? "",
+    }));
 
- const handleSavePerformance = async () => {
-  setFormError("");
+    setMarks(formattedMarks);
 
-  if (!Academic) return setFormError("Please select Term / Sem");
-  if (!marks.length) return setFormError("Marks not available");
-
-  for (let m of marks) {
-    if (m.mark === "") return setFormError(`Enter mark for ${m.subjectName}`);
-    if (isNaN(m.mark) || Number(m.mark) < 0)
-      return setFormError(`Invalid mark for ${m.subjectName}`);
-  }
-
-  const numericMarks = marks.map((m) => Number(m.mark));
-  const total = numericMarks.reduce((sum, m) => sum + m, 0);
-  const average = numericMarks.length
-    ? Number((total / numericMarks.length).toFixed(2))
-    : 0;
-
-  const payload = {
-    userId: id,
-    courseId: user?.courseDetails?._id,
-    batchId: user?.batchDetails?._id,
-    exam: sem,
-    Academic,
-    total,
-    average,
-    Marks: marks.map((m) => ({
+    // Also set subjects list so UI labels show
+    const subjectList = formattedMarks.map((m) => ({
       subjectCode: m.subjectCode,
       subjectName: m.subjectName,
-      mark: Number(m.mark),
-    })),
+    }));
+    setSubjects(subjectList);
   };
+  const [performanceLoading, setPerformanceLoading] = useState(false);
 
-  try {
-    if (editMode && editingId) {
-      await updateTermSem(editingId, payload);
-      toast.success("Marks updated successfully ✏️");
-    } else {
-      await createTermSem(payload);
-      toast.success("Marks saved successfully 🎉");
+
+  const handleSavePerformance = async () => {
+    setFormError("");
+
+    if (!Academic) return setFormError("Please select Term / Sem");
+    if (!marks.length) return setFormError("Marks not available");
+
+    if (!editMode && allAcademicsUsed) {
+      return setFormError(
+        "All Term / Semester marks already entered for this semester"
+      );
     }
 
-    setTermModal(false);
-    setEditMode(false);
-    setEditingId(null);
-    setMarks([]);
-    setSubjects([]);
-    fetchPerformance();
-  } catch (err) {
-    toast.error(err?.response?.data?.message || "Operation failed");
-  }
-};
+    if (!editMode && usedAcademicsForSemester.includes(Academic)) {
+      return setFormError(
+        "Marks already exist for this Term / Sem in the selected semester"
+      );
+    }
+
+    for (let m of marks) {
+      if (m.mark === "") {
+        return setFormError(`Enter mark for ${m.subjectName}`);
+      }
+
+      if (m.mark !== "AA" && (isNaN(m.mark) || Number(m.mark) < 0)) {
+        return setFormError(`Invalid mark for ${m.subjectName}`);
+      }
+    }
 
 
+    const numericMarks = marks.map((m) => {
+      // If absent → count as 0
+      if (m.mark === "AA") return 0;
 
-  const totalMarks = marks.reduce((sum, m) => sum + Number(m.mark || 0), 0);
-  const avgMarks = marks.length ? (totalMarks / marks.length).toFixed(2) : 0;
+      // Convert to number safely
+      const num = Number(m.mark);
+
+      // If invalid number → treat as 0 (prevents NaN)
+      return isNaN(num) ? 0 : num;
+    });
+
+    const total = numericMarks.reduce((sum, m) => sum + m, 0);
+
+    const average = numericMarks.length
+      ? Number((total / numericMarks.length).toFixed(2))
+      : 0;
+
+
+    const payload = {
+      userId: id,
+      courseId: user?.courseDetails?._id,
+      batchId: user?.batchDetails?._id,
+      exam: sem,
+      Academic,
+      total,
+      average,
+      Marks: marks.map((m) => ({
+        subjectCode: m.subjectCode,
+        subjectName: m.subjectName,
+        mark: m.mark === "AA" ? "AA" : Number(m.mark),
+      })),
+
+    };
+
+    try {
+      setPerformanceLoading(true);
+
+      if (editMode && editingId) {
+        await updateTermSem(editingId, payload);
+        toast.success("Marks updated successfully ✏️");
+      } else {
+        await createTermSem(payload);
+        toast.success("Marks saved successfully 🎉");
+      }
+
+      setTermModal(false);
+      setEditMode(false);
+      setEditingId(null);
+      setMarks([]);
+      setSubjects([]);
+      fetchPerformance();
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Operation failed");
+    } finally {
+      setPerformanceLoading(false);
+    }
+  };
+
+  // Academics already used for selected semester
+  const usedAcademicsForSemester = termList
+    .filter((item) => item.exam === sem)
+    .map((item) => item.Academic);
+
+  // All possible academic options
+  const allAcademicOptions = ["Term1", "Term2", "Semester"];
+
+  // Check if all options already entered
+  const allAcademicsUsed = allAcademicOptions.every((opt) =>
+    usedAcademicsForSemester.includes(opt)
+  );
+
+
+  const numericMarksUI = marks.map((m) => {
+    if (m.mark === "AA") return 0;
+    const num = Number(m.mark);
+    return isNaN(num) ? 0 : num;
+  });
+
+  const totalMarks = numericMarksUI.reduce((sum, m) => sum + m, 0);
+
+  const avgMarks = numericMarksUI.length
+    ? (totalMarks / numericMarksUI.length).toFixed(2)
+    : 0;
+
+
 
   const handleMarkChange = (index, value) => {
     const updated = [...marks];
-    updated[index].mark = value;
+    updated[index] = { ...updated[index], mark: value };
     setMarks(updated);
   };
 
@@ -391,7 +455,6 @@ const openEditTermSem = (record) => {
   }, [id]);
 
 
-  const [termList, setTermList] = useState([]);
   const [termLoading, setTermLoading] = useState(false);
 
 
@@ -703,10 +766,12 @@ const openEditTermSem = (record) => {
     rounded-md
     whitespace-nowrap"
                           onClick={() => {
+                            setTimeout(fetchSubjects, 0); // ensure modal + user loaded
+
                             setEditMode(false);
                             setAcademic("");
+                            // setSem("");
                             setTermModal(true);
-                            setTimeout(fetchSubjects, 0); // ensure modal + user loaded
                           }}
                         >
                           + Add Term / Sem Detail
@@ -1151,7 +1216,7 @@ const openEditTermSem = (record) => {
           overlay: { backgroundColor: "rgba(0,0,0,0.7)", zIndex: 1000 },
           content: {
             width: "600px",
-            height:'max-content',
+            height: 'max-content',
             margin: "auto",
             borderRadius: "10px",
             padding: "24px",
@@ -1189,13 +1254,43 @@ const openEditTermSem = (record) => {
             className="w-full border rounded p-2 bg-white"
             value={Academic}
             onChange={(e) => setAcademic(e.target.value)}
-            disabled={editMode}
+            disabled={editMode || allAcademicsUsed}
+            style={{
+              cursor: editMode || allAcademicsUsed ? "not-allowed" : "pointer",
+              // backgroundColor: !editMode || allAcademicsUsed ? "#f3f4f6" : "white",
+            }}
           >
-            <option value="">Select Term / Sem</option>   {/* ADD THIS */}
-            <option value="Term1">Term 1</option>
-            <option value="Term2">Term 2</option>
-            <option value="Semester">Semester</option>
+            <option value="">Select Term / Sem</option>
+
+            <option
+              value="Term1"
+              disabled={!editMode && usedAcademicsForSemester.includes("Term1")}
+            >
+              Term 1
+            </option>
+
+            <option
+              value="Term2"
+              disabled={!editMode && usedAcademicsForSemester.includes("Term2")}
+            >
+              Term 2
+            </option>
+
+            <option
+              value="Semester"
+              disabled={!editMode && usedAcademicsForSemester.includes("Semester")}
+            >
+              Semester
+            </option>
           </select>
+
+          {/* Helper Messages */}
+          {!editMode && allAcademicsUsed && (
+            <p className="text-xs text-red-500 mt-1">
+              All Term / Semester records are already added for this semester.
+            </p>
+          )}
+
 
 
         </div>
@@ -1211,15 +1306,35 @@ const openEditTermSem = (record) => {
           ) : (
             subjects.map((sub, index) => (
               <div key={sub.subjectCode} className="flex gap-3 mb-3 items-center">
-                <div className="w-1/3 text-sm font-medium">{sub.subjectCode}</div>
-                <div className="w-1/3 text-sm">{sub.subjectName}</div>
-                <input
-                  type="number"
-                  placeholder="Enter mark"
-                  value={marks[index]?.mark ?? ""}
-                  onChange={(e) => handleMarkChange(index, e.target.value)}
-                  className="w-1/3 border rounded p-2"
-                />
+                <div className="w-1/3 text-sm  font-medium">
+                  {sub.subjectCode} 
+                </div>
+                <div className="w-1/3 text-sm ">
+                 {sub.subjectName}
+                </div>
+                <div className="w-1/3 text-sm ">
+                  <input
+                    type="text"
+                    value={marks[index]?.mark ?? ""}
+                    onChange={(e) => {
+                      let value = e.target.value.toUpperCase();
+
+                      if (value === "AA") {
+                        handleMarkChange(index, "AA");
+                        return;
+                      }
+
+                      if (/^\d*$/.test(value)) {
+                        handleMarkChange(index, value);
+                        return;
+                      }
+
+                      handleMarkChange(index, value);
+                    }}
+                    className="border p-2 rounded"
+                  />
+                </div>
+
               </div>
             ))
           )}
@@ -1243,20 +1358,32 @@ const openEditTermSem = (record) => {
               setAcademic("");       // reset academic
               setMarks([]);          // clear marks
               setSubjects([]);       // clear subjects
-              setFormError("");      // clear validation error
+              setFormError("");
+              setSem("sem1");        // clear validation error
             }}
           >
             Cancel
           </button>
 
 
-        <button
-  type="button"
-  onClick={handleSavePerformance}
-  className="bg-[#144196] text-white px-5 py-2 rounded"
->
-  {editMode ? "Update" : "Save"}
-</button>
+          <button
+            type="button"
+            onClick={handleSavePerformance}
+            disabled={performanceLoading}
+            className={`px-5 py-2 rounded text-white flex items-center justify-center gap-2
+    ${performanceLoading ? "bg-gray-400 cursor-not-allowed" : "bg-[#144196]"}
+  `}
+          >
+            {performanceLoading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                {editMode ? "Updating..." : "Saving..."}
+              </>
+            ) : (
+              editMode ? "Update" : "Save"
+            )}
+          </button>
+
 
 
         </div>
@@ -1269,7 +1396,7 @@ const openEditTermSem = (record) => {
           content: {
             width: "350px",
             margin: "auto",
-            height:'max-content',
+            height: 'max-content',
             borderRadius: "10px",
             padding: "20px",
             textAlign: "center",

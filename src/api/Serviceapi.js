@@ -341,6 +341,10 @@ export const excelAttendance = (
   return apiService.get(url);
 };
 
+export const excelPerformance = (courseId,batchId,semester,value,academic) => {
+  return apiService.get(`/performance/excel?courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`);
+};
+
 export const makeabsent = (id,discription) => {
     const userId = sessionStorage.getItem('userId');
     const date= new Date().toLocaleDateString("en-CA")
