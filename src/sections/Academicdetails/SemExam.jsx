@@ -50,7 +50,7 @@ const Sem = () => {
   // const [page, setPage] = useState(1);
   // const rowsPerPage = 5;
 
-  const [limit, setlimit] = useState(8);
+  const [limit, setlimit] = useState(10);
   const [totaluser, settotal] = useState(0);
   const [totalpages, setpage] = useState(0);
   const [offset, setoffset] = useState(1);
