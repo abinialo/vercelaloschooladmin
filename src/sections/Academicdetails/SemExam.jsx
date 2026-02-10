@@ -327,12 +327,14 @@ const Sem = () => {
               <IoIosCloseCircle />
             </button>
           )}
+
+          <div className=''>
+            <button className='bg-gradient-to-b from-[#144196] to-[#061530] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
+            </button>
+          </div>
         </div>
       </div>
-      <div className='flex justify-end mt-4 w-[96%]'>
-        <button className='bg-gradient-to-b from-[#144196] to-[#061530] text-white px-1 py-1 rounded-md flex items-center flex-end gap-1 cursor-pointer' onClick={getExcel}>Export<MdOutlineFileDownload />
-        </button>
-      </div>
+
       <table className={styles.table}>
         <thead>
           <tr>
