@@ -455,6 +455,7 @@ const Sem = () => {
                   <th>Subject Code</th>
                   <th>Subject</th>
                   <th>Marks</th>
+                  <th>Status</th>
                   {/* <th>Total</th> */}
                   {/* <th>Percentage</th> */}
                 </tr>
@@ -466,6 +467,12 @@ const Sem = () => {
                       <td>{s.subjectCode}</td>
                       <td>{s.subjectName || "-"}</td>
                       <td>{s.mark ?? 0}</td>
+                      <td> {s.mark === "AA"
+                        ? "AA"
+                        : s.mark >= 40
+                          ? "P"
+                          : "RA"}
+                      </td>
                       {/* <td>100</td> */}
                       {/* <td>{s.mark ? `${s.mark}%` : "0%"}</td> */}
                     </tr>
