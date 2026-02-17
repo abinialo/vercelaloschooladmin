@@ -884,35 +884,69 @@ const Studentdetails = () => {
                 <p className="text-sm text-gray-500">Loading records...</p>
               ) : termList.length > 0 ? (
                 termList.map((p) => (
-                  <div
-                    key={p._id}
-                    className="flex justify-between items-center bg-white p-3 rounded mb-2"
-                  >
-                    <div>
-                      <p className="font-medium">
-                        {p.Academic || "—"}({p.exam || "—"})
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Total : {p.total} | Avg : {p.average}
-                      </p>
-                    </div>
+  <div
+    key={p._id}
+    className="bg-white p-3 rounded mb-3"
+  >
+    {/* Header */}
+    <div className="flex justify-between items-center mb-2">
+      <div>
+        <p className="font-medium">
+          {p.Academic || "—"} ({p.exam || "—"})
+        </p>
+        <p className="text-sm text-gray-500">
+          Total : {p.total} | Avg : {p.average}
+        </p>
+      </div>
 
-                    <div className="flex gap-3 items-center">
-                      <EditOutlinedIcon
-                        sx={{ cursor: "pointer", fontSize: 18 }}
-                        onClick={() => openEditTermSem(p)}
-                      />
+      <div className="flex gap-3 items-center">
+        <EditOutlinedIcon
+          sx={{ cursor: "pointer", fontSize: 18 }}
+          onClick={() => openEditTermSem(p)}
+        />
 
-                      <span
-                        className="text-red-600 text-sm cursor-pointer"
-                        onClick={() => setDeleteId(p._id)}
-                      >
-                        Delete
-                      </span>
+        <span
+          className="text-red-600 text-sm cursor-pointer"
+          onClick={() => setDeleteId(p._id)}
+        >
+          Delete
+        </span>
+      </div>
+    </div>
 
-                    </div>
-                  </div>
-                ))
+    {/* 🔥 Revaluation Section */}
+    {p?.Marks?.filter(
+      (m) => m.revaluationUrl && m.revaluationUrl.trim() !== ""
+    ).length > 0 && (
+      <div className="border-t pt-2 mt-2">
+        <p className="text-sm font-medium mb-2">
+          Revaluation Papers:
+        </p>
+
+        {p.Marks
+          .filter((m) => m.revaluationUrl && m.revaluationUrl.trim() !== "")
+          .map((m, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded mb-1"
+            >
+              <span className="text-sm font-medium">
+                {m.subjectName}
+              </span>
+
+              <button
+                onClick={() => handleDownload(m.revaluationUrl)}
+                className="text-blue-600 hover:text-blue-800"
+              >
+                ⬇️
+              </button>
+            </div>
+          ))}
+      </div>
+    )}
+  </div>
+))
+
               ) : (
                 <p className="text-sm text-gray-400">No Term / Sem Records</p>
               )}
