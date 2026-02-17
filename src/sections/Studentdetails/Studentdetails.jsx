@@ -16,6 +16,7 @@ import {
   getPerformance,
   Performanceuser,
   deleteTermSem,
+  uploadFile,
 } from "../../api/Serviceapi";
 import Modal from "react-modal";
 import { deleteTermSem as deleteTermSemApi } from "../../api/Serviceapi";
@@ -89,7 +90,10 @@ const Studentdetails = () => {
         subjectCode: sub.subjectCode,
         subjectName: sub.subjectName,
         mark: "",
+        revaluationUrl: "",
+        revaluationFileName: ""
       }));
+
 
       setMarks(initialMarks);
     } catch (err) {
@@ -98,6 +102,32 @@ const Studentdetails = () => {
       setSubjectsLoading(false);
     }
   };
+
+  const handleRevaluationUpload = async (index, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files allowed");
+      return;
+    }
+
+    try {
+      const res = await uploadFile(file);
+      const fileUrl = res?.data?.data?.imageURL;
+
+      const updated = [...marks];
+      updated[index].revaluationUrl = fileUrl;
+      updated[index].revaluationFileName = file.name;
+
+      setMarks(updated);
+
+    } catch (error) {
+      console.error("Upload failed", error);
+      toast.error("Upload failed");
+    }
+  };
+
 
   useEffect(() => {
     if (termModal && !editMode) {
@@ -121,9 +151,12 @@ const Studentdetails = () => {
     // Convert API Marks → UI format
     const formattedMarks = (record.Marks || []).map((m) => ({
       subjectCode: m.subjectCode || "",
-      subjectName: m.subjectName || m.subject || "",
-      mark: m.mark ?? m.Mark ?? "",
+      subjectName: m.subjectName || "",
+      mark: m.mark ?? "",
+      revaluationUrl: m.revaluationUrl || "",
+      revaluationFileName: m.revaluationUrl ? "Uploaded File" : ""
     }));
+
 
     setMarks(formattedMarks);
 
@@ -196,7 +229,9 @@ const Studentdetails = () => {
         subjectCode: m.subjectCode,
         subjectName: m.subjectName,
         mark: m.mark === "AA" ? "AA" : Number(m.mark),
-      })),
+        revaluationUrl: m.revaluationUrl || ""
+      }))
+
 
     };
 
@@ -1305,37 +1340,77 @@ const Studentdetails = () => {
             <p className="text-sm text-red-500">No subjects found</p>
           ) : (
             subjects.map((sub, index) => (
-              <div key={sub.subjectCode} className="flex gap-3 mb-3 items-center">
-                <div className="w-1/3 text-sm  font-medium">
-                  {sub.subjectCode} 
-                </div>
-                <div className="w-1/3 text-sm ">
-                 {sub.subjectName}
-                </div>
-                <div className="w-1/3 text-sm ">
-                  <input
-                    type="text"
-                    value={marks[index]?.mark ?? ""}
-                    onChange={(e) => {
-                      let value = e.target.value.toUpperCase();
+              <div key={sub.subjectCode} className=" mb-4">
 
-                      if (value === "AA") {
-                        handleMarkChange(index, "AA");
-                        return;
-                      }
+                <div className="flex gap-3 items-center mb-2">
+                  <div className="w-1/10 text-sm font-medium">
+                    {sub.subjectCode}
+                  </div>
 
-                      if (/^\d*$/.test(value)) {
-                        handleMarkChange(index, value);
-                        return;
-                      }
+                  <div className="w-1/8 text-sm">
+                    {sub.subjectName}
+                  </div>
 
-                      handleMarkChange(index, value);
-                    }}
-                    className="border p-2 rounded"
-                  />
+                  <div className="w-1/4">
+                    <input
+                      type="text"
+                      value={marks[index]?.mark ?? ""}
+                      onChange={(e) => {
+                        let value = e.target.value.toUpperCase();
+
+                        if (value === "AA") {
+                          handleMarkChange(index, "AA");
+                          return;
+                        }
+
+                        if (/^\d*$/.test(value)) {
+                          handleMarkChange(index, value);
+                          return;
+                        }
+                      }}
+                      className="border p-2 rounded w-full"
+                    />
+                  </div>
+                  <div className="w-1/2 ">
+                    {/* <label className="text-xs font-medium">
+                    Revaluation Paper (PDF)
+                  </label> */}
+
+                    {marks[index]?.revaluationUrl ? (
+                      <div className=" bg-gray-100 p-2 rounded mt-1">
+                        <span className="text-xs truncate">
+                          {marks[index].revaluationFileName}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="text-red-500 text-xs cursor-pointer ml-2"
+                          onClick={() => {
+                            const updated = [...marks];
+                            updated[index].revaluationUrl = "";
+                            updated[index].revaluationFileName = "";
+                            setMarks(updated);
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => handleRevaluationUpload(index, e)}
+                        className="border py-3 px-2 rounded w-full  text-xs cursor-pointer"
+                      />
+                    )}
+                  </div>
                 </div>
+
+                {/* Revaluation Upload */}
+
 
               </div>
+
             ))
           )}
         </div>
