@@ -168,7 +168,7 @@ const UpdateStudent = ({ closeModal, id, onSuccess }) => {
         // }
         if(!Formdata.ID){
             newErrors.register_number="Register number is required";
-            setErrors(prev=>({...prev,register_number:newErrors}));
+            setErrors(prev=>({...prev,register_number:newErrors.register_number}));
         }
         return newErrors
     }
