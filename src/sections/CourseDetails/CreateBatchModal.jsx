@@ -16,6 +16,8 @@ const CreateBatchModal = ({
     batchName: "",
     startDate: "",
     endDate: "",
+    classStartIn: "",
+    classEndIn: "",
     sem1FeeDate: "",
     sem2FeeDate: "",
   });
@@ -32,11 +34,30 @@ const CreateBatchModal = ({
       return `${year}-${month}-${day}`;
     };
 
+    const to24HourTime = (timeStr) => {
+      if (!timeStr) return "";
+      if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+
+      const match = timeStr.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+      if (!match) return "";
+
+      let hour = parseInt(match[1], 10);
+      const minute = match[2];
+      const period = match[3].toUpperCase();
+
+      if (period === "AM" && hour === 12) hour = 0;
+      if (period === "PM" && hour !== 12) hour += 12;
+
+      return `${String(hour).padStart(2, "0")}:${minute}`;
+    };
+
     if (batchData) {
       setFormData({
         batchName: batchData.batchName || "",
         startDate: formatDate(batchData.startDate),
         endDate: formatDate(batchData.endDate),
+        classStartIn: to24HourTime(batchData.classStartIn || batchData.checkStartIn),
+        classEndIn: to24HourTime(batchData.classEndIn || batchData.checkEndIn),
         sem1FeeDate: formatDate(batchData.sem1PayDate),
         sem2FeeDate: formatDate(batchData.sem2PayDate),
       });
@@ -45,6 +66,8 @@ const CreateBatchModal = ({
         batchName: "",
         startDate: "",
         endDate: "",
+        classStartIn: "",
+        classEndIn: "",
         sem1FeeDate: "",
         sem2FeeDate: "",
       });
@@ -75,6 +98,8 @@ const CreateBatchModal = ({
       newErrors.batchName = "Batch name is required";
     if (!formData.startDate) newErrors.startDate = "Start date is required";
     if (!formData.endDate) newErrors.endDate = "End date is required";
+    if (!formData.classStartIn) newErrors.classStartIn = "Class start time is required";
+    if (!formData.classEndIn) newErrors.classEndIn = "Class end time is required";
     if (!formData.sem1FeeDate)
       newErrors.sem1FeeDate = "Sem1 Fee Date is required";
     if (!formData.sem2FeeDate)
@@ -113,6 +138,12 @@ const CreateBatchModal = ({
       }
     }
 
+    if (formData.classStartIn && formData.classEndIn) {
+      if (formData.classEndIn <= formData.classStartIn) {
+        newErrors.classEndIn = "Class end time must be after class start time";
+      }
+    }
+
     return newErrors;
   };
 
@@ -124,6 +155,14 @@ const CreateBatchModal = ({
     if (Object.keys(newErrors).length > 0) return;
     setIsLoading(true);
     try {
+      const to12HourTime = (timeStr) => {
+        if (!timeStr) return "";
+        const [hourStr, minute] = timeStr.split(":");
+        let hour = parseInt(hourStr, 10);
+        const period = hour >= 12 ? "PM" : "AM";
+        hour = hour % 12 || 12;
+        return `${String(hour).padStart(2, "0")}:${minute} ${period}`;
+      };
 
       const formattedCourseName = formData.batchName
         .trim()
@@ -139,6 +178,8 @@ const CreateBatchModal = ({
         courseId: id,
         startDate: formData.startDate,
         endDate: formData.endDate,
+        classStartIn: to12HourTime(formData.classStartIn),
+        classEndIn: to12HourTime(formData.classEndIn),
         sem1PayDate: formData.sem1FeeDate,
         sem2PayDate: formData.sem2FeeDate,
       };
@@ -151,6 +192,8 @@ const CreateBatchModal = ({
           batchName: formData.batchName,
           startDate: formData.startDate,
           endDate: formData.endDate,
+          classStartIn: to12HourTime(formData.classStartIn),
+          classEndIn: to12HourTime(formData.classEndIn),
           sem1PayDate: formData.sem1FeeDate,
           sem2PayDate: formData.sem2FeeDate,
         };
@@ -171,6 +214,8 @@ const CreateBatchModal = ({
         batchName: "",
         startDate: "",
         endDate: "",
+        classStartIn: "",
+        classEndIn: "",
         sem1FeeDate: "",
         sem2FeeDate: "",
       });
@@ -187,6 +232,8 @@ const CreateBatchModal = ({
       batchName: "",
       startDate: "",
       endDate: "",
+      classStartIn: "",
+      classEndIn: "",
       sem1FeeDate: "",
       sem2FeeDate: "",
     });
@@ -258,6 +305,40 @@ const CreateBatchModal = ({
               />
               {errors.endDate && (
                 <div className={styles.errorDiv}>{errors.endDate}</div>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.rowTwoGrid}>
+            <div className={styles.formGroup}>
+              <label>
+                Class Start Time <span className={styles.required}>*</span>
+              </label>
+              <input
+                type="time"
+                name="classStartIn"
+                value={formData.classStartIn}
+                onChange={handleChange}
+                className={errors.classStartIn ? styles.errorInput : ""}
+              />
+              {errors.classStartIn && (
+                <div className={styles.errorDiv}>{errors.classStartIn}</div>
+              )}
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>
+                 Class End Time <span className={styles.required}>*</span>
+              </label>
+              <input
+                type="time"
+                name="classEndIn"
+                value={formData.classEndIn}
+                onChange={handleChange}
+                className={errors.classEndIn ? styles.errorInput : ""}
+              />
+              {errors.classEndIn && (
+                <div className={styles.errorDiv}>{errors.classEndIn}</div>
               )}
             </div>
           </div>

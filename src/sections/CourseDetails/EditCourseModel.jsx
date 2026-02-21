@@ -219,6 +219,8 @@ const EditCourseModal = ({ visible, onCancel, onUpdate, formData,id }) => {
               </div>
             </div>
 
+            
+
             <div className={styles.rowTwoGrid}>
               <div className={styles.formGroup}>
                 <label>
