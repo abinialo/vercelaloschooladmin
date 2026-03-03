@@ -1,0 +1,285 @@
+.container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  background: #f6f7fb;
+  min-height: 100vh;
+}
+
+.wrapper {
+  width: 95%;
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+
+  height: 79vh;          /* ⭐ fixed height */
+  display: flex;
+  flex-direction: column;
+}
+.addRow {
+  margin-bottom: 10px;
+}
+
+.addBtn {
+  background: linear-gradient(90deg,#5fa8d3,#6fc3df);
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tableWrapper {
+  margin-top: 20px;
+  width: 100%;
+
+  flex: 1;               /* ⭐ take remaining space */
+  overflow-y: auto;      /* ⭐ vertical scroll */
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 12px;
+  background: #f1f3f7;
+}
+
+.table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  color: #555;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.link {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.icon {
+  cursor: pointer;
+  color: #777;
+}
+
+.icon:hover {
+  color: #000;
+}
+@media (max-width: 576px) {
+
+  .wrapper {
+    width: 100%;
+  }
+
+  .heading {
+    font-size: 18px;
+  }
+
+  .card {
+    padding: 10px;
+  }
+
+  /* force horizontal scroll */
+  .table {
+    min-width: 700px;
+  }
+
+  .table th {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .table td {
+    font-size: 13px;
+    padding: 10px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .thumbnail {
+    width: 55px;
+    height: 36px;
+  }
+
+  /* pagination center on mobile */
+  .card > div:last-child {
+    justify-content: center !important;
+  }
+
+}
+@media (min-width: 577px) and (max-width: 768px) {
+
+  .wrapper {
+    width: 100%;
+  }
+
+  .heading {
+    font-size: 20px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  /* keep scroll but slightly smaller width than mobile */
+  .table {
+    min-width: 650px;
+  }
+
+  .table th {
+    font-size: 13.5px;
+    padding: 11px;
+  }
+
+  .table td {
+    font-size: 13.5px;
+    padding: 11px;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .thumbnail {
+    width: 58px;
+    height: 38px;
+  }
+
+  /* pagination alignment */
+  .card > div:last-child {
+    justify-content: flex-end;
+  }
+
+}
+@media (min-width: 769px) and (max-width: 992px) {
+
+  .wrapper {
+    width: 97%;
+  }
+
+  .heading {
+    font-size: 21px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  /* no scroll needed on laptop */
+  .table {
+    min-width: 100%;
+  }
+
+  .table th {
+    font-size: 14px;
+    padding: 11px;
+  }
+
+  .table td {
+    font-size: 14px;
+    padding: 12px 11px;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .thumbnail {
+    width: 60px;
+    height: 40px;
+  }
+
+  /* pagination right aligned */
+  .card > div:last-child {
+    justify-content: flex-end;
+  }
+
+}
+@media (min-width: 993px) and (max-width: 1200px) {
+
+  .wrapper {
+    width: 96%;
+  }
+
+  .heading {
+    font-size: 22px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .table {
+    min-width: 100%;
+  }
+
+  .table th {
+    font-size: 14.5px;
+    padding: 12px;
+  }
+
+  .table td {
+    font-size: 14.5px;
+    padding: 14px 12px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .thumbnail {
+    width: 62px;
+    height: 42px;
+  }
+
+  /* pagination right aligned */
+  .card > div:last-child {
+    justify-content: flex-end;
+  }
+
+}

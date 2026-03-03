@@ -1,12 +1,10 @@
-import React, { use, useEffect } from "react";
+import React, { useState } from "react";
 import schoolLogo from "../../assets/loginPage_image/AloSchoolredesign_logo.png";
 import schoolImg from "../../assets/loginPage_image/AloSchoolboy_image.png";
 import styles from "./Login.module.css";
-import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { LoginUser } from '../../api/Serviceapi';
-import { message } from "antd";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loader from "../../component/loader/Loader";
@@ -14,86 +12,72 @@ import Loader from "../../component/loader/Loader";
 const Login = ({ setLoginUser }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState({
-    userName: "",
-    passWord: "",
-  });
+  const [error, setError] = useState({ userName: "", passWord: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [user, setUser] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  function Validation() {
-    let newErrors = {}
-    if (!email.trim()) {
-      newErrors.userName = "Email Id is required";
-      setError(prev => ({ ...prev, userName: newErrors.userName }));
+  // Form validation
+  function validateForm() {
+    const newErrors = {};
+    if (!email.trim()) newErrors.userName = "Email ID is required";
+    else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email.trim()))
+      newErrors.userName = "Enter a valid email address";
 
-    } else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email.trim())) {
+    if (!password.trim()) newErrors.passWord = "Password is required";
 
-      newErrors.userName = " enter a valid email address";
-      setError(prev => ({ ...prev, userName: newErrors.userName }));
-    }
-
-    if (!password.trim()) {
-      newErrors.password = " Password is Required";
-      setError(prev => ({ ...prev, passWord: newErrors.password }))
-
-    }
-    return newErrors
+    setError(newErrors);
+    return newErrors;
   }
-  const [loading, setLoading] = useState(false);
+
   const handleClick = async (e) => {
     e.preventDefault();
 
-    let validation = Validation();
+    if (Object.keys(validateForm()).length > 0) return;
 
-    if (Object.keys(validation).length === 0) {
-      setLoading(true)
-      try {
-        const res = await LoginUser(email, password);
-        console.log('hkokoioj')
-        if (res?.data?.data?.data.role == "admin") {
+    setLoading(true);
+    try {
+      const res = await LoginUser(email, password);
+      const userData = res?.data?.data?.data;
+      const token = res?.data?.data?.token;
 
-          setUser(res?.data);
+      if (!userData || !token) throw new Error("Invalid login response");
 
-          let token = res?.data?.data.token;
-          let userId = res?.data?.data?.data.userId;
-          let userName = res?.data?.data?.data.name;
-          localStorage.setItem('authToken', token);
-          sessionStorage.setItem('authToken', token);
-          localStorage.setItem('userId', userId);
-          sessionStorage.setItem('userId', userId);
-          localStorage.setItem('username', userName);
-          
-          localStorage.removeItem('att_date');
-          localStorage.removeItem('activestatus');
-          localStorage.removeItem('status');
-          localStorage.removeItem('courseId');
-          localStorage.removeItem('batchId');
-          localStorage.removeItem('searchText');
-          localStorage.removeItem('att_courseId');
-          localStorage.removeItem('att_batchId');
-          localStorage.removeItem('att_status');
-          localStorage.removeItem('att_searchText');
-          setLoginUser(true);
-          navigate("/dashboard");
+      // Save user data in localStorage and sessionStorage
+      localStorage.setItem("authToken", token);
+      localStorage.setItem("userId", userData.userId);
+      localStorage.setItem("username", userData.name);
+      localStorage.setItem("userRole", userData.role);
 
-        }
-        console.log(user)
-      } catch (err) {
-        console.error("Login failed:", err);
-        toast.error(err?.response?.data?.message)
-      } finally {
-        setLoading(false)
+      sessionStorage.setItem("authToken", token);
+      sessionStorage.setItem("userId", userData.userId);
+      sessionStorage.setItem("username", userData.name);
+      sessionStorage.setItem("userRole", userData.role);
+
+      setLoginUser(true);
+
+      // Navigate based on role
+      if (userData.role === "admin") {
+        toast.success("Logged in as Admin!");
+        navigate("/dashboard");
+      } else if (userData.role === "sub-admin") {
+        toast.success("Logged in as Sub Admin!");
+        navigate("/alumniimages");
+      } else {
+        toast.error("Unauthorized role!");
       }
+
+    } catch (err) {
+      console.error("Login failed:", err);
+      toast.error(err?.response?.data?.message || err.message || "Login failed!");
+    } finally {
+      setLoading(false);
     }
   };
 
-
   return (
     <>
-
       <div className={styles.container}>
         <div className={styles.content}>
           <div className={styles["content-left"]}>
@@ -104,7 +88,6 @@ const Login = ({ setLoginUser }) => {
               <div className={styles["content-left-main"]}>
                 <div className={styles.head}>
                   <h1>Welcome Back!</h1>
-
                 </div>
                 <div className={styles.para}>
                   <p>
@@ -125,8 +108,7 @@ const Login = ({ setLoginUser }) => {
               <div className={styles.formDivHead}>
                 <h1>Nice to see you again</h1>
               </div>
-              <form action="" onSubmit={(e) => handleClick(e)}>
-                {/* Username Field */}
+              <form onSubmit={handleClick}>
                 <div className={styles.formDivName}>
                   <label htmlFor="username">Email ID</label>
                   <input
@@ -134,15 +116,11 @@ const Login = ({ setLoginUser }) => {
                     id="username"
                     placeholder="Email ID"
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError("");
-                    }}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                   <p className={styles.errorMsg}>{error.userName}</p>
                 </div>
 
-                {/* Password Field */}
                 <div className={styles.formDivPass}>
                   <label htmlFor="password">Password</label>
                   <div className={styles.passwordWrapper}>
@@ -151,11 +129,7 @@ const Login = ({ setLoginUser }) => {
                       id="password"
                       placeholder="Enter password"
                       value={password}
-                      onChange={(e) => {
-                        setPassword(e.target.value);
-
-                        setError("");
-                      }}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -167,10 +141,6 @@ const Login = ({ setLoginUser }) => {
                   <p className={styles.errorMsg}>{error.passWord}</p>
                 </div>
 
-
-                {/* <p>{message}</p> */}
-
-                {/* Submit Button */}
                 <div className={styles.formDivBtn}>
                   <button type="submit">{loading ? 'Signing in...' : "Sign in"}</button>
                 </div>
@@ -178,11 +148,9 @@ const Login = ({ setLoginUser }) => {
             </div>
           </div>
         </div>
-
-
       </div>
-      <ToastContainer />
 
+      
     </>
   );
 };

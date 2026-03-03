@@ -4,7 +4,6 @@ import apiService from "./apiService";
 import Form from "antd/es/form/Form";
 import { useState } from "react";
 
-
 export const getUserFilter = (value) => {
   return apiService.get(`/user?value=${value}`);
 };
@@ -53,7 +52,7 @@ export const updateCourseBatch = (id, editdata) => {
 // get batch by courseId
 export const getCourseBatchByCourseId = (courseId, limit, offset) => {
   return apiService.get(
-    `/batch?courseId=${courseId}&limit=${limit}&page=${offset}`
+    `/batch?courseId=${courseId}&limit=${limit}&page=${offset}`,
   );
 };
 
@@ -95,7 +94,7 @@ export const updateUser = (FormData, id) => {
     batchId: FormData.student_batch,
     DOB: FormData.student_dob,
     inStatus: FormData.inStatus,
-    ID:FormData.ID
+    ID: FormData.ID,
   };
   return apiService.put(`/user/${id}`, data);
 };
@@ -130,7 +129,7 @@ export const getBatchbyid = (id) => {
 // events
 export const getEvents = (limit, offset, status) => {
   return apiService.get(
-    `/event?limit=${limit}&offset=${offset}&status=${status}`
+    `/event?limit=${limit}&offset=${offset}&status=${status}`,
   );
 };
 
@@ -165,7 +164,7 @@ export const getAttendance = (
   courseId,
   batchId,
   date,
-  status
+  status,
 ) => {
   let url = `/attendance/admin?limit=${limit}&page=${offset}&value=${searchtext}&courseId=${courseId}&batchId=${batchId}&date=${date}`;
 
@@ -178,15 +177,24 @@ export const getAttendance = (
 
 export const getAttendancerate = (date, courseId, batchId) => {
   return apiService.get(
-    `/attendance/rate?date=${date}&courseId=${courseId}&batchId=${batchId}`
+    `/attendance/rate?date=${date}&courseId=${courseId}&batchId=${batchId}`,
   );
 };
 
 // leave request
 
-export const getLeaveRequest = (limit, offset, date, status, value,courseId,batchId,leaveType) => {
+export const getLeaveRequest = (
+  limit,
+  offset,
+  date,
+  status,
+  value,
+  courseId,
+  batchId,
+  leaveType,
+) => {
   return apiService.get(
-    `/leave?limit=${limit}&offset=${offset}&date=${date}&status=${status}&value=${value}&courseId=${courseId}&batchId=${batchId}&leaveType=${leaveType}`
+    `/leave?limit=${limit}&offset=${offset}&date=${date}&status=${status}&value=${value}&courseId=${courseId}&batchId=${batchId}&leaveType=${leaveType}`,
   );
 };
 
@@ -216,10 +224,10 @@ export const getFee = (
   courseId,
   batchId,
   semester,
-  searchtext
+  searchtext,
 ) => {
   return apiService.get(
-    `/fee?limit=${limit}&offset=${offset}&courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchtext}`
+    `/fee?limit=${limit}&offset=${offset}&courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchtext}`,
   );
 };
 
@@ -233,7 +241,7 @@ export const createFee = (formdata) => {
 
 export const calcfee = (courseId, batchId, semester, searchText) => {
   return apiService.get(
-    `/feeBalance/dasboard?courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchText}`
+    `/feeBalance/dasboard?courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchText}`,
   );
 };
 
@@ -248,11 +256,11 @@ export const updateBalanceFee = (userId, payload) => {
 };
 
 export const emailFee = (userId) => {
-  return apiService.post(`/fee/mail`, { '_id': userId });
+  return apiService.post(`/fee/mail`, { _id: userId });
 };
 
 export const updateFeeEmail = (id) => {
-  return apiService.put(`/fee/${id}`, {'mailStatus':'Sent'});
+  return apiService.put(`/fee/${id}`, { mailStatus: "Sent" });
 };
 
 export const getDashboardUser = () => {
@@ -264,7 +272,7 @@ export const getDashboardEvents = (status) => {
 };
 
 export const getDashboardLeave = (status) => {
-    const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date().toLocaleDateString("en-CA");
 
   return apiService.get(`/leave?status=${status}&date=${today}&limit=5`);
 };
@@ -282,7 +290,7 @@ export const getAttendanceStudentList = (userId) => {
 };
 
 export const getTodayrate = () => {
-    const today = new Date().toLocaleDateString("en-CA");
+  const today = new Date().toLocaleDateString("en-CA");
   return apiService.get(`/attendance/rate?date=${today}`);
 };
 
@@ -296,19 +304,21 @@ export const getNotification = () => {
   return apiService.get(`/notification?notificationType=admin`);
 };
 
-export const updateNotification=(id,read) => {
-  return apiService.put(`/notification/${id}`,{'isRead':read});
-}
+export const updateNotification = (id, read) => {
+  return apiService.put(`/notification/${id}`, { isRead: read });
+};
 
 // enquiry
 
-export const getEnquiry = (limit,offset,enroll) => {
-  return apiService.get(`/aloEnroll?limit=${limit}&page=${offset}&enrollType=${enroll}`);
+export const getEnquiry = (limit, offset, enroll) => {
+  return apiService.get(
+    `/aloEnroll?limit=${limit}&page=${offset}&enrollType=${enroll}`,
+  );
 };
 
 //application
 
-export const getApplication = (limit,offset ) => {
+export const getApplication = (limit, offset) => {
   return apiService.get(`/student?limit=${limit}&page=${offset}`);
 };
 
@@ -316,21 +326,30 @@ export const getApplicationByid = (id) => {
   return apiService.get(`/student/${id}`);
 };
 
-export const excelStudents = (courseId,batchId,status,activestatus,searchText) => {
-  return apiService.get(`/user/excel?courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}&value=${searchText}`);
+export const excelStudents = (
+  courseId,
+  batchId,
+  status,
+  activestatus,
+  searchText,
+) => {
+  return apiService.get(
+    `/user/excel?courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}&value=${searchText}`,
+  );
 };
 
-export const excelfee = (courseId,batchId,semester,searchText) => {
-  return apiService.get(`/fee/excel?&courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchText}`);
+export const excelfee = (courseId, batchId, semester, searchText) => {
+  return apiService.get(
+    `/fee/excel?&courseId=${courseId}&batchId=${batchId}&noOfsem=${semester}&value=${searchText}`,
+  );
 };
 
 export const excelAttendance = (
- 
   searchtext,
   courseId,
   batchId,
   date,
-  status
+  status,
 ) => {
   let url = `/attendance/excel?value=${searchtext}&courseId=${courseId}&batchId=${batchId}&date=${date}`;
 
@@ -341,18 +360,33 @@ export const excelAttendance = (
   return apiService.get(url);
 };
 
-export const excelPerformance = (courseId,batchId,semester,value,academic) => {
-  return apiService.get(`/performance/excel?courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`);
+export const excelPerformance = (
+  courseId,
+  batchId,
+  semester,
+  value,
+  academic,
+) => {
+  return apiService.get(
+    `/performance/excel?courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`,
+  );
 };
 
-export const makeabsent = (id,discription) => {
-    const userId = sessionStorage.getItem('userId');
-    const date= new Date().toLocaleDateString("en-CA")
-  return apiService.post(`/leave/admin/create`,{'userId':id,'date' :date,'approverId':userId,'discription':discription} );
+export const makeabsent = (id, discription) => {
+  const userId = sessionStorage.getItem("userId");
+  const date = new Date().toLocaleDateString("en-CA");
+  return apiService.post(`/leave/admin/create`, {
+    userId: id,
+    date: date,
+    approverId: userId,
+    discription: discription,
+  });
 };
 
-export const attendancestudentrate = (userid,fromdate,todate) => {
-  return apiService.get(`attendance/studentrate?userId=${userid}&fromDate=${fromdate}&toDate=${todate}`);
+export const attendancestudentrate = (userid, fromdate, todate) => {
+  return apiService.get(
+    `attendance/studentrate?userId=${userid}&fromDate=${fromdate}&toDate=${todate}`,
+  );
 };
 // export const getUserByStudentId = (studentId) => {
 //   return apiService.get(`/user?studentId=${studentId}`);
@@ -363,8 +397,6 @@ export const attendancestudentrate = (userid,fromdate,todate) => {
 export const createTermSem = (payload) => {
   return apiService.post("/performance/send", payload);
 };
-
-
 
 // export const getUsers = (params = {}) => {
 //   return apiService.get("/user", {
@@ -379,19 +411,31 @@ export const getUser = (
   courseId,
   status,
   batchId,
-  activestatus
+  activestatus,
 ) => {
   return apiService.get(
-    `/user?limit=${limit}&offset=${offset}&value=${value}&courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}`
+    `/user?limit=${limit}&offset=${offset}&value=${value}&courseId=${courseId}&inStatus=${status}&batchId=${batchId}&status=${activestatus}`,
   );
 };
 
-export const getPerformance = (limit,offset,courseId,batchId,semester,value,academic) => {
-  return apiService.get(`/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`);
+export const getPerformance = (
+  limit,
+  offset,
+  courseId,
+  batchId,
+  semester,
+  value,
+  academic,
+) => {
+  return apiService.get(
+    `/performance?limit=${limit}&page=${offset}&courseId=${courseId}&batchId=${batchId}&exam=${semester}&Academic=${academic}&value=${value}`,
+  );
 };
 
-export const getSubjects = (courseId,batchId,semester) => {
-  return apiService.get(`/subject?&courseId=${courseId}&batchId=${batchId}&exam=${semester}`);
+export const getSubjects = (courseId, batchId, semester) => {
+  return apiService.get(
+    `/subject?&courseId=${courseId}&batchId=${batchId}&exam=${semester}`,
+  );
 };
 
 export const addsubject = (id, payload) => {
@@ -412,15 +456,81 @@ export const deleteTermSem = (id) => {
   return apiService.delete(`/performance/${id}`);
 };
 // term wise toppers
-export const getDashboardTermToppers = (academic,semester,courseId,batchId) => {
-  return apiService.get(`/performance/leaderboard?Academic=${academic}&exam=${semester}&courseId=${courseId}&batchId=${batchId}`);
+export const getDashboardTermToppers = (
+  academic,
+  semester,
+  courseId,
+  batchId,
+) => {
+  return apiService.get(
+    `/performance/leaderboard?Academic=${academic}&exam=${semester}&courseId=${courseId}&batchId=${batchId}`,
+  );
 };
 
 // semester wise toppers
 export const getDashboardSemesterToppers = (semester) => {
   return apiService.get("/performance/leaderboard", {
     params: {
-      Academic: semester,  
+      Academic: semester,
     },
   });
+};
+export const createAlumni = (payload) => {
+  return apiService.post("/alumni", payload, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
+
+export const getAlumniList = () => {
+  return apiService.get("/alumni");
+};
+
+export const createWebsiteEvent = (payload) => {
+  return apiService.post("/eventWebsite", payload);
+};
+
+export const getWebsiteEvents = (eventName) => {
+  return apiService.get("/eventWebsite", {
+    params: { eventName }, // ?eventName=pongal
+  });
+};
+
+export const getStudentWork = () => {
+  return apiService.get("/alumni?model=work");
+};
+
+export const createStudentWork = (payload) => {
+  return apiService.post("/alumni", payload);
+};
+
+export const updateAlumni = (id, formData) => {
+  return apiService.put(`/alumni/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const deleteAlumni = (id) => {
+  return apiService.delete(`/alumni/${id}`);
+};
+export const updateStudentWork = (id, formData) => {
+  return apiService.put(`/alumni/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// 🔹 Delete Student Work
+export const deleteStudentWork = (id) => {
+  return apiService.delete(`/alumni/${id}`);
+}
+export const deleteWebsiteEvent = (id) => {
+  return apiService.delete(`/eventWebsite/${id}`);
+};
+export const updateWebsiteEvent = (id, payload) => {
+  return apiService.put(`/eventWebsite/${id}`, payload);
 };

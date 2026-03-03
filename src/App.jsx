@@ -21,6 +21,10 @@ import Details from './sections/details/Details';
 import TermExam from './sections/Academicdetails/TermExam';
 import SemesterExam from './sections/Academicdetails/SemExam';
 import Subjects from './sections/CourseDetails/Subjects';
+import AlumniImages from './sections/subAdmin/aluminiImage/AlunimiImage';
+import StudentWork from "./sections/subAdmin/studentWork/StudentWork";
+import AddEvent from "./sections/subAdmin/addEvent/AddEvent";
+
 
 
 function App() {
@@ -38,7 +42,6 @@ function App() {
   return (
     <>
       <Routes>
-
         <Route
           path="/login"
           element={<Login setLoginUser={setIsAuthenticated} />}
@@ -65,13 +68,14 @@ function App() {
 
           <Route path="/attendence" element={<Header />}>
             <Route index element={<Attendance />} />
-            <Route path="leaverequest/:date?/:courseId?/:batchId?/:searchText?" element={<LeaveRequest />} />
+            <Route
+              path="leaverequest/:date?/:courseId?/:batchId?/:searchText?"
+              element={<LeaveRequest />}
+            />
           </Route>
-          <Route path="/academic" element={<Header />} >
-                        <Route index element={<SemesterExam />} />
-
+          <Route path="/academic" element={<Header />}>
+            <Route index element={<SemesterExam />} />
           </Route>
-
 
           <Route path="/events" element={<Header />}>
             <Route index element={<Eventlist />} />
@@ -89,9 +93,19 @@ function App() {
             element={<Header setLoginUser={setIsAuthenticated} />}
           >
             <Route index element={<CourseTable />} />
-            <Route path="coursedetails/:id" element={<CourseDetails />} />            
+            <Route path="coursedetails/:id" element={<CourseDetails />} />
             <Route path="Subjects/:id/:batchId" element={<Subjects />} />
+          </Route>
+          <Route path="/alumniimages" element={<Header />}>
+            <Route index element={<AlumniImages />} />
+          </Route>
 
+          <Route path="/studentwork" element={<Header />}>
+            <Route index element={<StudentWork />} />
+          </Route>
+
+          <Route path="/addevent" element={<Header />}>
+            <Route index element={<AddEvent />} />
           </Route>
         </Route>
 
@@ -99,7 +113,6 @@ function App() {
       </Routes>
       <ToastContainer />
     </>
-
   );
 }
 export default App
