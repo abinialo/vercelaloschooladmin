@@ -1,5 +1,5 @@
 .container {
-  padding-top:15px ;
+  padding-top: 15px;
   display: flex;
   justify-content: center;
   background: #f6f7fb;
@@ -16,16 +16,20 @@
   margin-bottom: 15px;
 }
 
+
+
 .card {
-   background: #fff;
+  background: #fff;
   border-radius: 10px;
   padding: 15px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-  height: 79vh;        /* ✅ fixed card height */
+  height: 79vh;
   display: flex;
   flex-direction: column;
 }
+
+
 
 .addRow {
   margin-bottom: 10px;
@@ -52,14 +56,15 @@
 .addBtn:active {
   transform: scale(0.97);
 }
+
 .tableWrapper {
-   flex: 1;             /* ✅ take remaining space */
-  overflow-y: auto;    /* ✅ vertical scroll */
+  flex: 1;
+  overflow-y: auto;
   overflow-x: auto;
-  padding: 10px;
+  padding: 0;
 }
 
-/* optional smooth scroll */
+
 .tableWrapper::-webkit-scrollbar {
   height: 6px;
 }
@@ -68,6 +73,9 @@
   background: #d1d5db;
   border-radius: 10px;
 }
+
+/* ================= TABLE ================= */
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -83,10 +91,21 @@
 
 .table td {
   padding: 14px 12px;
-  border-bottom: 1px solid #eee;
   font-size: 14px;
   color: #555;
 }
+
+
+.table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
 
 .avatar {
   width: 40px;
@@ -98,27 +117,50 @@
   height: 28px;
 }
 
+
+
+.actionHeader {
+  text-align: center;
+  width: 120px;
+}
+
 .actions {
+  width: 120px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 12px;
 }
 
 .icon {
   cursor: pointer;
   color: #777;
+
+
+  margin-top: 17px;
 }
 
 .icon:hover {
   color: #000;
 }
-@media (max-width: 576px) {
 
+/* ================= NO DATA ================= */
+
+.noData {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 576px) {
   .wrapper {
     width: 100%;
   }
 
   .table {
-    min-width: 700px; /* important for horizontal scroll */
+    min-width: 700px;
   }
 
   .heading {
@@ -128,10 +170,9 @@
   .card {
     padding: 10px;
   }
-
 }
-@media (min-width: 577px) and (max-width: 768px) {
 
+@media (min-width: 577px) and (max-width: 768px) {
   .wrapper {
     width: 100%;
   }
@@ -145,7 +186,7 @@
   }
 
   .table {
-    min-width: 650px; /* still scroll but less than mobile */
+    min-width: 650px;
   }
 
   .table th {
@@ -166,10 +207,9 @@
   .logo {
     height: 24px;
   }
-
 }
-@media (min-width: 769px) and (max-width: 992px) {
 
+@media (min-width: 769px) and (max-width: 992px) {
   .wrapper {
     width: 97%;
   }
@@ -181,33 +221,9 @@
   .card {
     padding: 14px;
   }
-
-  .table {
-    min-width: 100%; /* no scroll on laptop */
-  }
-
-  .table th {
-    font-size: 14px;
-    padding: 11px;
-  }
-
-  .table td {
-    font-size: 14px;
-    padding: 13px 11px;
-  }
-
-  .avatar {
-    width: 38px;
-    height: 38px;
-  }
-
-  .logo {
-    height: 26px;
-  }
-
 }
-@media (min-width: 993px) and (max-width: 1200px) {
 
+@media (min-width: 993px) and (max-width: 1200px) {
   .wrapper {
     width: 96%;
   }
@@ -219,28 +235,4 @@
   .card {
     padding: 16px;
   }
-
-  .table {
-    min-width: 100%;
-  }
-
-  .table th {
-    font-size: 14.5px;
-    padding: 12px;
-  }
-
-  .table td {
-    font-size: 14.5px;
-    padding: 14px 12px;
-  }
-
-  .avatar {
-    width: 40px;
-    height: 40px;
-  }
-
-  .logo {
-    height: 28px;
-  }
-
 }

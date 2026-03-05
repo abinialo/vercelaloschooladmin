@@ -162,7 +162,7 @@ const AddEvent = () => {
                               src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
                               alt="empty"
                               width={120}
-                              style={{ marginBottom: 10 }}
+                              style={{ marginBottom: 10,margin:"auto"}}
                             />
                             <p>No Events Yet</p>
                             <small>Add your first event to get started</small>

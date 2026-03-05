@@ -52,51 +52,94 @@ useEffect(() => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setForm((prev) => ({ ...prev, [name]: value }));
+  // };
+const handleChange = (e) => {
+  const { name, value } = e.target;
 
+  setForm((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+
+  // ✅ REMOVE error key completely
+  setErrors((prev) => {
+    const newErrors = { ...prev };
+    delete newErrors[name];
+    return newErrors;
+  });
+};
  
-  const handleFile = (e, field) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handleFile = (e, field) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
+  const previewUrl = URL.createObjectURL(file);
 
-    setForm((prev) => ({
-      ...prev,
-      [field]: file,
-      ...(field === "alumniImage" ? { alumniImagePreview: previewUrl } : {}),
-      ...(field === "companyLogo" ? { companyLogoPreview: previewUrl } : {}),
-    }));
-  };
+  setForm((prev) => ({
+    ...prev,
+    [field]: file,
+    ...(field === "alumniImage" && { alumniImagePreview: previewUrl }),
+    ...(field === "companyLogo" && { companyLogoPreview: previewUrl }),
+  }));
 
+  // ✅ remove file error
+  setErrors((prev) => {
+    const newErrors = { ...prev };
+    delete newErrors[field];
+    return newErrors;
+  });
+};
  
  const handleSubmit = async () => {
   if (loading) return;
   setLoading(true);
 
+  // const validationErrors = {};
+
+  // Object.entries(form).forEach(([key, value]) => {
+  //   if (
+  //     (key === "alumniName" || key === "companyName" || key === "position") &&
+  //     !value?.trim()
+  //   ) {
+  //     validationErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+  //   }
+
+  //   if (
+  //     !editData &&
+  //     (key === "alumniImage" || key === "companyLogo") &&
+  //     !value
+  //   ) {
+  //     validationErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
+  //   }
+  // });
+
+  // setErrors(validationErrors);
   const validationErrors = {};
 
-  Object.entries(form).forEach(([key, value]) => {
-    if (
-      (key === "alumniName" || key === "companyName" || key === "position") &&
-      !value?.trim()
-    ) {
-      validationErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
-    }
+if (!form.alumniName.trim()) {
+  validationErrors.alumniName = "Alumni Name is required";
+}
 
-    if (
-      !editData &&
-      (key === "alumniImage" || key === "companyLogo") &&
-      !value
-    ) {
-      validationErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
-    }
-  });
+if (!form.companyName.trim()) {
+  validationErrors.companyName = "Company Name is required";
+}
 
-  setErrors(validationErrors);
+if (!form.position.trim()) {
+  validationErrors.position = "Position is required";
+}
+
+if (!editData && !form.alumniImage) {
+  validationErrors.alumniImage = "Alumni Image is required";
+}
+
+if (!editData && !form.companyLogo) {
+  validationErrors.companyLogo = "Company Logo is required";
+}
+
+setErrors(validationErrors);
   if (Object.keys(validationErrors).length > 0) {
     setLoading(false);
     return;

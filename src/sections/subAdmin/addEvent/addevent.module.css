@@ -62,8 +62,21 @@
 
 .table td {
   padding: 14px 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* 🔥 ONE BORDER PER ROW (FIX) */
+.table tbody tr {
   border-bottom: 1px solid #eee;
 }
+
+/* vertical alignment fix */
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
 
 .thumbnail {
   width: 80px;
@@ -80,6 +93,7 @@
 .icon {
   cursor: pointer;
   color: #777;
+  margin-top: 17px;
 }
 
 .icon:hover {

@@ -86,62 +86,67 @@ const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
     validateField(field, file);
   };
 
-  const handleSubmit = async () => {
-    if (loading) return;
-    setLoading(true);
+ const handleSubmit = async () => {
+  if (loading) return;
+  setLoading(true);
 
-    const isValid =
-      validateField("name", form.name) &&
-      validateField("position", form.position) &&
-      validateField("behance", form.behance) &&
-      (!editData ? validateField("profile", form.profile) : true) &&
-      (!editData ? validateField("thumbnail", form.thumbnail) : true);
+  // 🔥 Validate ALL fields (NO short-circuit)
+  const validationResults = [
+    validateField("name", form.name),
+    validateField("position", form.position),
+    validateField("behance", form.behance),
+    !editData ? validateField("profile", form.profile) : true,
+    !editData ? validateField("thumbnail", form.thumbnail) : true,
+  ];
 
-    if (!isValid) {
-      setLoading(false);
-      return;
+  const isValid = validationResults.every(Boolean);
+
+  if (!isValid) {
+    setLoading(false);
+    return;
+  }
+
+  try {
+    let profileUrl = preview.profile;
+    let thumbUrl = preview.thumbnail;
+
+    if (form.profile) {
+      const profileRes = await uploadFile(form.profile);
+      profileUrl = profileRes?.data?.data?.imageURL || profileUrl;
     }
 
-    try {
-      let profileUrl = preview.profile;
-      let thumbUrl = preview.thumbnail;
-
-      if (form.profile) {
-        const profileRes = await uploadFile(form.profile);
-        profileUrl = profileRes?.data?.data?.imageURL || profileUrl;
-      }
-      if (form.thumbnail) {
-        const thumbRes = await uploadFile(form.thumbnail);
-        thumbUrl = thumbRes?.data?.data?.imageURL || thumbUrl;
-      }
-
-      const payload = {
-        alumniName: form.name,
-        position: form.position,
-        link: form.behance,
-        alumniImage: profileUrl,
-        thumbnailImage: thumbUrl,
-        companyName: "Alo",
-        model: "work",
-      };
-
-      if (editData) {
-        await updateStudentWork(editData.id || editData._id, payload);
-        toast.success("Student work updated successfully!");
-      } else {
-        await createStudentWork(payload);
-        toast.success("Student work created successfully!");
-      }
-
-      refreshWork();
-      handleClose();
-    } catch (err) {
-      console.error("Submit error:", err);
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
+    if (form.thumbnail) {
+      const thumbRes = await uploadFile(form.thumbnail);
+      thumbUrl = thumbRes?.data?.data?.imageURL || thumbUrl;
     }
-  };
+
+    const payload = {
+      alumniName: form.name,
+      position: form.position,
+      link: form.behance,
+      alumniImage: profileUrl,
+      thumbnailImage: thumbUrl,
+      companyName: "Alo",
+      model: "work",
+    };
+
+    if (editData) {
+      await updateStudentWork(editData._id || editData.id, payload);
+      toast.success("Student work updated successfully!");
+    } else {
+      await createStudentWork(payload);
+      toast.success("Student work created successfully!");
+    }
+
+    refreshWork();
+    handleClose();
+  } catch (err) {
+    console.error(err);
+    toast.error("Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>

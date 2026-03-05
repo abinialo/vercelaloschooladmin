@@ -120,9 +120,21 @@ const handleDelete = async () => {
                 <tbody>
                   {selectedData.length === 0 ? (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: "center" }}>
-                        No Alumni Found
-                      </td>
+                      <td colSpan="6">
+                          <div style={{ textAlign: "center", padding: "40px 0", opacity: 0.8 }}>
+                            <img
+  src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
+  alt="empty"
+  width={120}
+  style={{
+    display: "block",
+    margin: "0 auto 10px auto",
+  }}
+/>
+                            <p>No Alumni Yet</p>
+                            {/* <small>Add your first event to get started</small> */}
+                          </div>
+                        </td>
                     </tr>
                   ) : (
                     selectedData.map((item) => (
