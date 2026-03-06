@@ -56,8 +56,10 @@ const AddEvent = () => {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false); // hide loader
-    }
+    setTimeout(() => {
+      setLoading(false);
+    }, 500); // delay so loader visible
+  }
   };
 
   // Delete flow with confirmation
@@ -139,12 +141,11 @@ const AddEvent = () => {
             </div>
 
             <div className={styles.tableWrapper}>
-              {loading ? (
-                // Loader while fetching API
-                <Box sx={{ display: "flex", justifyContent: "center", padding: 4 }}>
-                  <CircularProgress />
-                </Box>
-              ) : (
+             {loading ? (
+  <div className={styles.loaderCenter}>
+    <CircularProgress />
+  </div>
+) : (
                 <table className={styles.table}>
                   <thead>
                     <tr>

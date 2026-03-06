@@ -115,15 +115,19 @@ const Header = ({ setLoginUser }) => {
 
   let userName = localStorage.getItem('username');
 
-  useEffect(() => {
-    notificationget()
+ useEffect(() => {
+
+  if (userRole !== "sub-admin") {
+    notificationget();
+
     const interval = setInterval(() => {
       notificationget();
     }, 60000);
 
-    // clear interval when component unmounts
     return () => clearInterval(interval);
-  }, []);
+  }
+
+}, [userRole]);
 
   const [count, setCount] = useState(0)
 
@@ -193,7 +197,7 @@ const Header = ({ setLoginUser }) => {
           <div className={styles.navbar_content}>
             <div>
               <div className={styles.logo}>
-                <Link to="/dashboard">
+               <Link to={userRole === "admin" ? "/dashboard" : "/alumniimages"}>
                   <img
                     src={logo}
                     alt="logo"

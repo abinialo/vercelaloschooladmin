@@ -8,6 +8,7 @@ import {
   IconButton,
   Typography,
 } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   createWebsiteEvent,
@@ -27,6 +28,7 @@ const AddEventModal = ({
   const [images, setImages] = useState([]); // files
   const [previews, setPreviews] = useState([]); // preview urls
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
   useEffect(() => {
     if (editEvent) {
       setName(editEvent.name);
@@ -81,52 +83,54 @@ const AddEventModal = ({
     validateField("name", e.target.value);
   };
 
-  const handleSubmit = async () => {
-    validateField("name", name);
-    validateField("image", images);
+ const handleSubmit = async () => {
+  validateField("name", name);
+  validateField("image", images);
 
-    if (!name || !images.length) return;
+  if (!name || !images.length) return;
 
-    try {
-      setOverlayLoading(true);
+  try {
+    setSubmitting(true);       // ⭐ modal loader
+    setOverlayLoading(true);   // ⭐ page overlay loader
 
-      // upload all images
-      const uploadedUrls = [];
+    const uploadedUrls = [];
 
-     for (const file of images) {
-       // ⭐ if image already URL (edit mode)
-       if (typeof file === "string") {
-         uploadedUrls.push(file);
-       } else {
-         const res = await uploadFile(file);
-         const url = res?.data?.data?.imageURL;
-         if (url) uploadedUrls.push(url);
-       }
-     }
-      // create event with array
-      if (editEvent) {
-        await updateWebsiteEvent(editEvent.id, {
-          eventName: name,
-          eventImage: uploadedUrls,
-        });
+    for (const file of images) {
+      if (typeof file === "string") {
+        uploadedUrls.push(file);
       } else {
-        await createWebsiteEvent({
-          eventName: name,
-          eventImage: uploadedUrls,
-        });
+        const res = await uploadFile(file);
+        const url = res?.data?.data?.imageURL;
+        if (url) uploadedUrls.push(url);
       }
-      await refreshEvents();
-      setOverlayLoading(false);
-
-      handleClose();
-      setName("");
-      setImages([]);
-      setPreviews([]);
-      setErrors({});
-    } catch (err) {
-      console.error(err);
     }
-  };
+
+    if (editEvent) {
+      await updateWebsiteEvent(editEvent.id, {
+        eventName: name,
+        eventImage: uploadedUrls,
+      });
+    } else {
+      await createWebsiteEvent({
+        eventName: name,
+        eventImage: uploadedUrls,
+      });
+    }
+
+    await refreshEvents();
+
+    handleClose();
+    setName("");
+    setImages([]);
+    setPreviews([]);
+    setErrors({});
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setSubmitting(false);
+    setOverlayLoading(false);
+  }
+};
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -220,33 +224,28 @@ const AddEventModal = ({
 
         {/* BUTTON */}
         <div style={{ textAlign: "center", marginTop: 25 }}>
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            sx={{
-              px: 5,
-              py: 1.2,
-              borderRadius: "12px",
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: 14,
-              letterSpacing: "0.3px",
-              background: "linear-gradient(180deg, #1f4fa3, #0b2c6b)",
-              boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
-              transition: "all .2s ease",
-              "&:hover": {
-                background: "linear-gradient(180deg, #2458b8, #0d357f)",
-                boxShadow: "0 8px 18px rgba(0,0,0,0.25)",
-                transform: "translateY(-1px)",
-              },
-              "&:active": {
-                transform: "translateY(0)",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-              },
-            }}
-          >
-            Submit
-          </Button>
+         <Button
+  variant="contained"
+  onClick={handleSubmit}
+  disabled={submitting}
+  sx={{
+    px: 5,
+    py: 1.2,
+    borderRadius: "12px",
+    textTransform: "none",
+    fontWeight: 500,
+    fontSize: 14,
+    letterSpacing: "0.3px",
+    background: "linear-gradient(180deg, #1f4fa3, #0b2c6b)",
+    boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
+  }}
+>
+  {submitting ? (
+    <CircularProgress size={22} sx={{ color: "#fff" }} />
+  ) : (
+    "Submit"
+  )}
+</Button>
         </div>
       </DialogContent>
     </Dialog>
