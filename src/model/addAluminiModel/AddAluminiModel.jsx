@@ -76,6 +76,15 @@ const handleFile = (e, field) => {
   const file = e.target.files[0];
   if (!file) return;
 
+  // ✅ Allowed file types
+  const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Only JPG, PNG, and JFIF images are allowed.");
+    e.target.value = ""; // reset input
+    return;
+  }
+
   const previewUrl = URL.createObjectURL(file);
 
   setForm((prev) => ({
@@ -221,6 +230,7 @@ setErrors(validationErrors);
               )}
               <input
                 type="file"
+                  accept=".jpg,.jpeg,.png,.jfif"
                 hidden
                 onChange={(e) => handleFile(e, "alumniImage")}
               />

@@ -52,20 +52,32 @@ const AddEventModal = ({
     setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
-  const handleFile = (e) => {
-    const files = Array.from(e.target.files);
+ const handleFile = (e) => {
+  const files = Array.from(e.target.files);
 
-    // update images and validate
-    setImages((prev) => {
-      const updated = [...prev, ...files];
-      validateField("image", updated);
-      return updated;
-    });
+  const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
 
-    // update previews
-    const previewUrls = files.map((file) => URL.createObjectURL(file));
-    setPreviews((prev) => [...prev, ...previewUrls]);
-  };
+  // ✅ filter valid files
+  const validFiles = files.filter((file) => allowedTypes.includes(file.type));
+
+  // ❌ if invalid files selected
+  if (validFiles.length !== files.length) {
+    alert("Only JPG, JPEG, PNG, and JFIF images are allowed.");
+  }
+
+  if (validFiles.length === 0) return;
+
+  // update images
+  setImages((prev) => {
+    const updated = [...prev, ...validFiles];
+    validateField("image", updated);
+    return updated;
+  });
+
+  // update previews
+  const previewUrls = validFiles.map((file) => URL.createObjectURL(file));
+  setPreviews((prev) => [...prev, ...previewUrls]);
+};
   const removeImage = (index) => {
     setImages((prev) => {
       const updated = prev.filter((_, i) => i !== index);
@@ -196,6 +208,7 @@ const AddEventModal = ({
           <input
             type="file"
             multiple
+              accept=".jpg,.jpeg,.png,.jfif"
             hidden
             onChange={(e) => {
               handleFile(e);

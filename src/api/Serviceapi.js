@@ -477,14 +477,12 @@ export const getDashboardSemesterToppers = (semester) => {
 };
 export const createAlumni = (payload) => {
   return apiService.post("/alumni", payload, {
-    headers: {
-      "Content-Type": "application/json",
-    },
+    
   });
 };
 
 export const getAlumniList = () => {
-  return apiService.get("/alumni");
+  return apiService.get("/alumni?model=alumni");
 };
 
 export const createWebsiteEvent = (payload) => {
@@ -504,7 +502,6 @@ export const getStudentWork = () => {
 export const createStudentWork = (payload) => {
   return apiService.post("/alumni", payload);
 };
-
 export const updateAlumni = (id, formData) => {
   return apiService.put(`/alumni/${id}`, formData, {
     headers: {

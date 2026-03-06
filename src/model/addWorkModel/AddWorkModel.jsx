@@ -77,14 +77,28 @@ const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
     validateField(name, value);
   };
 
-  const handleFile = (e, field) => {
-    const file = e.target.files[0];
-    if (!file) return;
+ const handleFile = (e, field) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    setForm((prev) => ({ ...prev, [field]: file }));
-    setPreview((prev) => ({ ...prev, [field]: URL.createObjectURL(file) }));
-    validateField(field, file);
-  };
+  // ✅ allowed image types
+  const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
+
+  if (!allowedTypes.includes(file.type)) {
+    alert("Only JPG, JPEG, PNG, and JFIF images are allowed.");
+    e.target.value = ""; // reset input
+    return;
+  }
+
+  setForm((prev) => ({ ...prev, [field]: file }));
+
+  setPreview((prev) => ({
+    ...prev,
+    [field]: URL.createObjectURL(file),
+  }));
+
+  validateField(field, file);
+};
 
  const handleSubmit = async () => {
   if (loading) return;
@@ -193,7 +207,7 @@ const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
               ) : (
                 "Upload Profile"
               )}
-              <input type="file" hidden onChange={(e) => handleFile(e, "profile")} />
+              <input type="file" hidden  accept=".jpg,.jpeg,.png,.jfif" onChange={(e) => handleFile(e, "profile")} />
             </label>
             {errors.profile && <ErrorText text={errors.profile} />}
           </div>
@@ -210,7 +224,7 @@ const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
               ) : (
                 "Upload Thumbnail"
               )}
-              <input type="file" hidden onChange={(e) => handleFile(e, "thumbnail")} />
+              <input type="file" hidden accept=".jpg,.jpeg,.png,.jfif" onChange={(e) => handleFile(e, "thumbnail")} />
             </label>
             {errors.thumbnail && <ErrorText text={errors.thumbnail} />}
           </div>
