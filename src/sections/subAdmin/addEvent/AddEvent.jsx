@@ -16,6 +16,7 @@ const AddEvent = () => {
   const [loading, setLoading] = useState(true); // loader for fetch
   const [overlayLoading, setOverlayLoading] = useState(false); // loader for add/edit/delete
   const [editEvent, setEditEvent] = useState(null);
+  const [expandedImages, setExpandedImages] = useState({});
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
@@ -174,13 +175,48 @@ const AddEvent = () => {
                       paginatedEvents.map((event) => (
                         <tr key={event.id}>
                           <td>
-                            <div style={{ display: "flex", gap: 6, overflowX: "auto", maxWidth: 250 }}>
-                              {event.images.length
-                                ? event.images.map((img, i) => (
-                                    <img key={i} src={img} className={styles.thumbnail} alt="" />
-                                  ))
-                                : <img src="/no-image.png" className={styles.thumbnail} alt="" />}
-                            </div>
+                           <div style={{ display: "flex", gap: 6, overflowX: "auto", maxWidth: 250 }}>
+  {event.images.length ? (
+    <>
+      {(expandedImages[event.id]
+        ? event.images
+        : event.images.slice(0, 2)
+      ).map((img, i) => (
+        <img
+          key={i}
+          src={img}
+          className={styles.thumbnail}
+          alt=""
+        />
+      ))}
+
+      {event.images.length > 2 && (
+        <span
+          onClick={() =>
+            setExpandedImages((prev) => ({
+              ...prev,
+              [event.id]: !prev[event.id],
+            }))
+          }
+          style={{
+            alignSelf: "center",
+            fontSize: 13,
+            color: "#1976d2",
+            cursor: "pointer",
+            fontWeight: 500,
+            whiteSpace: "nowrap",
+          }}
+        >
+          {expandedImages[event.id]
+            ? "Show less"
+            : `+${event.images.length - 2} more`}
+        </span>
+      )}
+    </>
+  ) : (
+    <img src="/no-image.png" className={styles.thumbnail} alt="" />
+  )}
+</div>
                           </td>
                           <td>{event.name}</td>
                           <td className={styles.actions}>

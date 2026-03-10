@@ -80,7 +80,7 @@ const handleFile = (e, field) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
 
   if (!allowedTypes.includes(file.type)) {
-    alert("Only JPG, PNG, and JFIF images are allowed.");
+   toast.error("Only JPG, PNG, and JFIF images are allowed.");
     e.target.value = ""; // reset input
     return;
   }

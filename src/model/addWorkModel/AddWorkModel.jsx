@@ -11,8 +11,10 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { toast } from "react-toastify";
+
 import { uploadFile, createStudentWork, updateStudentWork } from "../../../src/api/Serviceapi";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
   const [form, setForm] = useState({
@@ -85,7 +87,7 @@ const AddWorkModel = ({ open, handleClose, refreshWork, editData }) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
 
   if (!allowedTypes.includes(file.type)) {
-    alert("Only JPG, JPEG, PNG, and JFIF images are allowed.");
+     toast.error("Only JPG, JPEG, PNG, and JFIF images are allowed.");
     e.target.value = ""; // reset input
     return;
   }
