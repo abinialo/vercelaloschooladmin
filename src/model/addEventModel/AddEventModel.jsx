@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -17,39 +17,43 @@ import {
 } from "../../../src/api/Serviceapi";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 
 const AddEventModal = ({
   open,
   handleClose,
   refreshEvents,
-  addEventOptimistic,
   setOverlayLoading,
   editEvent,
 }) => {
 
+  const fileInputRef = useRef(null);
+
   const [name, setName] = useState("");
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
+  
   const [showAll, setShowAll] = useState(false);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-  if (editEvent) {
-    // edit mode
-    setName(editEvent.name || "");
-    setImages(editEvent.images || []);
-    setPreviews(editEvent.images || []);
-  } else {
-    // add mode → reset form
-    setName("");
-    setImages([]);
-    setPreviews([]);
-    setErrors({});
-    setShowAll(false);
-  }
-}, [editEvent, open]);
+    if (editEvent) {
+      setName(editEvent.name || "");
+      setImages(editEvent.images || []);
+      setPreviews(editEvent.images || []);
+    } else {
+      setName("");
+      setImages([]);
+      setPreviews([]);
+      setErrors({});
+      setShowAll(false);
+    }
+  }, [editEvent, open]);
+
   const validateField = (field, value) => {
+
     let message = "";
 
     if (field === "name" && !value.trim()) {
@@ -63,7 +67,12 @@ const AddEventModal = ({
     setErrors((prev) => ({ ...prev, [field]: message }));
   };
 
+  const openFileBrowser = () => {
+    fileInputRef.current.click();
+  };
+
   const handleFile = (e) => {
+
     const files = Array.from(e.target.files);
 
     const allowedTypes = ["image/jpeg", "image/png", "image/jfif"];
@@ -83,6 +92,7 @@ const AddEventModal = ({
       validateField("image", updated);
       return updated;
     });
+    
 
     const previewUrls = validFiles.map((file) =>
       URL.createObjectURL(file)
@@ -90,10 +100,11 @@ const AddEventModal = ({
 
     setPreviews((prev) => [...prev, ...previewUrls]);
 
-    setShowAll(false); // reset preview mode
+    setShowAll(false);
   };
 
   const removeImage = (index) => {
+
     setImages((prev) => {
       const updated = prev.filter((_, i) => i !== index);
       validateField("image", updated.length ? updated : null);
@@ -127,8 +138,10 @@ const AddEventModal = ({
         if (typeof file === "string") {
           uploadedUrls.push(file);
         } else {
+
           const res = await uploadFile(file);
           const url = res?.data?.data?.imageURL;
+
           if (url) uploadedUrls.push(url);
         }
       }
@@ -151,6 +164,7 @@ const AddEventModal = ({
       await refreshEvents();
 
       handleClose();
+
       setName("");
       setImages([]);
       setPreviews([]);
@@ -164,14 +178,29 @@ const AddEventModal = ({
 
       setSubmitting(false);
       setOverlayLoading(false);
-
     }
   };
+const handleDragEnd = (result) => {
 
+  if (!result.destination) return;
+
+  const newImages = Array.from(images);
+  const newPreviews = Array.from(previews);
+
+  const [removedImage] = newImages.splice(result.source.index, 1);
+  const [removedPreview] = newPreviews.splice(result.source.index, 1);
+
+  newImages.splice(result.destination.index, 0, removedImage);
+  newPreviews.splice(result.destination.index, 0, removedPreview);
+
+  setImages(newImages);
+  setPreviews(newPreviews);
+};
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
 
       <DialogTitle sx={{ textAlign: "center", fontWeight: 600 }}>
+
         {editEvent ? "Edit Event" : "Add Event"}
 
         <IconButton
@@ -182,58 +211,98 @@ const AddEventModal = ({
         </IconButton>
 
       </DialogTitle>
+<DialogContent>
 
-      <DialogContent>
+  <Typography mb={1}>Event Image</Typography>
 
-        <Typography mb={1}>Event Image</Typography>
+  <div style={uploadBox} onClick={openFileBrowser}>
 
-        <label style={{ ...uploadBox, overflow: "hidden", position: "relative" }}>
+    {previews.length ? (
 
-          {previews.length ? (
-
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+ <DragDropContext
+  onDragStart={() => setIsDragging(true)}
+  onDragEnd={(result) => {
+    setIsDragging(false);
+    handleDragEnd(result);
+  }}
+>
+        <Droppable droppableId="imageList" direction="horizontal">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              style={{ display: "flex", gap: 10, flexWrap: "wrap" }}
+            >
 
               {(showAll ? previews : previews.slice(0, 2)).map((src, i) => (
 
-                <div key={i} style={{ position: "relative" }}>
+                <Draggable
+                  key={`img-${i}`}
+                  draggableId={`img-${i}`}
+                  index={i}
+                >
+                  {(provided) => (
+                    <div
+  ref={provided.innerRef}
+  {...provided.draggableProps}
+  {...provided.dragHandleProps}
+  onClick={(e) => {
+    e.stopPropagation();
+    openFileBrowser();
+  }}
+  style={{
+    position: "relative",
+    ...provided.draggableProps.style
+  }}
+>
 
-                  <img
-                    src={src}
-                    alt="preview"
-                    style={{
-                      width: 80,
-                      height: 80,
-                      objectFit: "cover",
-                      borderRadius: 8,
-                    }}
-                  />
+                     <img
+  src={src}
+  alt="preview"
+  onClick={(e) => {
+    e.stopPropagation();
+    if (!isDragging) {
+      openFileBrowser();
+    }
+  }}
+  style={{
+    width: 80,
+    height: 80,
+    objectFit: "cover",
+    borderRadius: 8,
+    cursor: "grab"
+  }}
+/>
 
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeImage(i);
-                    }}
-                    style={{
-                      position: "absolute",
-                      top: -6,
-                      right: -6,
-                      cursor: "pointer",
-                      background: "#fff",
-                      borderRadius: "50%",
-                      padding: "2px 6px",
-                      fontSize: 12,
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    ✕
-                  </span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeImage(i);
+                        }}
+                        style={{
+                          position: "absolute",
+                          top: -6,
+                          right: -6,
+                          cursor: "pointer",
+                          background: "#fff",
+                          borderRadius: "50%",
+                          padding: "2px 6px",
+                          fontSize: 12,
+                          boxShadow: "0 1px 4px rgba(0,0,0,0.2)",
+                        }}
+                      >
+                        ✕
+                      </span>
 
-                </div>
+                    </div>
+                  )}
+                </Draggable>
 
               ))}
 
-              {!showAll && previews.length > 2 && (
+              {provided.placeholder}
 
+              {!showAll && previews.length > 2 && (
                 <div
                   onClick={(e) => {
                     e.stopPropagation();
@@ -253,78 +322,79 @@ const AddEventModal = ({
                 >
                   +{previews.length - 2}
                 </div>
-
               )}
 
             </div>
-
-          ) : (
-
-            <span>Upload Image</span>
-
           )}
+        </Droppable>
+      </DragDropContext>
 
-          <input
-            type="file"
-            multiple
-            accept=".jpg,.jpeg,.png,.jfif"
-            hidden
-            onChange={(e) => {
-              handleFile(e);
-              e.target.value = null;
-            }}
-          />
+    ) : (
+      <span>Upload Image</span>
+    )}
 
-        </label>
+  </div>
 
-        {images.length > 0 && (
-          <Typography variant="caption" color="text.secondary">
-            {images.length} image(s) selected
-          </Typography>
-        )}
+  <input
+    ref={fileInputRef}
+    type="file"
+    multiple
+    accept=".jpg,.jpeg,.png,.jfif"
+    hidden
+    onChange={(e) => {
+      handleFile(e);
+      e.target.value = null;
+    }}
+  />
 
-        {errors.image && <ErrorText text={errors.image} />}
+  {images.length > 0 && (
+    <Typography variant="caption" color="text.secondary">
+      {images.length} image(s) selected
+    </Typography>
+  )}
 
-        <TextField
-          fullWidth
-          label="Event Name"
-          value={name}
-          onChange={handleNameChange}
-          error={!!errors.name}
-          helperText={errors.name}
-          sx={{ marginTop: 3 }}
-        />
+  {errors.image && <ErrorText text={errors.image} />}
 
-        <div style={{ textAlign: "center", marginTop: 25 }}>
+  <TextField
+    fullWidth
+    label="Event Name"
+    value={name}
+    onChange={handleNameChange}
+    error={!!errors.name}
+    helperText={errors.name}
+    sx={{ marginTop: 3 }}
+  />
 
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            disabled={submitting}
-            sx={{
-              px: 5,
-              py: 1.2,
-              borderRadius: "12px",
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: 14,
-              letterSpacing: "0.3px",
-              background: "linear-gradient(180deg, #1f4fa3, #0b2c6b)",
-              boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
-            }}
-          >
+  <div style={{ textAlign: "center", marginTop: 25 }}>
 
-            {submitting ? (
-              <CircularProgress size={22} sx={{ color: "#fff" }} />
-            ) : (
-              "Submit"
-            )}
+    <Button
+      variant="contained"
+      onClick={handleSubmit}
+      disabled={submitting}
+      sx={{
+        px: 5,
+        py: 1.2,
+        borderRadius: "12px",
+        textTransform: "none",
+        fontWeight: 500,
+        fontSize: 14,
+        letterSpacing: "0.3px",
+        background: "linear-gradient(180deg, #1f4fa3, #0b2c6b)",
+        boxShadow: "0 6px 14px rgba(0,0,0,0.2)",
+      }}
+    >
 
-          </Button>
+      {submitting ? (
+        <CircularProgress size={22} sx={{ color: "#fff" }} />
+      ) : (
+        "Submit"
+      )}
 
-        </div>
+    </Button>
 
-      </DialogContent>
+  </div>
+
+</DialogContent>
 
     </Dialog>
   );
